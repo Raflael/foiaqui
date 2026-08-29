@@ -121,3 +121,47 @@ export const mapFilters: MapFilter[] = [
 
 /** Épocas oferecidas no fluxo de adicionar memória. */
 export const eras = ['Anos 40', 'Anos 50', 'Anos 60', 'Anos 70', 'Atual'] as const;
+
+/**
+ * Normaliza para busca: sem acento, sem caixa.
+ *
+ * Obrigatório em português — quem digita "memoria", "praca" ou "comercio"
+ * precisa encontrar "memória", "praça" e "comércio". Sem isso a busca só
+ * funciona pra quem acentua certo no teclado do celular, que é quase ninguém.
+ */
+const normalize = (s: string) =>
+  s
+    // NFD separa a letra do acento: "á" vira "a" + acento combinante.
+    // O intervalo do replace abaixo é U+0300–U+036F, o bloco desses acentos —
+    // eles aparecem como caracteres invisíveis aqui no código. Não "conserte"
+    // achando que é lixo de codificação: sem essa linha, buscar "praca" não
+    // encontra "Praça".
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .trim();
+
+/**
+ * A busca do mapa: lugar, época ou tema, como diz o próprio campo.
+ * Casa contra tudo que a pessoa poderia ter na cabeça ao procurar —
+ * inclusive o nome de quem contou.
+ */
+export function matchesQuery(memory: Memory, query: string): boolean {
+  const q = normalize(query);
+  if (!q) return true;
+  const alvo = normalize(
+    [
+      memory.title,
+      memory.shortName,
+      memory.place,
+      memory.era,
+      memory.year,
+      memory.period,
+      memory.kind,
+      memory.author.name,
+      ...memory.tags,
+    ].join(' '),
+  );
+  // cada palavra digitada precisa aparecer: "cine 1958" acha, "xyz 1958" não
+  return q.split(/\s+/).every((termo) => alvo.includes(termo));
+}

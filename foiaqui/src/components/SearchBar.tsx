@@ -1,25 +1,28 @@
-import { Pressable, StyleSheet } from 'react-native';
+import { Pressable, StyleSheet, TextInput } from 'react-native';
 
 import { Glass } from '@/components/Glass';
 import { Icon, type IconName } from '@/components/Icon';
-import { Body } from '@/components/Type';
-import { colors, HIT, radius, space } from '@/theme';
+import { useTypeScale } from '@/store/settings';
+import { colors, fonts, HIT, radius, space } from '@/theme';
 
 /**
- * Busca do mapa. Nesta fase é um alvo de toque, não um input:
- * o teclado abrindo sobre o mapa não acrescenta nada ao protótipo de telas.
+ * Busca do mapa: lugar, época ou tema.
  *
- * O botão da direita era um ícone de filtro que não fazia nada — os filtros
- * são os chips logo abaixo. Virou a alternância mapa↔lista, que é controle
- * de verdade e a Decisão 8 exige que exista sempre.
+ * O botão da direita não é filtro — os filtros são os chips logo abaixo.
+ * É a alternância mapa↔lista, controle que a Decisão 8 exige que exista sempre.
+ *
+ * O "x" só aparece com texto digitado: botão que não faz nada ocupa alvo de
+ * toque e ensina a pessoa a desconfiar da interface.
  */
 export function SearchBar({
+  value,
+  onChangeText,
   placeholder = 'Buscar lugar, época ou tema',
-  onPress,
   action,
 }: {
+  value: string;
+  onChangeText: (text: string) => void;
   placeholder?: string;
-  onPress?: () => void;
   action?: {
     icon: IconName;
     label: string;
@@ -27,18 +30,34 @@ export function SearchBar({
     onPress: () => void;
   };
 }) {
+  const scale = useTypeScale();
+
   return (
     <Glass style={styles.bar}>
-      <Pressable
-        style={styles.field}
-        onPress={onPress}
-        accessibilityRole="search"
-        accessibilityLabel={placeholder}>
-        <Icon name="search" size={19} color={colors.grafiteDim} />
-        <Body style={styles.placeholder} numberOfLines={1}>
-          {placeholder}
-        </Body>
-      </Pressable>
+      <Icon name="search" size={19} color={colors.grafiteDim} />
+
+      <TextInput
+        value={value}
+        onChangeText={onChangeText}
+        placeholder={placeholder}
+        placeholderTextColor={colors.grafiteDim}
+        style={[styles.input, { fontSize: 14.5 * scale }]}
+        returnKeyType="search"
+        autoCorrect={false}
+        clearButtonMode="never"
+        accessibilityLabel={placeholder}
+      />
+
+      {value.length > 0 ? (
+        <Pressable
+          onPress={() => onChangeText('')}
+          hitSlop={12}
+          style={styles.clear}
+          accessibilityRole="button"
+          accessibilityLabel="Limpar a busca">
+          <Icon name="x" size={16} color={colors.grafiteDim} strokeWidth={2.2} />
+        </Pressable>
+      ) : null}
 
       {action ? (
         <Pressable
@@ -63,20 +82,31 @@ const styles = StyleSheet.create({
   bar: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 10,
     borderRadius: radius.md,
     paddingLeft: 15,
     paddingRight: 7,
     minHeight: HIT + 4,
     boxShadow: '0 8px 22px rgba(15,43,84,0.16)',
   },
-  field: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 13 },
-  placeholder: { flex: 1, color: colors.grafiteDim, fontSize: 14.5 },
+  input: {
+    flex: 1,
+    paddingVertical: 13,
+    fontFamily: fonts.ui.regular,
+    color: colors.grafite,
+  },
+  clear: {
+    width: 26,
+    height: 26,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   action: {
     minWidth: 38,
     minHeight: 38,
     alignItems: 'center',
     justifyContent: 'center',
-    marginLeft: space.sm,
+    marginLeft: space.xs,
     borderRadius: radius.sm,
     borderWidth: 1,
     borderColor: colors.esmalte,

@@ -15,7 +15,7 @@ import { Body, Mono } from '@/components/Type';
 import { YouAreHere } from '@/components/YouAreHere';
 import { currentPosition, distanceTo, formatDistance } from '@/data/location';
 import { mapStyle } from '@/data/mapStyle';
-import { mapFilters, memories } from '@/data/memories';
+import { mapFilters, matchesQuery, memories } from '@/data/memories';
 import { useMotionEnabled } from '@/hooks/useMotion';
 import { useSettings } from '@/store/settings';
 import { useSheet } from '@/store/sheet';
@@ -54,6 +54,7 @@ export default function MapScreen() {
    * e a lista é o que sobra quando o GPS erra ou a rede cai.
    */
   const [view, setView] = useState<'mapa' | 'lista'>('mapa');
+  const [query, setQuery] = useState('');
 
   const coachDismissed = useSettings((s) => s.coachDismissed);
   const dismissCoach = useSettings((s) => s.dismissCoach);
@@ -65,7 +66,10 @@ export default function MapScreen() {
   const floorGap = TABBAR_HEIGHT + insets.bottom + space.xl;
 
   const filter = mapFilters.find((f) => f.id === filterId) ?? null;
-  const shown = filter ? memories.filter(filter.match) : memories;
+  // busca e chip se somam, não se substituem: "Anos 60" + "praça" é um recorte só
+  const shown = memories
+    .filter((m) => (filter ? filter.match(m) : true))
+    .filter((m) => matchesQuery(m, query));
   const byDistance = [...shown].sort((a, b) => distanceTo(a) - distanceTo(b));
 
   /**
@@ -101,7 +105,7 @@ export default function MapScreen() {
     setTracking(true);
     const t = setTimeout(() => setTracking(false), 1200);
     return () => clearTimeout(t);
-  }, [mapReady, openId, filterId]);
+  }, [mapReady, openId, filterId, query]);
 
   return (
     <View style={styles.screen}>
@@ -163,7 +167,9 @@ export default function MapScreen() {
             <View style={styles.empty}>
               <Icon name="bookmark" size={30} color={colors.calLine} strokeWidth={1.6} />
               <Body style={styles.emptyText}>
-                Nada {filter?.countLabel} por aqui ainda. Que tal contar a primeira?
+                {query
+                  ? `Nada encontrado para "${query}". Tente o nome do lugar, a década ou o tema.`
+                  : `Nada ${filter?.countLabel} por aqui ainda. Que tal contar a primeira?`}
               </Body>
             </View>
           ) : null}
@@ -172,6 +178,8 @@ export default function MapScreen() {
 
       <View style={[styles.top, { top: insets.top + space.md }]}>
         <SearchBar
+          value={query}
+          onChangeText={setQuery}
           action={{
             icon: view === 'mapa' ? 'list' : 'map',
             label: view === 'mapa' ? 'Ver em lista' : 'Ver no mapa',
@@ -197,14 +205,23 @@ export default function MapScreen() {
       <Glass style={[styles.count, { bottom: floorGap }]}>
         {shown.length === 0 ? (
           <Body style={styles.countText}>
-            Nenhuma memória <Body style={styles.countStrong}>{filter?.countLabel}</Body> por aqui.
-            Que tal contar a primeira?
+            {query ? (
+              <>
+                Nada encontrado para{' '}
+                <Body style={styles.countStrong}>&ldquo;{query}&rdquo;</Body>.
+              </>
+            ) : (
+              <>
+                Nenhuma memória <Body style={styles.countStrong}>{filter?.countLabel}</Body> por
+                aqui. Que tal contar a primeira?
+              </>
+            )}
           </Body>
         ) : (
           <Body style={styles.countText}>
             <Mono style={styles.countNumber}>{shown.length}</Mono>{' '}
             {shown.length === 1 ? 'memória' : 'memórias'}
-            {filter ? ` ${filter.countLabel}` : ' por perto'}
+            {query ? ' encontradas' : filter ? ` ${filter.countLabel}` : ' por perto'}
           </Body>
         )}
       </Glass>
