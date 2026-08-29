@@ -1,13 +1,16 @@
 import {
   AudioModule,
   RecordingPresets,
+  useAudioPlayer,
+  useAudioPlayerStatus,
   useAudioRecorder,
   useAudioRecorderState,
 } from 'expo-audio';
 import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
+import * as Location from 'expo-location';
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -17,18 +20,24 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Chip } from '@/components/Chip';
 import { Icon } from '@/components/Icon';
-import { PhotoPlaceholder } from '@/components/PhotoPlaceholder';
 import { Body, Mono, Plaque } from '@/components/Type';
+import type { Position } from '@/data/location';
+import { mapStyle } from '@/data/mapStyle';
 import { eras } from '@/data/memories';
+import { useCurrentPosition } from '@/hooks/useCurrentPosition';
 import { colors, HIT, radius, space } from '@/theme';
 
 const TAGS = ['Cinema', 'Lazer', 'Centro', 'Demolido', 'Família', 'Arte urbana', 'Escola'];
 
 const STEPS = ['Mídia', 'História', 'Local', 'Época'] as const;
+
+/** `null` quando ainda não há gravação — o player aceita fonte vazia. */
+const audioSource = (uri?: string) => (uri ? { uri } : null);
 
 /** 78 -> "1:18" */
 const formatSeconds = (s: number) =>
@@ -52,8 +61,17 @@ export default function AdicionarScreen() {
   const [audio, setAudio] = useState<{ uri: string; seconds: number } | null>(null);
   const [mediaErro, setMediaErro] = useState<string | null>(null);
 
+  const { position } = useCurrentPosition();
+  const [local, setLocal] = useState<Position | null>(null);
+  const [endereco, setEndereco] = useState<string | null>(null);
+  // o local nasce onde a pessoa está; ela ajusta se a memória for logo ali adiante
+  const alvo = local ?? position;
+
   const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
   const recState = useAudioRecorderState(recorder);
+  // ouvir o próprio relato antes de enviar: sem isto a pessoa grava no escuro
+  const player = useAudioPlayer(audioSource(audio?.uri));
+  const playing = useAudioPlayerStatus(player).playing;
   const [story, setStory] = useState('');
   const [era, setEra] = useState<string | null>(null);
   const [tags, setTags] = useState<string[]>([]);
@@ -63,7 +81,7 @@ export default function AdicionarScreen() {
   const toggleTag = (tag: string) =>
     setTags((t) => (t.includes(tag) ? t.filter((x) => x !== tag) : [...t, tag]));
 
-  // o local vem do GPS já preenchido, então o passo 3 nasce válido
+  // o local nasce preenchido pelo GPS, então este passo já nasce válido
   const canContinue = [media !== null, story.trim().length >= 10, true, era !== null][step];
   const isLast = step === STEPS.length - 1;
 
@@ -83,10 +101,11 @@ export default function AdicionarScreen() {
     }
     guardar(
       await ImagePicker.launchCameraAsync({
-        mediaTypes: ['images', 'videos'],
+        // só foto: pedir imagem E vídeo abria a câmera num modo ambíguo,
+        // sem disparador claro. Vídeo entra pela galeria ou por um botão
+        // próprio, quando houver.
+        mediaTypes: ['images'],
         quality: 0.85,
-        // microdocumentário, não filme: um minuto é o teto
-        videoMaxDuration: 60,
       }),
     );
   };
@@ -122,6 +141,32 @@ export default function AdicionarScreen() {
     await recorder.prepareToRecordAsync();
     recorder.record();
   };
+
+  /**
+   * Endereço a partir da coordenada. Roda quando o mapa para de se mexer,
+   * não a cada quadro — geocodificação é chamada cara e com limite.
+   */
+  useEffect(() => {
+    if (step !== 2) return;
+    let vivo = true;
+    setEndereco(null);
+    (async () => {
+      try {
+        const [r] = await Location.reverseGeocodeAsync({
+          latitude: alvo.lat,
+          longitude: alvo.lng,
+        });
+        if (!vivo) return;
+        const rua = [r?.street, r?.streetNumber].filter(Boolean).join(', ');
+        setEndereco([rua, r?.district, r?.city].filter(Boolean).join(' · ') || null);
+      } catch {
+        if (vivo) setEndereco(null);
+      }
+    })();
+    return () => {
+      vivo = false;
+    };
+  }, [step, alvo.lat, alvo.lng]);
 
   const submit = () => {
     setSending(true);
@@ -273,6 +318,31 @@ export default function AdicionarScreen() {
                 {recState.isRecording ? <View style={styles.recDot} /> : null}
               </Pressable>
 
+              {audio && !recState.isRecording ? (
+                <Pressable
+                  style={styles.ouvirBtn}
+                  onPress={() => {
+                    if (playing) {
+                      player.pause();
+                    } else {
+                      player.seekTo(0);
+                      player.play();
+                    }
+                  }}
+                  accessibilityRole="button"
+                  accessibilityLabel={playing ? 'Pausar o relato' : 'Ouvir o relato gravado'}>
+                  <Icon
+                    name={playing ? 'pause' : 'play'}
+                    size={16}
+                    color={colors.esmalte}
+                    filled
+                  />
+                  <Body style={styles.ouvirBtnText}>
+                    {playing ? 'Tocando…' : 'Ouvir o que você gravou'}
+                  </Body>
+                </Pressable>
+              ) : null}
+
               {mediaErro ? <Body style={styles.mediaErro}>{mediaErro}</Body> : null}
             </>
           ) : null}
@@ -301,18 +371,45 @@ export default function AdicionarScreen() {
             <>
               <Label text="Local" required />
               <View style={styles.locMap}>
-                <PhotoPlaceholder variant="present" style={StyleSheet.absoluteFill} />
-                <View style={styles.locPin}>
-                  <Icon name="pinSolid" size={26} color={colors.ferrugem} />
-                </View>
-                <View style={styles.locTag}>
-                  <Mono style={styles.locGps}>GPS</Mono>
-                  <Body style={styles.locText}>Rua do Comércio, 210 · toque p/ ajustar</Body>
+                <MapView
+                  provider={PROVIDER_GOOGLE}
+                  style={StyleSheet.absoluteFill}
+                  customMapStyle={mapStyle}
+                  initialRegion={{
+                    latitude: alvo.lat,
+                    longitude: alvo.lng,
+                    latitudeDelta: 0.004,
+                    longitudeDelta: 0.004,
+                  }}
+                  onRegionChangeComplete={(r) =>
+                    setLocal({ lat: r.latitude, lng: r.longitude })
+                  }
+                  showsCompass={false}
+                  toolbarEnabled={false}
+                  rotateEnabled={false}
+                  pitchEnabled={false}
+                />
+                {/*
+                  O pino fica cravado no centro e quem se move é o mapa.
+                  Arrastar um pino minúsculo com o polegar, em pé na rua, é
+                  bem mais difícil do que empurrar o mapa inteiro — Decisão 7,
+                  operação com uma mão.
+                */}
+                <View style={styles.locPin} pointerEvents="none">
+                  <Icon name="pinSolid" size={30} color={colors.esmalte} />
                 </View>
               </View>
+
+              <View style={styles.locTag}>
+                <Mono style={styles.locGps}>AQUI</Mono>
+                <Body style={styles.locText} numberOfLines={2}>
+                  {endereco ?? 'Procurando o endereço…'}
+                </Body>
+              </View>
+
               <Body style={styles.help}>
-                Sem sinal bom? Dá pra arrastar o pin depois — o importante é não deixar a
-                memória sem endereço.
+                Arraste o mapa até o ponto exato. Não precisa ser perfeito — o importante é
+                não deixar a memória sem endereço.
               </Body>
             </>
           ) : null}
@@ -494,6 +591,19 @@ const styles = StyleSheet.create({
     borderRadius: 4.5,
     backgroundColor: colors.ferrugem,
   },
+  ouvirBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: space.sm,
+    minHeight: HIT,
+    marginTop: space.sm,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.calLine,
+    backgroundColor: colors.cal2,
+  },
+  ouvirBtnText: { fontSize: 13.5, fontWeight: '600', color: colors.esmalte },
   mediaErro: { marginTop: space.md, fontSize: 12.5, lineHeight: 18, color: colors.ferrugem },
 
   photoSwap: {
@@ -539,18 +649,17 @@ const styles = StyleSheet.create({
   counter: { fontSize: 12, color: colors.grafiteDim, marginTop: space.sm },
 
   locMap: {
-    height: 150,
+    // mais alto que antes: agora dá pra arrastar de verdade
+    height: 230,
     borderRadius: radius.md,
     overflow: 'hidden',
     borderWidth: 1,
     borderColor: colors.calLine,
   },
-  locPin: { position: 'absolute', left: '50%', top: '40%', marginLeft: -13 },
+  // o pino aponta o centro exato: metade da largura, e a ponta na linha do meio
+  locPin: { position: 'absolute', left: '50%', top: '50%', marginLeft: -15, marginTop: -30 },
   locTag: {
-    position: 'absolute',
-    left: 10,
-    right: 10,
-    bottom: 10,
+    marginTop: space.md,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,

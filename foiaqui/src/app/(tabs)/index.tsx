@@ -131,8 +131,7 @@ export default function MapScreen() {
 
   return (
     <View style={styles.screen}>
-      {view === 'mapa' ? (
-        <MapView
+      <MapView
           ref={mapRef}
           provider={PROVIDER_GOOGLE}
           style={StyleSheet.absoluteFill}
@@ -182,10 +181,16 @@ export default function MapScreen() {
               />
             </Marker>
           ))}
-        </MapView>
-      ) : (
+      </MapView>
+
+      {/*
+        A lista fica POR CIMA do mapa, nunca no lugar dele. Trocar de visão
+        desmontava o MapView, e ao voltar a câmera ressuscitava no
+        enquadramento inicial — foi por isso que o mapa "voltava para Santos".
+      */}
+      {view === 'lista' ? (
         <ScrollView
-          style={StyleSheet.absoluteFill}
+          style={[StyleSheet.absoluteFill, styles.listOver]}
           contentContainerStyle={{
             paddingTop: insets.top + TOP_CHROME,
             paddingBottom: TABBAR_HEIGHT + insets.bottom + space.xxl,
@@ -210,7 +215,7 @@ export default function MapScreen() {
             </View>
           ) : null}
         </ScrollView>
-      )}
+      ) : null}
 
       <View style={[styles.top, { top: insets.top + space.md }]}>
         <SearchBar
@@ -257,7 +262,7 @@ export default function MapScreen() {
           <Body style={styles.countText}>
             <Mono style={styles.countNumber}>{shown.length}</Mono>{' '}
             {shown.length === 1 ? 'memória' : 'memórias'}
-            {query ? ' encontradas' : filter ? ` ${filter.countLabel}` : ' por perto'}
+            {query ? ' encontradas' : filter ? ` ${filter.countLabel}` : ' no acervo'}
           </Body>
         )}
 
@@ -309,6 +314,7 @@ export default function MapScreen() {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.mapaFundo },
+  listOver: { backgroundColor: colors.cal },
 
   top: { position: 'absolute', left: space.lg, right: space.lg, zIndex: 20, gap: space.md },
   chips: { gap: space.sm, paddingRight: space.lg },
