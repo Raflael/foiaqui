@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 420" width="1280" height="420" role="img" aria-label="FoiAqui — memória urbana colaborativa">
+  <title>FoiAqui</title>
+
+  <!-- a chapa esmaltada -->
+  <rect width="1280" height="420" fill="#14396E"/>
+
+  <!-- a moldura branca embutida: a assinatura do sistema -->
+  <rect x="30" y="30" width="1220" height="360" fill="none" stroke="#F4F3EE" stroke-width="4"/>
+
+  <g font-family="'Archivo Narrow','Arial Narrow',Arial,Helvetica,sans-serif">
+    <text x="82" y="126" fill="#A8C2E4" font-size="24" font-weight="600" letter-spacing="9">MEMÓRIA URBANA COLABORATIVA</text>
+    <text x="78" y="264" fill="#F4F3EE" font-size="150" font-weight="700" letter-spacing="2">FOIAQUI</text>
+    <text x="82" y="352" fill="#A8C2E4" font-size="25" font-weight="600" letter-spacing="6">APONTE A CÂMERA E VEJA O QUE FOI AQUI</text>
+  </g>
+
+  <line x1="82" y1="300" x2="1198" y2="300" stroke="#F4F3EE" stroke-opacity="0.34" stroke-width="2"/>
+
+  <g font-family="ui-monospace,'DM Mono',Menlo,Consolas,monospace">
+    <text x="1198" y="308" fill="#F4F3EE" font-size="24" text-anchor="end">SANTOS · SP</text>
+  </g>
+
+  <!-- a lasca: o esmalte descasca e aparece o ferro por baixo -->
+  <rect x="1256" y="152" width="24" height="86" fill="#B4471F"/>
+</svg>
