@@ -1,20 +1,20 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
-import Animated, { useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Chip } from '@/components/Chip';
-import { MemoryRow } from '@/components/MemoryCard';
 import { Glass } from '@/components/Glass';
 import { Icon, type IconName } from '@/components/Icon';
-import { MapCanvas } from '@/components/MapCanvas';
+import { MemoryRow } from '@/components/MemoryCard';
 import { MemoryPin } from '@/components/MemoryPin';
 import { SearchBar } from '@/components/SearchBar';
 import { Body, Mono } from '@/components/Type';
 import { YouAreHere } from '@/components/YouAreHere';
-import { distanceTo, formatDistance } from '@/data/location';
+import { currentPosition, distanceTo, formatDistance } from '@/data/location';
+import { mapStyle } from '@/data/mapStyle';
 import { mapFilters, memories } from '@/data/memories';
 import { useMotionEnabled } from '@/hooks/useMotion';
 import { useSettings } from '@/store/settings';
@@ -28,19 +28,22 @@ const PIN_ICONS: Record<string, IconName> = {
   mural: 'circlePlus',
 };
 
-/** Onde o pin aberto deve ficar: alto o bastante para sobrar mapa acima da folha. */
-const FOCUS_AT = 0.24;
-/** Teto do deslocamento, para o mapa nunca deixar borda vazia à mostra. */
-const MAX_SHIFT = 0.4;
-/** Topo da folha na altura "meio" — precisa bater com `tops.mid` do MemorySheet. */
-const SHEET_MID = 0.46;
 /** Altura ocupada pela busca + linha de chips, que flutuam sobre o conteúdo. */
 const TOP_CHROME = 124;
+
+/** Enquadramento inicial: cabe as três memórias com folga. */
+const INITIAL_REGION = {
+  latitude: currentPosition.lat,
+  longitude: currentPosition.lng,
+  latitudeDelta: 0.012,
+  longitudeDelta: 0.012,
+};
 
 export default function MapScreen() {
   const insets = useSafeAreaInsets();
   const { height: H } = useWindowDimensions();
   const motion = useMotionEnabled();
+  const mapRef = useRef<MapView>(null);
 
   // null = sem recorte, mostra tudo. Chip clicado de novo limpa o filtro:
   // na rua a pessoa precisa desfazer sem procurar um "x".
@@ -51,6 +54,7 @@ export default function MapScreen() {
    * e a lista é o que sobra quando o GPS erra ou a rede cai.
    */
   const [view, setView] = useState<'mapa' | 'lista'>('mapa');
+
   const coachDismissed = useSettings((s) => s.coachDismissed);
   const dismissCoach = useSettings((s) => s.dismissCoach);
 
@@ -65,52 +69,73 @@ export default function MapScreen() {
   const byDistance = [...shown].sort((a, b) => distanceTo(a) - distanceTo(b));
 
   /**
-   * Quando a ficha sobe, o mapa desliza para trazer o pin aberto à faixa que
-   * continua visível. É o que sustenta a promessa da Decisão 2: a memória abre
-   * sem que a pessoa perca de vista onde ela fica.
-   *
-   * Duas sutilezas que evitam movimento gratuito:
-   * - só desliza se o pin realmente ficaria atrás da folha;
-   * - a referência é sempre a altura "meio", então passar de meio para cheia
-   *   (onde o mapa nem aparece) não mexe o mapa de novo.
+   * O padding diz ao mapa qual faixa continua visível, então `animateCamera`
+   * centraliza ali dentro em vez de atrás da ficha. É o que sustenta a
+   * Decisão 2: abrir a memória sem perder de vista onde ela fica.
    */
-  const selected = shown.find((m) => m.id === openId);
-  const pinY = selected ? (parseFloat(selected.mapPos.top) / 100) * H : 0;
-  const coveredFrom = H * SHEET_MID - 72;
-  const shift =
-    selected && snap !== 'peek' && pinY > coveredFrom
-      ? Math.max(Math.min(H * FOCUS_AT - pinY, H * MAX_SHIFT), -H * MAX_SHIFT)
-      : 0;
+  const sheetOccupies = openId && snap !== 'peek' ? H * 0.54 : TABBAR_HEIGHT + insets.bottom;
 
-  const mapStyle = useAnimatedStyle(() => ({
-    transform: [
-      {
-        translateY: motion
-          ? withSpring(shift, { damping: 20, stiffness: 140 })
-          : withTiming(shift, { duration: 0 }),
-      },
-    ],
-  }));
+  useEffect(() => {
+    const target = shown.find((m) => m.id === openId);
+    if (!target || snap === 'peek') return;
+    mapRef.current?.animateCamera(
+      { center: { latitude: target.coords.lat, longitude: target.coords.lng } },
+      { duration: motion ? 420 : 0 },
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [openId, snap]);
+
+  /**
+   * No Android, marcador com view customizada redesenha o bitmap a cada quadro
+   * enquanto `tracksViewChanges` for true. Ligamos só na janela em que algo
+   * mudou de aparência e desligamos em seguida.
+   */
+  const [tracking, setTracking] = useState(true);
+  useEffect(() => {
+    setTracking(true);
+    const t = setTimeout(() => setTracking(false), 600);
+    return () => clearTimeout(t);
+  }, [openId, filterId]);
 
   return (
     <View style={styles.screen}>
       {view === 'mapa' ? (
-      <Animated.View style={[StyleSheet.absoluteFill, mapStyle]}>
-        <MapCanvas>
+        <MapView
+          ref={mapRef}
+          provider={PROVIDER_GOOGLE}
+          style={StyleSheet.absoluteFill}
+          initialRegion={INITIAL_REGION}
+          customMapStyle={mapStyle}
+          mapPadding={{ top: insets.top + TOP_CHROME, left: 0, right: 0, bottom: sheetOccupies }}
+          showsCompass={false}
+          toolbarEnabled={false}
+          showsMyLocationButton={false}
+          rotateEnabled={false}
+          pitchEnabled={false}>
+          <Marker
+            coordinate={{ latitude: currentPosition.lat, longitude: currentPosition.lng }}
+            anchor={{ x: 0.5, y: 0.5 }}
+            tracksViewChanges={false}
+            accessibilityLabel="Sua localização atual">
+            <YouAreHere />
+          </Marker>
+
           {shown.map((memory) => (
-            <MemoryPin
+            <Marker
               key={memory.id}
-              pos={memory.mapPos}
-              icon={PIN_ICONS[memory.id] ?? 'pin'}
-              label={`${memory.shortName} · ${memory.year}`}
-              accessibilityLabel={`${memory.title}, ${memory.year}. Abrir memória.`}
-              active={memory.id === openId}
+              coordinate={{ latitude: memory.coords.lat, longitude: memory.coords.lng }}
+              anchor={{ x: 0.5, y: 1 }}
+              tracksViewChanges={tracking}
               onPress={() => openSheet(memory.id)}
-            />
+              accessibilityLabel={`${memory.title}, ${memory.year}. Abrir memória.`}>
+              <MemoryPin
+                icon={PIN_ICONS[memory.id] ?? 'pin'}
+                label={`${memory.shortName} · ${memory.year}`}
+                active={memory.id === openId}
+              />
+            </Marker>
           ))}
-          <YouAreHere left="47%" top="63%" />
-        </MapCanvas>
-      </Animated.View>
+        </MapView>
       ) : (
         <ScrollView
           style={StyleSheet.absoluteFill}
@@ -172,7 +197,7 @@ export default function MapScreen() {
           <Body style={styles.countText}>
             <Mono style={styles.countNumber}>{shown.length}</Mono>{' '}
             {shown.length === 1 ? 'memória' : 'memórias'}
-            {filter ? ` ${filter.countLabel}` : ' neste quarteirão'}
+            {filter ? ` ${filter.countLabel}` : ' por perto'}
           </Body>
         )}
       </Glass>
@@ -201,8 +226,6 @@ export default function MapScreen() {
           locations={[0, 0.6, 1]}
           start={{ x: 0.35, y: 0.3 }}
           end={{ x: 1, y: 1 }}
-          // arredonda o próprio gradiente: o container precisa de overflow
-          // visível pro selo "AR" poder escapar do canto
           style={[StyleSheet.absoluteFill, { borderRadius: radius.md }]}
         />
         <Icon name="camera" size={30} color={colors.sobreFerrugem} strokeWidth={2.2} />
@@ -215,7 +238,7 @@ export default function MapScreen() {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.cal },
+  screen: { flex: 1, backgroundColor: colors.mapaFundo },
 
   top: { position: 'absolute', left: space.lg, right: space.lg, zIndex: 20, gap: space.md },
   chips: { gap: space.sm, paddingRight: space.lg },
@@ -247,7 +270,7 @@ const styles = StyleSheet.create({
     boxShadow: '0 14px 34px rgba(0,0,0,0.4)',
   },
   coachText: { fontSize: 12.5, lineHeight: 17, color: colors.grafite, fontWeight: '500' },
-  coachStrong: { fontSize: 12.5, lineHeight: 17, color: colors.grafite, fontWeight: '700' },
+  coachStrong: { fontSize: 12.5, lineHeight: 17, color: colors.grafite, fontWeight: '600' },
   coachTail: {
     position: 'absolute',
     right: 26,
@@ -288,5 +311,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
     paddingVertical: 2,
   },
-  camBadgeText: { fontSize: 9, fontWeight: '700', color: colors.ferrugemClara },
+  camBadgeText: { fontSize: 9, fontWeight: '700', color: colors.ferrugem },
 });

@@ -2,8 +2,8 @@ import { distanceTo, NEARBY_M } from '@/data/location';
 import type { Memory } from '@/types';
 
 /**
- * As 3 memórias do protótipo. Coordenadas reais de Santos-SP (cidade da Íris),
- * mas as posições no mapa stub vêm de `mapPos` — ver `<MapCanvas>`.
+ * As 3 memórias do protótipo, em coordenadas reais de Santos-SP —
+ * a cidade da Íris. É por elas que os marcadores se posicionam no mapa.
  */
 export const memories: Memory[] = [
   {
@@ -28,7 +28,6 @@ export const memories: Memory[] = [
     ],
     audioSeconds: 72,
     tags: ['Cinema', 'Lazer', 'Centro'],
-    mapPos: { left: '29%', top: '38%' },
   },
   {
     id: 'praca',
@@ -48,7 +47,6 @@ export const memories: Memory[] = [
     verified: true,
     media: [{ type: 'photo', uri: 'past' }],
     tags: ['Praça', 'Música', 'Demolido'],
-    mapPos: { left: '63%', top: '30%' },
   },
   {
     id: 'mural',
@@ -72,7 +70,6 @@ export const memories: Memory[] = [
     ],
     audioSeconds: 48,
     tags: ['Arte urbana', 'Bairro operário'],
-    mapPos: { left: '74%', top: '58%' },
   },
 ];
 

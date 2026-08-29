@@ -18,7 +18,17 @@
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.raflael.foiaqui",
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ],
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyAyZj6_akN9A6APc_2GXxfivE8wQrVvBO0"
+        }
+      }
     },
     "androidNavigationBar": {
       "barStyle": "dark-content",
@@ -50,6 +60,13 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "4c70b839-8730-47e9-a8a6-db4510aa3c43"
+      }
+    },
+    "owner": "raflael"
   }
 }

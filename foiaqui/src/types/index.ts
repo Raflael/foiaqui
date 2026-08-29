@@ -1,12 +1,5 @@
 export type MediaType = 'photo' | 'audio' | 'video';
 
-/** Posição do pin no `<MapCanvas>` stub (percentuais da tela).
- *  Sai daqui quando entrar o react-native-maps num dev build — aí vale só `coords`. */
-export interface StubMapPos {
-  left: `${number}%`;
-  top: `${number}%`;
-}
-
 export interface Memory {
   id: string;
   title: string;
@@ -36,10 +29,8 @@ export interface Memory {
   /** duração do áudio em segundos, quando há relato falado */
   audioSeconds?: number;
   tags: string[];
-  /** enquanto não há fotos reais, o par passado/presente é desenhado (ver PhotoPlaceholder) */
   pastImageUri?: string;
   presentImageUri?: string;
-  mapPos: StubMapPos;
 }
 
 export type TrailCover =
