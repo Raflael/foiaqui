@@ -86,16 +86,22 @@ export default function MapScreen() {
   }, [openId, snap]);
 
   /**
-   * No Android, marcador com view customizada redesenha o bitmap a cada quadro
-   * enquanto `tracksViewChanges` for true. Ligamos só na janela em que algo
-   * mudou de aparência e desligamos em seguida.
+   * No Android, marcador com view customizada vira bitmap, e ele para de ser
+   * redesenhado quando `tracksViewChanges` fica false.
+   *
+   * O relógio precisa começar quando o MAPA fica pronto, não quando a tela
+   * monta: o MapView leva segundos para inicializar, e desligar a captura
+   * antes disso congela a chapa vazia, sem moldura nem texto — foi exatamente
+   * o bug que apareceu no primeiro build.
    */
+  const [mapReady, setMapReady] = useState(false);
   const [tracking, setTracking] = useState(true);
   useEffect(() => {
+    if (!mapReady) return;
     setTracking(true);
-    const t = setTimeout(() => setTracking(false), 600);
+    const t = setTimeout(() => setTracking(false), 1200);
     return () => clearTimeout(t);
-  }, [openId, filterId]);
+  }, [mapReady, openId, filterId]);
 
   return (
     <View style={styles.screen}>
@@ -106,6 +112,7 @@ export default function MapScreen() {
           style={StyleSheet.absoluteFill}
           initialRegion={INITIAL_REGION}
           customMapStyle={mapStyle}
+          onMapReady={() => setMapReady(true)}
           mapPadding={{ top: insets.top + TOP_CHROME, left: 0, right: 0, bottom: sheetOccupies }}
           showsCompass={false}
           toolbarEnabled={false}

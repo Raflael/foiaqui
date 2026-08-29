@@ -54,10 +54,8 @@ const styles = StyleSheet.create({
   // escala em vez de animação: dentro de um Marker do Android, view animada
   // obriga o mapa a redesenhar o bitmap a cada quadro
   lifted: { transform: [{ scale: 1.12 }] },
-  plate: {
-    padding: 4,
-    boxShadow: '0 4px 10px rgba(15,43,84,0.28)',
-  },
+  // sem sombra: dentro do bitmap de um marcador no Android ela sai cortada
+  plate: { padding: 4 },
   frame: { borderWidth: 1.5 },
   row: {
     flexDirection: 'row',
