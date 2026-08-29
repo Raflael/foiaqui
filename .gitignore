@@ -1,0 +1,35 @@
+# dependências
+node_modules/
+
+# Expo
+.expo/
+dist/
+web-build/
+*.orig.*
+expo-env.d.ts
+
+# builds nativos
+android/
+ios/
+*.apk
+*.aab
+*.ipa
+
+# sistema
+.DS_Store
+Thumbs.db
+
+# logs
+*.log
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# ambiente
+.env
+.env.local
+.env.*.local
+
+# scratch
+*.tmp
+.bundle-check/

@@ -1,0 +1,750 @@
+<title>Placa Esmaltada</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@600;700&family=Archivo:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,600&family=DM+Mono:wght@400;500&display=swap">
+
+<style>
+  /* ============================================================
+     Este documento é escrito no sistema que ele descreve.
+     Os tokens abaixo são os mesmos de theme/colors.ts.
+     Direção única e deliberada — sem tema escuro: o app é cal.
+     ============================================================ */
+  :root {
+    --cal: #F4F3EE;
+    --cal-2: #EAE8E0;
+    --cal-3: #DFDCD1;
+    --cal-line: #CFCABA;
+    --esmalte: #14396E;
+    --esmalte-fundo: #0F2B54;
+    --sobre-esmalte: #F4F3EE;
+    --sobre-esmalte-dim: #A8C2E4;
+    --ferrugem: #B4471F;
+    --conferido: #2E6E68;
+    --grafite: #1A1D23;
+    --grafite-dim: #55524B;
+
+    --placa: 'Archivo Narrow', 'Arial Narrow', sans-serif;
+    --story: 'Newsreader', Georgia, 'Times New Roman', serif;
+    --ui: 'Archivo', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    --mono: 'DM Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+    --measure: 66ch;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--cal);
+    color: var(--grafite);
+    font-family: var(--ui);
+    font-size: 16px;
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+  }
+
+  :focus-visible { outline: 2px solid var(--ferrugem); outline-offset: 3px; }
+
+  .wrap { max-width: 860px; margin: 0 auto; padding: 0 24px 96px; }
+
+  /* ---------- a placa ---------- */
+  .plate {
+    background: var(--esmalte);
+    padding: 7px;
+    box-shadow: 0 10px 26px rgba(15, 43, 84, .3);
+  }
+  .plate > .frame {
+    border: 2px solid var(--sobre-esmalte);
+    padding: 26px 26px 22px;
+  }
+  .plate .marker {
+    font-family: var(--placa);
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: .3em;
+    text-transform: uppercase;
+    color: var(--sobre-esmalte-dim);
+    margin: 0;
+  }
+  .plate .name {
+    font-family: var(--placa);
+    font-weight: 700;
+    font-size: clamp(2.1rem, 7vw, 3.4rem);
+    line-height: 1.02;
+    letter-spacing: .012em;
+    text-transform: uppercase;
+    color: var(--sobre-esmalte);
+    margin: 10px 0 0;
+  }
+  .plate .period {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .plate .period span {
+    font-family: var(--mono);
+    font-size: 13px;
+    letter-spacing: .06em;
+    color: var(--sobre-esmalte);
+  }
+  .plate .period i { flex: 1; height: 1px; background: rgba(244, 243, 238, .34); }
+  .plate .addr {
+    font-family: var(--placa);
+    font-weight: 600;
+    font-size: 12.5px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--sobre-esmalte-dim);
+    margin: 12px 0 0;
+  }
+  /* a lasca: o esmalte descasca e aparece o ferro por baixo */
+  .plate { position: relative; }
+  .plate::after {
+    content: "";
+    position: absolute;
+    right: -5px;
+    top: 46px;
+    width: 10px;
+    height: 30px;
+    background: var(--ferrugem);
+  }
+
+  header.mast { padding: 72px 0 8px; }
+  .mast .plate { max-width: 620px; }
+  .standfirst {
+    max-width: var(--measure);
+    margin: 40px 0 0;
+    font-family: var(--story);
+    font-size: 1.28rem;
+    line-height: 1.55;
+    color: var(--grafite);
+    text-wrap: pretty;
+  }
+
+  /* ---------- seções ---------- */
+  section { padding: 52px 0 0; scroll-margin-top: 16px; }
+  section > * { max-width: var(--measure); }
+  section > .wide { max-width: none; }
+
+  .num {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: .16em;
+    color: var(--ferrugem);
+    margin: 0 0 10px;
+  }
+  h2 {
+    font-family: var(--placa);
+    font-weight: 700;
+    font-size: clamp(1.55rem, 4vw, 2.05rem);
+    line-height: 1.1;
+    letter-spacing: .014em;
+    text-transform: uppercase;
+    margin: 0 0 18px;
+    color: var(--grafite);
+    text-wrap: balance;
+  }
+  h3 {
+    font-family: var(--placa);
+    font-weight: 600;
+    font-size: 1.05rem;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    margin: 32px 0 10px;
+    color: var(--esmalte);
+  }
+  p { margin: 0 0 16px; }
+  b, strong { font-weight: 600; }
+  a { color: var(--ferrugem); text-underline-offset: 3px; }
+  a:hover { color: var(--esmalte); }
+
+  .story { font-family: var(--story); font-size: 1.08rem; line-height: 1.62; }
+
+  hr {
+    border: 0;
+    border-top: 1px solid var(--cal-line);
+    margin: 48px 0 0;
+    max-width: none;
+  }
+
+  /* ---------- swatches ---------- */
+  .swatches {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 14px;
+    margin: 20px 0 8px;
+  }
+  .sw { display: flex; flex-direction: column; gap: 7px; }
+  .sw .chip { height: 58px; border: 1px solid var(--cal-line); }
+  .sw b {
+    font-family: var(--ui);
+    font-weight: 600;
+    font-size: 12.5px;
+    color: var(--grafite);
+  }
+  .sw code {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--grafite-dim);
+  }
+  .sw span {
+    font-size: 12px;
+    line-height: 1.4;
+    color: var(--grafite-dim);
+  }
+
+  /* ---------- tabela ---------- */
+  .scroller { overflow-x: auto; margin: 20px 0 0; }
+  table { border-collapse: collapse; width: 100%; min-width: 560px; font-size: .94rem; }
+  th, td {
+    text-align: left;
+    padding: 10px 14px 10px 0;
+    border-bottom: 1px solid var(--cal-line);
+    vertical-align: top;
+  }
+  th {
+    font-family: var(--placa);
+    font-weight: 600;
+    font-size: 11.5px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--grafite-dim);
+  }
+  td { color: var(--grafite-dim); }
+  td b { color: var(--grafite); }
+  td.num-cell {
+    font-family: var(--mono);
+    font-variant-numeric: tabular-nums;
+    color: var(--grafite);
+    white-space: nowrap;
+  }
+  .pass {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--conferido);
+    letter-spacing: .06em;
+  }
+
+  /* ---------- tipografia demo ---------- */
+  .voices { display: flex; flex-direction: column; gap: 24px; margin-top: 22px; }
+  .voice { border-left: 3px solid var(--esmalte); padding-left: 18px; }
+  .voice .sample { margin: 0 0 6px; color: var(--grafite); }
+  .voice .why { margin: 0; font-size: 13.5px; color: var(--grafite-dim); line-height: 1.5; }
+  .v-placa { font-family: var(--placa); font-weight: 700; font-size: 27px; letter-spacing: .014em; text-transform: uppercase; }
+  .v-story { font-family: var(--story); font-size: 20px; }
+  .v-ui { font-family: var(--ui); font-weight: 500; font-size: 17px; }
+  .v-mono { font-family: var(--mono); font-size: 16px; letter-spacing: .05em; }
+
+  /* ---------- não-fazer ---------- */
+  .nots { display: flex; flex-direction: column; gap: 2px; margin-top: 18px; }
+  .not {
+    display: flex;
+    gap: 14px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--cal-line);
+  }
+  .not .x {
+    flex: 0 0 auto;
+    width: 22px;
+    height: 22px;
+    margin-top: 2px;
+    border: 1.5px solid var(--ferrugem);
+    display: grid;
+    place-items: center;
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--ferrugem);
+  }
+  .not b { display: block; margin-bottom: 3px; color: var(--grafite); }
+  .not span { font-size: 14px; color: var(--grafite-dim); line-height: 1.5; }
+
+  /* ---------- forma ---------- */
+  .shapes { display: flex; gap: 22px; flex-wrap: wrap; margin-top: 20px; }
+  .shape { display: flex; flex-direction: column; gap: 9px; width: 150px; }
+  .shape .demo { height: 84px; display: grid; place-items: center; }
+  .shape .d-plate { background: var(--esmalte); padding: 6px; width: 100%; height: 100%; }
+  .shape .d-plate div { border: 1.5px solid var(--sobre-esmalte); width: 100%; height: 100%; }
+  .shape .d-square { background: var(--cal-2); border: 1px solid var(--esmalte); width: 100%; height: 100%; }
+  .shape .d-circle { background: var(--esmalte); border-radius: 50%; width: 68px; height: 68px; }
+  .shape p { margin: 0; font-size: 12.5px; line-height: 1.45; color: var(--grafite-dim); }
+  .shape p b { color: var(--grafite); }
+
+  footer {
+    margin-top: 56px;
+    padding-top: 26px;
+    border-top: 1px solid var(--cal-line);
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.9;
+    color: var(--grafite-dim);
+    max-width: none;
+  }
+  footer a { color: var(--ferrugem); }
+</style>
+
+<div class="wrap">
+
+  <header class="mast">
+    <div class="plate">
+      <div class="frame">
+        <p class="marker">Sistema visual do FoiAqui</p>
+        <h1 class="name">Placa<br>Esmaltada</h1>
+        <div class="period"><span>Adotada em 29.08.2026</span><i></i></div>
+        <p class="addr">Substitui &ldquo;a cidade como arquivo vivo &agrave; noite&rdquo;</p>
+      </div>
+    </div>
+
+    <p class="standfirst">
+      Cada cor, cada letra e cada canto deste app vem de um objeto real: a placa de rua
+      brasileira de chapa esmaltada. Este documento registra de onde veio cada escolha e o
+      que ela est&aacute; resolvendo &mdash; inclusive as que foram abandonadas.
+    </p>
+  </header>
+
+  <hr>
+
+  <section id="ponto-de-partida">
+    <p class="num">01</p>
+    <h2>Por que a direção anterior caiu</h2>
+    <p class="story">
+      O app come&ccedil;ou escuro, com acento &acirc;mbar, superf&iacute;cies de papel quente e
+      Fraunces nos t&iacute;tulos. Era bonito. E era gen&eacute;rico.
+    </p>
+    <p>
+      Duas raz&otilde;es derrubaram a dire&ccedil;&atilde;o, e as duas s&atilde;o verific&aacute;veis, n&atilde;o
+      quest&atilde;o de gosto:
+    </p>
+
+    <h3>Era um clichê, não um ponto de vista</h3>
+    <p>
+      Azul-escuro + &acirc;mbar + creme quente + display serifado &eacute; uma das combina&ccedil;&otilde;es mais
+      repetidas em design gerado por IA. Tirando a Fraunces, nada ali era espec&iacute;fico
+      <em>deste</em> produto: os &iacute;cones eram o vocabul&aacute;rio de tra&ccedil;o que vem de gra&ccedil;a em
+      qualquer biblioteca, os containers eram todos ret&acirc;ngulos arredondados, e o pin do
+      mapa era a gota gen&eacute;rica que cabe igual num app de entrega.
+    </p>
+
+    <h3>Contradizia o uso real, documentado na própria pesquisa</h3>
+    <p>
+      A Decis&atilde;o 7 do benchmarking define o contexto de uso: <b>&ldquo;sol na tela, m&atilde;o
+      ocupada, sinal inst&aacute;vel&rdquo;</b>. Interface escura sob sol direto &eacute; pior de ler que
+      clara &mdash; e a persona principal, &Iacute;ris, tem 70 anos. O escuro era po&eacute;tico
+      (&ldquo;a cidade &agrave; noite&rdquo;); o uso &eacute; de dia, na cal&ccedil;ada. Ganhou o uso.
+    </p>
+  </section>
+
+  <hr>
+
+  <section id="referencia">
+    <p class="num">02</p>
+    <h2>A referência</h2>
+    <p class="story">
+      A placa de rua brasileira de chapa esmaltada: chapa de ferro com esmalte vitrificado,
+      fundo azul-marinho, letra <em>e moldura</em> em branco.
+    </p>
+    <p>
+      Padr&atilde;o das cidades brasileiras a partir dos anos 1930, quando come&ccedil;ou a
+      preocupa&ccedil;&atilde;o de identificar endere&ccedil;os. Entrou em decl&iacute;nio nos anos 80, trocada
+      por alum&iacute;nio, PVC e acr&iacute;lico &mdash; mais baratos, mais leves, mais f&aacute;ceis de fabricar.
+      Sobreviveu onde h&aacute; interesse de preserva&ccedil;&atilde;o: Paraty, Ouro Preto, Olinda.
+    </p>
+    <p>
+      <b>&Eacute; por isso que ela serve.</b> A placa esmaltada n&atilde;o &eacute; s&oacute; uma est&eacute;tica bonita
+      dos anos 50: ela &eacute; <em>ela mesma</em> uma mem&oacute;ria urbana desaparecendo. Construir o app
+      com a linguagem dela faz o meio dizer a mesma coisa que a mensagem.
+    </p>
+    <p>
+      E h&aacute; a coincid&ecirc;ncia que decidiu a escolha: placas comemorativas escrevem
+      literalmente <b>&ldquo;AQUI FUNCIONOU&rdquo;</b>, &ldquo;AQUI VIVEU&rdquo;, &ldquo;AQUI
+      NASCEU&rdquo;. O nome do app <em>&eacute;</em> a fala da placa. No FoiAqui, cada mem&oacute;ria abre
+      com o seu verbo &mdash; e o tempo verbal j&aacute; conta se a coisa sobreviveu:
+    </p>
+
+    <div class="scroller wide">
+      <table>
+        <thead>
+          <tr><th>Memória</th><th>Marcador</th><th>O que o tempo verbal diz</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>Cine Marrocos</b></td>
+            <td class="num-cell">AQUI FUNCIONOU</td>
+            <td>Acabou. Fechou em 1974 e virou loja.</td>
+          </tr>
+          <tr>
+            <td><b>Coreto da Praça</b></td>
+            <td class="num-cell">AQUI FICAVA</td>
+            <td>Foi demolido. O de hoje é réplica de 1998.</td>
+          </tr>
+          <tr>
+            <td><b>Mural do Beco</b></td>
+            <td class="num-cell">AQUI ESTÁ</td>
+            <td>Continua lá. Você pode ir ver agora.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <hr>
+
+  <section id="regra">
+    <p class="num">03</p>
+    <h2>A regra estrutural</h2>
+    <p>
+      Um sistema visual s&oacute; vira sistema quando cada cor tem um trabalho e nenhuma faz o
+      trabalho da outra. S&atilde;o tr&ecirc;s pap&eacute;is, e eles n&atilde;o se misturam:
+    </p>
+
+    <div class="scroller wide">
+      <table>
+        <thead>
+          <tr><th>Papel</th><th>Token</th><th>Onde aparece</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>A cidade, de dia</b><br><span style="font-size:13px">onde a pessoa anda</span></td>
+            <td class="num-cell">cal</td>
+            <td>Mapa, listas, perfil, formulários. É o chão.</td>
+          </tr>
+          <tr>
+            <td><b>A memória marcada no lugar</b><br><span style="font-size:13px">a placa</span></td>
+            <td class="num-cell">esmalte</td>
+            <td>Pin do mapa, cabeçalho da ficha, marcador selecionado.</td>
+          </tr>
+          <tr>
+            <td><b>O tempo agindo</b><br><span style="font-size:13px">o que é humano e imperfeito</span></td>
+            <td class="num-cell">ferrugem</td>
+            <td>Ações, seleção, o botão de criar, a lasca na placa velha.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="margin-top:22px">
+      A regra anterior era <em>escuro = navega&ccedil;&atilde;o, papel = mem&oacute;ria</em>. Ela tinha uma boa
+      ideia dentro (o passado emergindo sobre o presente) e essa ideia sobreviveu: a ficha
+      continua subindo como uma superf&iacute;cie sobre o mapa. O que mudou &eacute; que a mem&oacute;ria
+      deixou de ser uma folha de papel gen&eacute;rica e virou um objeto espec&iacute;fico.
+    </p>
+  </section>
+
+  <hr>
+
+  <section id="cor">
+    <p class="num">04</p>
+    <h2>Cor</h2>
+    <p>
+      Nenhum tom foi escolhido por gosto. Azul e branco vieram do objeto; a ferrugem &eacute; o
+      que acontece com o objeto quando o esmalte descasca; o verde &eacute; a &uacute;nica cor
+      importada, e existe porque &ldquo;conferido pela comunidade&rdquo; precisava de um sinal
+      que n&atilde;o competisse com mem&oacute;ria nem com a&ccedil;&atilde;o.
+    </p>
+
+    <div class="swatches wide">
+      <div class="sw">
+        <div class="chip" style="background:#F4F3EE"></div>
+        <b>cal</b><code>#F4F3EE</code>
+        <span>O branco do esmalte. Fundo de tudo.</span>
+      </div>
+      <div class="sw">
+        <div class="chip" style="background:#EAE8E0"></div>
+        <b>cal2</b><code>#EAE8E0</code>
+        <span>Superfície elevada: campos, botões secundários.</span>
+      </div>
+      <div class="sw">
+        <div class="chip" style="background:#14396E"></div>
+        <b>esmalte</b><code>#14396E</code>
+        <span>A chapa. Toda memória é desta cor.</span>
+      </div>
+      <div class="sw">
+        <div class="chip" style="background:#B4471F"></div>
+        <b>ferrugem</b><code>#B4471F</code>
+        <span>O tempo sobre o ferro. Ações e seleção.</span>
+      </div>
+      <div class="sw">
+        <div class="chip" style="background:#2E6E68"></div>
+        <b>conferido</b><code>#2E6E68</code>
+        <span>Aprovado pela comunidade. Só isso.</span>
+      </div>
+      <div class="sw">
+        <div class="chip" style="background:#1A1D23"></div>
+        <b>grafite</b><code>#1A1D23</code>
+        <span>Texto. E o ponto &ldquo;você está aqui&rdquo;.</span>
+      </div>
+    </div>
+
+    <h3>Por que &ldquo;você está aqui&rdquo; não é azul</h3>
+    <p>
+      No sistema, azul significa mem&oacute;ria. Se o ponto que marca a pessoa fosse azul, ela
+      viraria mais um pin no mapa. Ele &eacute; grafite neutro de prop&oacute;sito: <b>voc&ecirc; n&atilde;o &eacute;
+      mem&oacute;ria &mdash; voc&ecirc; &eacute; o presente olhando pra ela.</b>
+    </p>
+
+    <h3>Contraste medido, não estimado</h3>
+    <p>
+      Acessibilidade aqui n&atilde;o &eacute; inten&ccedil;&atilde;o: cada par texto/fundo do app foi calculado
+      contra o WCAG&nbsp;2.1 AA. <b>Os 16 pares passam.</b> A dire&ccedil;&atilde;o anterior tinha duas
+      reprova&ccedil;&otilde;es &mdash; uma delas de 2,74:1, quase metade do m&iacute;nimo, no r&oacute;tulo de &eacute;poca
+      da tela mais importante.
+    </p>
+
+    <div class="scroller wide">
+      <table>
+        <thead>
+          <tr><th>Par</th><th>Razão</th><th>Mínimo</th><th></th></tr>
+        </thead>
+        <tbody>
+          <tr><td><b>Texto sobre cal</b></td><td class="num-cell">15,19 : 1</td><td class="num-cell">4,5</td><td class="pass">PASSA</td></tr>
+          <tr><td><b>Texto sobre a placa</b></td><td class="num-cell">10,27 : 1</td><td class="num-cell">4,5</td><td class="pass">PASSA</td></tr>
+          <tr><td><b>Placa sobre o quarteirão</b> (pin no mapa)</td><td class="num-cell">7,85 : 1</td><td class="num-cell">3,0</td><td class="pass">PASSA</td></tr>
+          <tr><td><b>Secundário sobre cal</b></td><td class="num-cell">7,01 : 1</td><td class="num-cell">4,5</td><td class="pass">PASSA</td></tr>
+          <tr><td><b>Secundário sobre a placa</b></td><td class="num-cell">6,25 : 1</td><td class="num-cell">4,5</td><td class="pass">PASSA</td></tr>
+          <tr><td><b>Conferido sobre cal</b></td><td class="num-cell">5,33 : 1</td><td class="num-cell">4,5</td><td class="pass">PASSA</td></tr>
+          <tr><td><b>Ferrugem sobre cal</b> (rótulos)</td><td class="num-cell">4,89 : 1</td><td class="num-cell">4,5</td><td class="pass">PASSA</td></tr>
+          <tr><td><b>Texto sobre ferrugem</b> (botões)</td><td class="num-cell">4,89 : 1</td><td class="num-cell">4,5</td><td class="pass">PASSA</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin-top:14px; font-size:13.5px; color:var(--grafite-dim)">
+      Cor nova entra no app s&oacute; depois de medida. O script da auditoria vive junto do projeto.
+    </p>
+  </section>
+
+  <hr>
+
+  <section id="tipografia">
+    <p class="num">05</p>
+    <h2>Tipografia</h2>
+    <p>
+      Quatro vozes, uma por papel. A anterior tinha uma s&oacute; fazendo todo o trabalho de
+      personalidade &mdash; e era a Fraunces, que est&aacute; entre as fontes mais associadas a
+      design gerado por IA.
+    </p>
+
+    <div class="voices">
+      <div class="voice">
+        <p class="sample v-placa">Cine Marrocos</p>
+        <p class="why">
+          <b>Archivo Narrow &mdash; a placa.</b> Caixa alta, condensada, tracking largo.
+          Condensada n&atilde;o por moda: nome de rua precisa caber numa chapa estreita. A forma
+          da letra vem da restri&ccedil;&atilde;o do objeto. Usada em t&iacute;tulo de mem&oacute;ria, nome de tela e
+          r&oacute;tulo de pin.
+        </p>
+      </div>
+      <div class="voice">
+        <p class="sample v-story">Minha m&atilde;e contava das filas que dobravam a esquina.</p>
+        <p class="why">
+          <b>Newsreader &mdash; a voz de quem viveu.</b> Serifa de leitura, n&atilde;o de enfeite:
+          o relato &eacute; o produto, e precisa de conforto para par&aacute;grafos inteiros lidos na rua.
+          S&oacute; para relato e cita&ccedil;&atilde;o &mdash; nunca para interface.
+        </p>
+      </div>
+      <div class="voice">
+        <p class="sample v-ui">Compartilhar &middot; Salvar &middot; Reportar</p>
+        <p class="why">
+          <b>Archivo &mdash; a interface.</b> Grotesca de alta legibilidade para r&oacute;tulos,
+          bot&otilde;es e listas. Da mesma fam&iacute;lia da Narrow, ent&atilde;o placa e interface s&atilde;o
+          parentes sem serem iguais.
+        </p>
+      </div>
+      <div class="voice">
+        <p class="sample v-mono">1958 &mdash; 1974 &nbsp;&middot;&nbsp; 23&deg;56'S 46&deg;19'W</p>
+        <p class="why">
+          <b>DM Mono &mdash; o registro.</b> Datas, per&iacute;odos, coordenadas, n&uacute;mero de acervo.
+          Monoespa&ccedil;ada porque o que ela carrega &eacute; dado catalogado, e o alinhamento dos
+          d&iacute;gitos faz parte de dizer isso.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <hr>
+
+  <section id="forma">
+    <p class="num">06</p>
+    <h2>Forma</h2>
+    <p>
+      Esta &eacute; a mudan&ccedil;a que mais separa o app de qualquer outro, e a mais f&aacute;cil de perder
+      de vista: <b>o canto reto &eacute; o padr&atilde;o.</b> Chapa esmaltada &eacute; cortada reta. Curva
+      virou exce&ccedil;&atilde;o, reservada ao que &eacute; corpo.
+    </p>
+
+    <div class="shapes wide">
+      <div class="shape">
+        <div class="demo"><div class="d-plate"><div></div></div></div>
+        <p><b>A moldura embutida.</b> A assinatura. Substitui o retângulo arredondado como linguagem de container.</p>
+      </div>
+      <div class="shape">
+        <div class="demo"><div class="d-square"></div></div>
+        <p><b>Canto reto.</b> Campos, chips, cards, botões. O padrão de tudo que é superfície.</p>
+      </div>
+      <div class="shape">
+        <div class="demo"><div class="d-circle"></div></div>
+        <p><b>Círculo.</b> Só o que é corpo: avatar, tocar áudio, o botão de criar.</p>
+      </div>
+    </div>
+
+    <h3>A lasca de ferrugem</h3>
+    <p>
+      A mem&oacute;ria aberta ganha uma lasca no canto da chapa, onde o esmalte descascou e
+      apareceu o ferro. &Eacute; a marca do tempo que toda placa velha tem. Aparece <em>s&oacute;</em> na
+      mem&oacute;ria aberta &mdash; se estivesse em tudo, viraria enfeite e perderia o sentido.
+    </p>
+  </section>
+
+  <hr>
+
+  <section id="nao">
+    <p class="num">07</p>
+    <h2>O que decidimos não fazer</h2>
+    <p>
+      Um sistema tamb&eacute;m se define pelo que ele pro&iacute;be. Estes s&atilde;o compromissos, n&atilde;o
+      prefer&ecirc;ncias.
+    </p>
+
+    <div class="nots">
+      <div class="not">
+        <div class="x">&times;</div>
+        <div>
+          <b>Pins que pulsam, brilham ou piscam</b>
+          <span>
+            O pin anterior tinha um halo âmbar pulsando. É vocabulário de app de corrida e
+            de entrega — e contradiz o que a placa é: um objeto parado no muro há sessenta
+            anos. Sobre o mapa cal, o azul já salta sozinho.
+          </span>
+        </div>
+      </div>
+      <div class="not">
+        <div class="x">&times;</div>
+        <div>
+          <b>Gradiente como decoração</b>
+          <span>
+            Só onde existe volume real — o botão de criar, que é físico e redondo. Fundo com
+            gradiente é o atalho mais rápido para o app parecer gerado por máquina.
+          </span>
+        </div>
+      </div>
+      <div class="not">
+        <div class="x">&times;</div>
+        <div>
+          <b>Ranking, placar ou pontuação visível</b>
+          <span>
+            Vem da Decisão 12 da pesquisa: gamificar reconhecimento, nunca volume. Corrida por
+            quantidade enche o acervo de conteúdo raso. O sistema não tem cor de &ldquo;primeiro
+            lugar&rdquo; porque não vai existir primeiro lugar.
+          </span>
+        </div>
+      </div>
+      <div class="not">
+        <div class="x">&times;</div>
+        <div>
+          <b>Voltar com o âmbar ou com a Fraunces</b>
+          <span>
+            Não por serem ruins, mas porque foi exatamente aquela combinação que fez o app não
+            ter cara de nada.
+          </span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr>
+
+  <section id="serve">
+    <p class="num">08</p>
+    <h2>Como isso serve a pesquisa</h2>
+    <p>
+      A dire&ccedil;&atilde;o n&atilde;o &eacute; um gesto est&eacute;tico solto. Ela responde ao que j&aacute; estava escrito
+      no <code style="font-family:var(--mono);font-size:13px">FoiAqui-UX.xlsx</code>:
+    </p>
+
+    <div class="scroller wide">
+      <table>
+        <thead>
+          <tr><th>O que a pesquisa pedia</th><th>O que o sistema faz</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>&ldquo;Sol na tela, mão ocupada, sinal instável&rdquo;</b><br><span style="font-size:13px">Decisão 7</span></td>
+            <td>App claro, contraste medido, alvos ≥ 44px, canto reto (mais fácil de acertar que pílula).</td>
+          </tr>
+          <tr>
+            <td><b>&ldquo;Afetiva e respeitosa. Não é nostalgia melancólica&rdquo;</b><br><span style="font-size:13px">Helena, sobre a alma da marca</span></td>
+            <td>Sem sépia melancólico como cor de interface. O passado aparece na foto, não na UI. A placa é celebração cívica, não saudade.</td>
+          </tr>
+          <tr>
+            <td><b>&ldquo;Uma senhora de 70 anos precisa conseguir contribuir&rdquo;</b><br><span style="font-size:13px">Helena, sobre acessibilidade</span></td>
+            <td>Fundo claro, tipografia de alta legibilidade, &ldquo;fonte grande&rdquo; que atravessa todo texto do app, &ldquo;modo simples&rdquo; que desliga animação e opacifica o chrome.</td>
+          </tr>
+          <tr>
+            <td><b>&ldquo;Catálogo de pontos georreferenciados&rdquo;</b><br><span style="font-size:13px">Helena, sobre o conteúdo</span></td>
+            <td>A monoespaçada carrega período, coordenada e tipo de registro — o app parece um catálogo porque é um.</td>
+          </tr>
+          <tr>
+            <td><b>Parcerias com museus, escolas e arquivos</b><br><span style="font-size:13px">Decisão 6 — resolve o mapa vazio</span></td>
+            <td>Linguagem de sinalização cívica: uma prefeitura ou um arquivo reconhece o próprio vocabulário e se vê ali dentro.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <hr>
+
+  <section id="aberto">
+    <p class="num">09</p>
+    <h2>O que ainda não está resolvido</h2>
+    <p>
+      Honestidade vale mais que um documento redondo. Quatro pontos em aberto:
+    </p>
+
+    <div class="nots">
+      <div class="not">
+        <div class="x">?</div>
+        <div>
+          <b>O ícone do app ainda é o padrão do Expo</b>
+          <span>Nenhum trabalho de marca foi feito. A wordmark e o ícone deveriam sair da mesma referência — uma chapa com as iniciais, provavelmente.</span>
+        </div>
+      </div>
+      <div class="not">
+        <div class="x">?</div>
+        <div>
+          <b>As fotos ainda são desenhos</b>
+          <span>O par passado/presente é SVG. Quando entrarem fotos reais, o tratamento delas (borda, grão, legenda) precisa ser decidido — é onde a direção &ldquo;Caixa de Fotos&rdquo;, descartada, ainda tem coisa a dizer.</span>
+        </div>
+      </div>
+      <div class="not">
+        <div class="x">?</div>
+        <div>
+          <b>Nada disso foi testado com a Íris</b>
+          <span>O sistema foi medido contra o WCAG, não contra uma pessoa de 70 anos na calçada, no sol. Medição não substitui teste.</span>
+        </div>
+      </div>
+      <div class="not">
+        <div class="x">?</div>
+        <div>
+          <b>O ícone de cada tipo de memória é genérico</b>
+          <span>Cinema, coreto e mural usam ícones de traço comuns. Deveriam ser desenhados no mesmo espírito da chapa: sólidos, simples, legíveis a 13px.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Refer&ecirc;ncias: placas esmaltadas brasileiras &mdash;
+    <a href="https://www.nrmesmaltacao.com.br/rua">NRM Esmalta&ccedil;&atilde;o</a> &middot;
+    esquema de placas comemorativas &mdash;
+    <a href="https://www.english-heritage.org.uk/visit/blue-plaques/about-blue-plaques/how-blue-plaques-are-made/">English Heritage</a> &middot;
+    acervo fotogr&aacute;fico brasileiro &mdash;
+    <a href="https://acervos.ims.com.br/sobreims">Instituto Moreira Salles</a><br>
+    Fontes do projeto: <b>FoiAqui-UX.xlsx</b> (entrevista com a PO, benchmarking, 12 decis&otilde;es de design)
+    &middot; <b>CLAUDE.md</b> se&ccedil;&atilde;o 3 &middot; <b>theme/colors.ts</b>
+  </footer>
+
+</div>

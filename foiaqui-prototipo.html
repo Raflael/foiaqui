@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>FoiAqui — protótipo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0E1420; --ink-2:#161E2C; --ink-3:#222C40; --line:#2C3750;
+    --paper:#F2EBDC; --paper-2:#E6DAC4; --paper-line:#D8C8AC;
+    --ember:#F0A83A; --ember-soft:#F7C877; --ember-deep:#C87E20;
+    --sepia:#8A5A38; --sepia-2:#5E3C24;
+    --teal:#2E6E68;
+    --on-dark:#ECE6D8; --dim:#96A0B2;
+    --on-paper:#2A2620; --on-paper-dim:#6E6555;
+    --display:'Fraunces',Georgia,'Times New Roman',serif;
+    --ui:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,Roboto,sans-serif;
+    --mono:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{
+    font-family:var(--ui); color:var(--on-dark);
+    background:#070A10;
+    background:
+      radial-gradient(1200px 700px at 50% -10%, #14203A 0%, #0A0E17 55%, #070A10 100%);
+    display:flex; align-items:center; justify-content:center;
+    min-height:100dvh; padding:0;
+  }
+  @media(min-width:640px){ body{padding:28px} }
+
+  /* ---------- device ---------- */
+  .device{
+    position:relative; width:100%; max-width:404px;
+    height:100dvh; max-height:880px; overflow:hidden;
+    background:var(--ink);
+    display:flex; flex-direction:column;
+  }
+  @media(min-width:640px){
+    .device{ border-radius:46px; box-shadow:0 40px 90px rgba(0,0,0,.6), 0 0 0 11px #05070c, 0 0 0 13px #1a2233; }
+  }
+  .statusbar{
+    flex:0 0 auto; height:44px; display:flex; align-items:center; justify-content:space-between;
+    padding:0 24px; font-size:13px; font-weight:600; letter-spacing:.3px; color:var(--on-dark);
+    z-index:60;
+  }
+  .statusbar .dots{display:flex; gap:5px; align-items:center}
+  .statusbar .bar{width:3px;height:9px;background:var(--on-dark);border-radius:1px;opacity:.9}
+  .statusbar .bar.s1{height:5px;opacity:.5}.statusbar .bar.s2{height:7px;opacity:.7}
+  .statusbar .bat{width:22px;height:11px;border:1.4px solid var(--on-dark);border-radius:3px;position:relative;opacity:.9}
+  .statusbar .bat::after{content:"";position:absolute;left:2px;top:2px;bottom:2px;width:13px;background:var(--on-dark);border-radius:1px}
+  .statusbar .bat::before{content:"";position:absolute;right:-3px;top:3px;height:5px;width:2px;background:var(--on-dark);border-radius:1px}
+
+  .viewport{position:relative; flex:1 1 auto; overflow:hidden}
+  .screen{position:absolute; inset:0; overflow-y:auto; overflow-x:hidden; display:none;
+    -webkit-overflow-scrolling:touch; padding-bottom:96px}
+  .screen.active{display:block; animation:fade .28s ease both}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  .screen::-webkit-scrollbar{width:0}
+
+  /* ---------- tabbar ---------- */
+  .tabbar{
+    position:absolute; left:0; right:0; bottom:0; height:84px; z-index:50;
+    background:linear-gradient(to top, var(--ink) 62%, rgba(14,20,32,0));
+    display:flex; align-items:flex-start; justify-content:space-around; padding:12px 14px 0;
+  }
+  .tab{background:none;border:0;color:var(--dim);font-family:var(--ui);font-size:10.5px;font-weight:600;
+    display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;flex:1;letter-spacing:.2px}
+  .tab svg{width:23px;height:23px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+  .tab.on{color:var(--ember)}
+  .tab.fab{flex:0 0 auto;position:relative;top:-16px}
+  .fab-btn{width:60px;height:60px;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--ember-soft),var(--ember) 60%,var(--ember-deep));
+    display:flex;align-items:center;justify-content:center;box-shadow:0 8px 22px rgba(240,168,58,.45),0 2px 0 rgba(0,0,0,.2) inset;border:0;cursor:pointer}
+  .fab-btn svg{width:28px;height:28px;stroke:#241705;stroke-width:2.6}
+  .tab.fab span{color:var(--ember);margin-top:2px}
+
+  /* ---------- generic ---------- */
+  .eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:2px;text-transform:uppercase;color:var(--ember)}
+  .wordmark{font-family:var(--display);font-weight:600;letter-spacing:-.5px}
+  .wordmark .b{font-weight:900}
+
+  /* ================= MAP ================= */
+  #map{padding-bottom:96px}
+  .map-canvas{position:absolute;inset:0;background:
+    radial-gradient(120% 80% at 50% 0%, #16223a 0%, #0f1526 60%, #0c1120 100%);}
+  .map-svg{position:absolute;inset:0;width:100%;height:100%}
+  .map-top{position:absolute;top:14px;left:16px;right:16px;z-index:20;display:flex;flex-direction:column;gap:12px}
+  .searchbar{display:flex;align-items:center;gap:10px;background:rgba(23,30,45,.86);backdrop-filter:blur(12px);
+    border:1px solid var(--line);border-radius:16px;padding:13px 15px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+  .searchbar svg{width:19px;height:19px;stroke:var(--dim);fill:none;stroke-width:2}
+  .searchbar .ph{color:var(--dim);font-size:14.5px}
+  .searchbar .b{margin-left:auto;color:var(--ember)}
+  .chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px}
+  .chips::-webkit-scrollbar{height:0}
+  .chip{white-space:nowrap;font-size:12.5px;font-weight:600;color:var(--on-dark);background:rgba(23,30,45,.8);
+    border:1px solid var(--line);padding:8px 13px;border-radius:20px}
+  .chip.on{background:var(--ember);color:#241705;border-color:var(--ember)}
+
+  .pin{position:absolute;transform:translate(-50%,-100%);z-index:15;cursor:pointer;display:flex;flex-direction:column;align-items:center}
+  .pin .glow{position:absolute;left:50%;top:60%;width:70px;height:70px;transform:translate(-50%,-50%);
+    background:radial-gradient(circle,rgba(240,168,58,.5),rgba(240,168,58,0) 70%);border-radius:50%;pointer-events:none}
+  .pin .dot{position:relative;width:34px;height:34px;border-radius:50% 50% 50% 8px;transform:rotate(45deg);
+    background:radial-gradient(circle at 35% 30%,var(--ember-soft),var(--ember) 65%);box-shadow:0 6px 14px rgba(0,0,0,.4);
+    display:flex;align-items:center;justify-content:center}
+  .pin .dot svg{transform:rotate(-45deg);width:16px;height:16px;stroke:#241705;fill:none;stroke-width:2.2}
+  .pin .lbl{margin-top:8px;font-size:11px;font-weight:700;font-family:var(--mono);letter-spacing:.5px;
+    background:rgba(12,17,32,.82);color:var(--ember-soft);padding:3px 8px;border-radius:8px;white-space:nowrap}
+  @media(prefers-reduced-motion:no-preference){
+    .pin .glow{animation:pulse 2.6s ease-in-out infinite}
+    .pin.p2 .glow{animation-delay:.9s}.pin.p3 .glow{animation-delay:1.7s}
+    @keyframes pulse{0%,100%{opacity:.55;transform:translate(-50%,-50%) scale(.85)}50%{opacity:.95;transform:translate(-50%,-50%) scale(1.15)}}
+  }
+  .me{position:absolute;left:47%;top:63%;transform:translate(-50%,-50%);z-index:14}
+  .me .ring{position:absolute;left:50%;top:50%;width:54px;height:54px;transform:translate(-50%,-50%);
+    border-radius:50%;background:radial-gradient(circle,rgba(78,150,255,.35),rgba(78,150,255,0) 70%)}
+  .me .core{width:16px;height:16px;border-radius:50%;background:#4E96FF;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.5)}
+  @media(prefers-reduced-motion:no-preference){.me .ring{animation:pulse 2.4s ease-in-out infinite}}
+
+  .coach{position:absolute;right:20px;bottom:120px;z-index:30;max-width:190px;
+    background:var(--paper);color:var(--on-paper);border-radius:14px;padding:11px 13px;font-size:12.5px;line-height:1.35;font-weight:500;
+    box-shadow:0 14px 34px rgba(0,0,0,.4)}
+  .coach b{font-weight:700}
+  .coach::after{content:"";position:absolute;right:26px;bottom:-8px;border:8px solid transparent;border-top-color:var(--paper);border-bottom:0}
+  .cam-fab{position:absolute;right:18px;bottom:104px;z-index:31;width:66px;height:66px;border-radius:22px;border:0;cursor:pointer;
+    background:radial-gradient(circle at 35% 30%,var(--ember-soft),var(--ember) 60%,var(--ember-deep));
+    box-shadow:0 12px 28px rgba(240,168,58,.5);display:flex;align-items:center;justify-content:center}
+  .cam-fab svg{width:30px;height:30px;stroke:#241705;fill:none;stroke-width:2.2}
+  .cam-fab .rec{position:absolute;top:-3px;right:-3px;background:var(--ink);color:var(--ember-soft);font-family:var(--mono);
+    font-size:9px;font-weight:700;padding:2px 5px;border-radius:8px;border:1px solid var(--line)}
+
+  .map-count{position:absolute;left:16px;bottom:104px;z-index:20;background:rgba(23,30,45,.86);border:1px solid var(--line);
+    backdrop-filter:blur(10px);border-radius:14px;padding:9px 13px;font-size:12px;color:var(--dim)}
+  .map-count b{color:var(--ember-soft);font-family:var(--mono)}
+
+  /* ================= AR ================= */
+  #ar{background:linear-gradient(#0b1120 0%,#101a2e 42%,#1b2942 70%,#26364f 100%)}
+  .ar-scene{position:absolute;inset:0;overflow:hidden}
+  .ar-grid{position:absolute;inset:0;opacity:.14;background-image:
+    linear-gradient(rgba(120,170,255,.5) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(120,170,255,.5) 1px,transparent 1px);
+    background-size:44px 44px;mask-image:linear-gradient(to bottom,transparent 30%,#000 75%)}
+  .ar-sky{position:absolute;top:0;left:0;right:0;height:56%}
+  .ar-build{position:absolute;bottom:0;left:0;right:0;height:60%}
+  @media(prefers-reduced-motion:no-preference){
+    .ar-scan{position:absolute;left:0;right:0;height:120px;
+      background:linear-gradient(to bottom,rgba(240,168,58,0),rgba(240,168,58,.18),rgba(240,168,58,0));
+      animation:scan 4s linear infinite}
+    @keyframes scan{0%{top:-120px}100%{top:100%}}
+  }
+  .ar-hint{position:absolute;top:16px;left:16px;right:16px;z-index:20;display:flex;align-items:center;gap:10px;
+    background:rgba(11,17,32,.6);backdrop-filter:blur(8px);border:1px solid rgba(120,150,200,.25);border-radius:14px;padding:11px 14px}
+  .ar-hint svg{width:18px;height:18px;stroke:var(--ember-soft);fill:none;stroke-width:2}
+  .ar-hint span{font-size:13px;color:var(--on-dark);font-weight:500}
+  .reticle{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);width:46px;height:46px;z-index:10;
+    border:2px solid rgba(240,200,119,.7);border-radius:12px}
+  .reticle::before,.reticle::after{content:"";position:absolute;background:var(--ember-soft)}
+  .reticle::before{left:50%;top:-9px;width:2px;height:6px;transform:translateX(-50%)}
+  .reticle::after{left:50%;bottom:-9px;width:2px;height:6px;transform:translateX(-50%)}
+
+  .ar-card{position:absolute;z-index:16;width:172px;cursor:pointer;
+    background:rgba(15,21,38,.9);backdrop-filter:blur(10px);border:1px solid rgba(240,168,58,.4);
+    border-radius:16px;padding:9px;display:flex;gap:10px;align-items:center;box-shadow:0 14px 34px rgba(0,0,0,.5)}
+  .ar-card .thumb{width:46px;height:46px;border-radius:11px;flex:0 0 auto;overflow:hidden;position:relative}
+  .ar-card .meta .t{font-family:var(--display);font-weight:600;font-size:14px;line-height:1.1;color:var(--on-dark)}
+  .ar-card .meta .d{font-family:var(--mono);font-size:10.5px;color:var(--ember-soft);margin-top:3px;letter-spacing:.5px}
+  .ar-card .tail{position:absolute;width:2px;background:linear-gradient(var(--ember),rgba(240,168,58,0));left:34px;bottom:-30px;height:30px}
+  .ar-card .anchor{position:absolute;left:29px;bottom:-36px;width:12px;height:12px;border-radius:50%;
+    background:var(--ember);box-shadow:0 0 12px var(--ember)}
+  @media(prefers-reduced-motion:no-preference){.ar-card{animation:floaty 5s ease-in-out infinite}.ar-card.c2{animation-delay:1.2s}}
+  @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+  .ar-back{position:absolute;left:50%;bottom:104px;transform:translateX(-50%);z-index:22;display:flex;gap:8px;align-items:center;
+    background:rgba(15,21,38,.9);border:1px solid var(--line);color:var(--on-dark);border-radius:22px;padding:11px 18px;font-size:13px;font-weight:600;cursor:pointer;backdrop-filter:blur(8px)}
+  .ar-back svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:2}
+
+  /* photo fills (reusable) */
+  .oldphoto{background:
+    linear-gradient(135deg,rgba(0,0,0,.15),rgba(0,0,0,0)),
+    radial-gradient(120% 120% at 30% 20%, #b8895a 0%, #8a5a38 45%, #5e3c24 100%);}
+  .oldphoto.grain{position:relative}
+  .oldphoto.grain::after{content:"";position:absolute;inset:0;opacity:.16;mix-blend-mode:overlay;
+    background-image:radial-gradient(#fff 0.5px,transparent 0.6px);background-size:3px 3px}
+  .nowphoto{background:linear-gradient(160deg,#7f8ea3,#54627a 55%,#3c4658)}
+
+  /* ================= FICHA ================= */
+  #ficha{background:var(--ink)}
+  .ficha-sheet{min-height:100%;background:var(--paper);color:var(--on-paper);border-radius:26px 26px 0 0;margin-top:8px;
+    box-shadow:0 -10px 40px rgba(0,0,0,.5)}
+  .ficha-hero{position:relative;border-radius:26px 26px 0 0;overflow:hidden}
+  .fk-top{position:absolute;top:0;left:0;right:0;z-index:8;display:flex;justify-content:space-between;padding:14px 14px 0}
+  .rbtn{width:38px;height:38px;border-radius:50%;background:rgba(20,20,20,.42);backdrop-filter:blur(6px);border:0;cursor:pointer;
+    display:flex;align-items:center;justify-content:center}
+  .rbtn svg{width:19px;height:19px;stroke:#fff;fill:none;stroke-width:2}
+
+  /* reveal slider */
+  .reveal{position:relative;width:100%;height:270px;overflow:hidden;user-select:none;touch-action:none;cursor:ew-resize}
+  .reveal-layer{position:absolute;inset:0}
+  .reveal-layer .cap{position:absolute;bottom:14px;font-family:var(--mono);font-size:11px;letter-spacing:1px;
+    padding:4px 9px;border-radius:8px;color:#fff;background:rgba(0,0,0,.35);backdrop-filter:blur(4px)}
+  .layer-now .cap{right:14px}
+  .layer-past .cap{left:14px;background:rgba(94,60,36,.5)}
+  .layer-past{clip-path:inset(0 42% 0 0)}
+  .sky-svg{position:absolute;inset:0;width:100%;height:100%}
+  .rhandle{position:absolute;top:0;bottom:0;left:58%;width:3px;background:var(--paper);z-index:9;transform:translateX(-1.5px)}
+  .rhandle .knob{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:44px;height:44px;border-radius:50%;
+    background:var(--paper);box-shadow:0 4px 14px rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center}
+  .rhandle .knob svg{width:22px;height:22px;stroke:var(--sepia-2);fill:none;stroke-width:2.2}
+
+  .ficha-body{padding:20px 22px 8px}
+  .fk-era{font-family:var(--mono);font-size:10.5px;letter-spacing:2px;text-transform:uppercase;color:var(--ember-deep)}
+  .fk-title{font-family:var(--display);font-weight:600;font-size:29px;line-height:1.05;margin-top:8px;letter-spacing:-.4px}
+  .fk-loc{display:flex;align-items:center;gap:7px;margin-top:10px;color:var(--on-paper-dim);font-size:13.5px}
+  .fk-loc svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2}
+  .audio{margin-top:18px;display:flex;align-items:center;gap:12px;background:var(--paper-2);border:1px solid var(--paper-line);
+    border-radius:14px;padding:12px 14px}
+  .audio .play{width:38px;height:38px;border-radius:50%;background:var(--sepia);flex:0 0 auto;display:flex;align-items:center;justify-content:center}
+  .audio .play svg{width:16px;height:16px;fill:#fff;stroke:none;margin-left:2px}
+  .audio .wave{flex:1;height:26px;display:flex;align-items:center;gap:3px}
+  .audio .wave i{flex:1;background:var(--sepia);border-radius:2px;opacity:.5}
+  .audio .time{font-family:var(--mono);font-size:11px;color:var(--on-paper-dim)}
+  .fk-story{margin-top:18px;font-size:15.5px;line-height:1.62;color:#3c372f}
+  .fk-story .drop{font-family:var(--display);font-weight:600;font-size:15.5px}
+  .byline{margin-top:18px;padding-top:16px;border-top:1px solid var(--paper-line);display:flex;align-items:center;gap:11px}
+  .byline .av{width:38px;height:38px;border-radius:50%;background:var(--sepia);color:#fff;display:flex;align-items:center;justify-content:center;
+    font-weight:700;font-size:15px;flex:0 0 auto}
+  .byline .who{font-size:13.5px;font-weight:700}
+  .byline .role{font-size:11.5px;color:var(--on-paper-dim);font-family:var(--mono);letter-spacing:.3px}
+  .verified{margin-left:auto;display:flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:var(--teal)}
+  .verified svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2.4}
+
+  .fk-actions{display:flex;gap:10px;padding:16px 22px 6px}
+  .act{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;background:var(--paper-2);border:1px solid var(--paper-line);
+    border-radius:14px;padding:11px 4px;cursor:pointer;color:var(--on-paper);font-size:11.5px;font-weight:600}
+  .act svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2}
+  .more-h{padding:22px 22px 10px;font-family:var(--display);font-weight:600;font-size:17px}
+  .more-row{display:flex;gap:12px;padding:0 22px 20px;overflow-x:auto}
+  .more-row::-webkit-scrollbar{height:0}
+  .mcard{flex:0 0 138px;cursor:pointer}
+  .mcard .mimg{width:138px;height:96px;border-radius:14px;overflow:hidden;position:relative}
+  .mcard .mt{font-family:var(--display);font-weight:600;font-size:14px;margin-top:8px;line-height:1.15;color:var(--on-paper)}
+  .mcard .md{font-family:var(--mono);font-size:10.5px;color:var(--ember-deep);margin-top:3px}
+  .mimg .yr{position:absolute;left:8px;bottom:8px;font-family:var(--mono);font-size:10px;color:#fff;background:rgba(0,0,0,.4);padding:2px 6px;border-radius:6px}
+
+  /* ================= ADD ================= */
+  #add{background:var(--ink)}
+  .add-sheet{min-height:100%;background:var(--paper);color:var(--on-paper);border-radius:26px 26px 0 0;margin-top:8px;padding:22px 22px 40px}
+  .add-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+  .add-head .x{width:34px;height:34px;border-radius:50%;background:var(--paper-2);border:0;display:flex;align-items:center;justify-content:center;cursor:pointer}
+  .add-head .x svg{width:17px;height:17px;stroke:var(--on-paper);fill:none;stroke-width:2.2}
+  .add-title{font-family:var(--display);font-weight:600;font-size:24px;letter-spacing:-.3px}
+  .steps{display:flex;gap:6px;margin:18px 0 22px}
+  .steps i{height:4px;flex:1;border-radius:2px;background:var(--paper-line)}
+  .steps i.on{background:var(--ember)}
+  .field{margin-bottom:18px}
+  .field label{display:block;font-size:12.5px;font-weight:700;color:var(--on-paper);margin-bottom:8px}
+  .field label .req{color:var(--ember-deep)}
+  .photobox{height:150px;border-radius:16px;border:2px dashed var(--paper-line);background:var(--paper-2);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--on-paper-dim);cursor:pointer}
+  .photobox svg{width:30px;height:30px;stroke:var(--sepia);fill:none;stroke-width:1.8}
+  .photobox b{font-size:14px;color:var(--on-paper);font-weight:700}
+  .photobox span{font-size:12px}
+  .inp{width:100%;background:var(--paper-2);border:1px solid var(--paper-line);border-radius:13px;padding:13px 14px;
+    font-family:var(--ui);font-size:14.5px;color:var(--on-paper);resize:none}
+  .inp::placeholder{color:#a89a82}
+  textarea.inp{min-height:88px;line-height:1.5}
+  .loc-mini{height:96px;border-radius:14px;overflow:hidden;position:relative;border:1px solid var(--paper-line)}
+  .loc-mini .lm-pin{position:absolute;left:50%;top:46%;transform:translate(-50%,-100%);color:var(--ember-deep)}
+  .loc-mini .lm-pin svg{width:26px;height:26px;fill:var(--ember);stroke:#241705;stroke-width:1.5}
+  .loc-mini .lm-tag{position:absolute;left:10px;bottom:10px;background:var(--paper);border:1px solid var(--paper-line);
+    border-radius:9px;padding:5px 9px;font-size:11.5px;font-weight:600;display:flex;gap:6px;align-items:center}
+  .loc-mini .lm-tag .gps{color:var(--teal);font-family:var(--mono);font-size:10px}
+  .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tg{font-size:12.5px;font-weight:600;padding:8px 13px;border-radius:20px;border:1px solid var(--paper-line);background:var(--paper-2);color:var(--on-paper);cursor:pointer}
+  .tg.on{background:var(--sepia);color:#fff;border-color:var(--sepia)}
+  .era-row{display:flex;gap:8px;overflow-x:auto}
+  .era-row::-webkit-scrollbar{height:0}
+  .era{flex:0 0 auto;font-family:var(--mono);font-size:13px;font-weight:600;padding:10px 14px;border-radius:12px;border:1px solid var(--paper-line);background:var(--paper-2);color:var(--on-paper);cursor:pointer}
+  .era.on{background:var(--ember);color:#241705;border-color:var(--ember)}
+  .submit{width:100%;margin-top:8px;background:linear-gradient(135deg,var(--ember-soft),var(--ember) 70%);color:#241705;border:0;border-radius:16px;
+    padding:16px;font-family:var(--ui);font-weight:700;font-size:15.5px;cursor:pointer;box-shadow:0 10px 24px rgba(240,168,58,.4)}
+  .mod-note{display:flex;gap:9px;align-items:flex-start;margin-top:14px;color:var(--on-paper-dim);font-size:12px;line-height:1.4}
+  .mod-note svg{width:16px;height:16px;stroke:var(--teal);fill:none;stroke-width:2;flex:0 0 auto;margin-top:1px}
+
+  /* ================= TRILHAS ================= */
+  #trilhas{background:var(--ink)}
+  .pad{padding:18px 18px 0}
+  .h-big{font-family:var(--display);font-weight:600;font-size:26px;letter-spacing:-.4px;color:var(--on-dark)}
+  .h-sub{color:var(--dim);font-size:13.5px;margin-top:6px;line-height:1.4}
+  .trail{position:relative;border-radius:20px;overflow:hidden;margin-top:16px;height:170px;cursor:pointer;
+    box-shadow:0 12px 30px rgba(0,0,0,.35)}
+  .trail .cover{position:absolute;inset:0}
+  .trail .shade{position:absolute;inset:0;background:linear-gradient(to top,rgba(8,10,16,.9),rgba(8,10,16,.15) 60%,rgba(8,10,16,.35))}
+  .trail .info{position:absolute;left:16px;right:16px;bottom:14px}
+  .trail .kt{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--ember-soft)}
+  .trail .tt{font-family:var(--display);font-weight:600;font-size:21px;color:#fff;margin-top:5px;line-height:1.1}
+  .trail .tm{display:flex;gap:14px;margin-top:9px;color:#d9d2c4;font-size:12px}
+  .trail .tm span{display:flex;align-items:center;gap:5px}
+  .trail .tm svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2}
+  .trail .go{position:absolute;top:14px;right:14px;width:36px;height:36px;border-radius:50%;background:var(--ember);display:flex;align-items:center;justify-content:center}
+  .trail .go svg{width:18px;height:18px;stroke:#241705;fill:none;stroke-width:2.4}
+
+  /* ================= PERFIL ================= */
+  #perfil{background:var(--ink)}
+  .prof-head{padding:24px 20px 18px;display:flex;align-items:center;gap:16px}
+  .prof-av{width:70px;height:70px;border-radius:50%;flex:0 0 auto;position:relative;
+    background:radial-gradient(circle at 35% 30%,var(--ember-soft),var(--sepia) 75%);display:flex;align-items:center;justify-content:center;
+    font-family:var(--display);font-weight:600;font-size:28px;color:#fff;box-shadow:0 8px 20px rgba(0,0,0,.4)}
+  .prof-av .lv{position:absolute;bottom:-4px;right:-4px;background:var(--ember);color:#241705;font-family:var(--mono);font-size:10px;font-weight:700;
+    padding:3px 7px;border-radius:10px;border:2px solid var(--ink)}
+  .prof-name{font-family:var(--display);font-weight:600;font-size:22px;color:var(--on-dark)}
+  .prof-tag{color:var(--dim);font-size:12.5px;margin-top:4px;font-family:var(--mono);letter-spacing:.3px}
+  .stats{display:flex;gap:10px;padding:0 20px}
+  .stat{flex:1;background:var(--ink-2);border:1px solid var(--line);border-radius:16px;padding:14px 10px;text-align:center}
+  .stat .n{font-family:var(--display);font-weight:600;font-size:24px;color:var(--ember-soft)}
+  .stat .l{font-size:11px;color:var(--dim);margin-top:3px}
+  .badges{padding:22px 20px 8px}
+  .badges .bh{font-family:var(--display);font-weight:600;font-size:17px;color:var(--on-dark);margin-bottom:12px}
+  .badge-row{display:flex;gap:12px;overflow-x:auto}
+  .badge-row::-webkit-scrollbar{height:0}
+  .badge{flex:0 0 auto;width:84px;text-align:center}
+  .badge .ic{width:66px;height:66px;border-radius:20px;margin:0 auto;display:flex;align-items:center;justify-content:center;
+    background:var(--ink-2);border:1px solid var(--line)}
+  .badge.got .ic{background:radial-gradient(circle at 35% 30%,rgba(247,200,119,.25),rgba(240,168,58,.08));border-color:var(--ember-deep)}
+  .badge .ic svg{width:30px;height:30px;stroke:var(--dim);fill:none;stroke-width:1.8}
+  .badge.got .ic svg{stroke:var(--ember)}
+  .badge .bn{font-size:10.5px;color:var(--dim);margin-top:7px;line-height:1.2}
+  .badge.got .bn{color:var(--on-dark)}
+  .rows{padding:6px 20px 8px}
+  .row{display:flex;align-items:center;gap:14px;padding:15px 2px;border-bottom:1px solid var(--line);cursor:pointer}
+  .row .ri{width:22px;height:22px;stroke:var(--ember-soft);fill:none;stroke-width:2}
+  .row .rt{font-size:14.5px;color:var(--on-dark);font-weight:500}
+  .row .rd{font-size:12px;color:var(--dim);margin-top:2px}
+  .row .chev{margin-left:auto;width:18px;height:18px;stroke:var(--dim);fill:none;stroke-width:2}
+  .row .pill{margin-left:auto;background:var(--ember);color:#241705;font-size:11px;font-weight:700;font-family:var(--mono);padding:3px 8px;border-radius:10px}
+
+  /* saved */
+  #salvos{background:var(--ink)}
+  .saved-item{display:flex;gap:13px;padding:12px 18px;align-items:center;border-bottom:1px solid var(--line);cursor:pointer}
+  .saved-item .si{width:64px;height:64px;border-radius:13px;overflow:hidden;position:relative;flex:0 0 auto}
+  .saved-item .st{font-family:var(--display);font-weight:600;font-size:16px;color:var(--on-dark)}
+  .saved-item .sl{font-size:12.5px;color:var(--dim);margin-top:3px}
+  .saved-item .sd{font-family:var(--mono);font-size:10.5px;color:var(--ember-deep);margin-top:4px}
+
+  .sec-title{padding:18px 18px 2px}
+  .sec-title .wordmark{font-size:20px;color:var(--on-dark)}
+  .sec-title .eyebrow{margin-bottom:8px;display:block}
+</style>
+</head>
+<body>
+<div class="device">
+  <div class="statusbar">
+    <span>9:41</span>
+    <span class="dots">
+      <span class="bar s1"></span><span class="bar s2"></span><span class="bar"></span><span class="bar"></span>
+      <span style="font-size:11px;margin:0 2px">5G</span>
+      <span class="bat"></span>
+    </span>
+  </div>
+
+  <div class="viewport">
+
+    <!-- ===================== MAP ===================== -->
+    <section id="map" class="screen active">
+      <div class="map-canvas">
+        <svg class="map-svg" viewBox="0 0 404 760" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+          <!-- blocks -->
+          <g fill="#161e2c">
+            <rect x="-10" y="120" width="120" height="120" rx="8"/>
+            <rect x="130" y="90" width="140" height="90" rx="8"/>
+            <rect x="292" y="120" width="130" height="150" rx="8"/>
+            <rect x="-10" y="270" width="95" height="150" rx="8"/>
+            <rect x="250" y="300" width="170" height="130" rx="8"/>
+            <rect x="120" y="330" width="90" height="120" rx="8"/>
+            <rect x="-10" y="450" width="150" height="140" rx="8"/>
+            <rect x="300" y="470" width="120" height="150" rx="8"/>
+            <rect x="150" y="500" width="120" height="120" rx="8"/>
+            <rect x="20" y="620" width="150" height="150" rx="8"/>
+            <rect x="230" y="650" width="180" height="150" rx="8"/>
+          </g>
+          <!-- roads (lighter gaps drawn as strokes) -->
+          <g stroke="#232f47" stroke-width="14" fill="none" stroke-linecap="round">
+            <path d="M-20 250 H430"/>
+            <path d="M-20 435 H430"/>
+            <path d="M-20 600 H430"/>
+            <path d="M110 -20 V800"/>
+            <path d="M282 -20 V800"/>
+          </g>
+          <!-- avenue -->
+          <path d="M-30 700 L440 200" stroke="#2a3a58" stroke-width="18" fill="none" stroke-linecap="round"/>
+          <!-- river -->
+          <path d="M-30 40 C120 90 90 200 250 250 S440 360 470 330" stroke="#204e49" stroke-width="26" fill="none" stroke-linecap="round" opacity="0.85"/>
+        </svg>
+
+        <!-- pins -->
+        <div class="pin p1" style="left:29%;top:38%" onclick="openFicha('cine')">
+          <div class="glow"></div>
+          <div class="dot"><svg viewBox="0 0 24 24"><path d="M4 8h16v11H4z"/><path d="M4 8l3-4h10l3 4"/></svg></div>
+          <div class="lbl">Cine · 1958</div>
+        </div>
+        <div class="pin p2" style="left:63%;top:30%" onclick="openFicha('praca')">
+          <div class="glow"></div>
+          <div class="dot"><svg viewBox="0 0 24 24"><path d="M12 3v18"/><path d="M5 8h14"/><path d="M7 8a5 5 0 0 1 10 0"/></svg></div>
+          <div class="lbl">Praça · 1962</div>
+        </div>
+        <div class="pin p3" style="left:74%;top:58%" onclick="openFicha('mural')">
+          <div class="glow"></div>
+          <div class="dot"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v8M8 12h8"/></svg></div>
+          <div class="lbl">Mural · 2019</div>
+        </div>
+
+        <div class="me"><div class="ring"></div><div class="core"></div></div>
+      </div>
+
+      <div class="map-top">
+        <div class="searchbar">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+          <span class="ph">Buscar lugar, época ou tema</span>
+          <span class="b"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M7 12h10M10 18h4"/></svg></span>
+        </div>
+        <div class="chips">
+          <span class="chip on">Perto de mim</span>
+          <span class="chip">Anos 60</span>
+          <span class="chip">Cinemas antigos</span>
+          <span class="chip">Arte urbana</span>
+          <span class="chip">Escolas</span>
+        </div>
+      </div>
+
+      <div class="map-count"><b>18</b> memórias neste quarteirão</div>
+      <div class="coach"><b>Toque na câmera</b> para ver as memórias em realidade aumentada, no próprio lugar.</div>
+      <button class="cam-fab" onclick="show('ar')" aria-label="Abrir câmera em realidade aumentada">
+        <span class="rec">AR</span>
+        <svg viewBox="0 0 24 24"><path d="M4 8l2-3h4l1 2h6a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8z"/><circle cx="12" cy="13" r="3.4"/></svg>
+      </button>
+    </section>
+
+    <!-- ===================== AR ===================== -->
+    <section id="ar" class="screen">
+      <div class="ar-scene">
+        <svg class="sky-svg ar-sky" viewBox="0 0 404 300" preserveAspectRatio="none" aria-hidden="true">
+          <defs><linearGradient id="skg" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#0b1120"/><stop offset="1" stop-color="#1a2740"/></linearGradient></defs>
+          <rect width="404" height="300" fill="url(#skg)"/>
+        </svg>
+        <svg class="sky-svg ar-build" viewBox="0 0 404 300" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+          <g fill="#26364f">
+            <rect x="-10" y="70" width="90" height="240"/>
+            <rect x="86" y="120" width="70" height="200"/>
+            <rect x="250" y="40" width="80" height="270"/>
+            <rect x="332" y="110" width="90" height="200"/>
+          </g>
+          <g fill="#2f4160">
+            <rect x="150" y="150" width="105" height="160"/>
+          </g>
+          <!-- lit windows -->
+          <g fill="#3a4d6e">
+            <rect x="10" y="100" width="12" height="16"/><rect x="34" y="100" width="12" height="16"/><rect x="58" y="100" width="12" height="16"/>
+            <rect x="10" y="140" width="12" height="16"/><rect x="34" y="140" width="12" height="16"/>
+            <rect x="266" y="80" width="12" height="16"/><rect x="290" y="80" width="12" height="16"/><rect x="266" y="120" width="12" height="16"/>
+          </g>
+        </svg>
+        <div class="ar-grid"></div>
+        <div class="ar-scan"></div>
+        <div class="reticle"></div>
+
+        <div class="ar-card c1" style="left:14px;top:120px" onclick="openFicha('cine')">
+          <div class="thumb oldphoto grain"></div>
+          <div class="meta"><div class="t">Cine Marrocos</div><div class="d">1958 · aqui</div></div>
+          <div class="anchor"></div><div class="tail"></div>
+        </div>
+        <div class="ar-card c2" style="right:14px;top:76px" onclick="openFicha('praca')">
+          <div class="thumb oldphoto grain"></div>
+          <div class="meta"><div class="t">Coreto</div><div class="d">1962 · 40m</div></div>
+          <div class="anchor" style="left:auto;right:29px"></div><div class="tail" style="left:auto;right:34px"></div>
+        </div>
+      </div>
+
+      <div class="ar-hint">
+        <svg viewBox="0 0 24 24"><path d="M12 3l1.9 5.8H20l-5 3.6 1.9 5.8L12 15l-4.9 3.2L9 12.4 4 8.8h6.1z"/></svg>
+        <span>Aponte para um prédio ou praça</span>
+      </div>
+      <button class="ar-back" onclick="show('map')">
+        <svg viewBox="0 0 24 24"><path d="M9 18l-6-6 6-6"/><path d="M3 12h18"/></svg> Voltar ao mapa
+      </button>
+    </section>
+
+    <!-- ===================== FICHA ===================== -->
+    <section id="ficha" class="screen">
+      <div class="ficha-sheet">
+        <div class="ficha-hero">
+          <div class="fk-top">
+            <button class="rbtn" onclick="show('map')"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+            <button class="rbtn" id="saveBtn" onclick="toggleSave(this)"><svg viewBox="0 0 24 24"><path d="M6 3h12v18l-6-4-6 4z"/></svg></button>
+          </div>
+          <!-- reveal slider -->
+          <div class="reveal" id="reveal">
+            <div class="reveal-layer layer-now">
+              <svg class="sky-svg" viewBox="0 0 404 270" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+                <defs><linearGradient id="nw" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8593a8"/><stop offset="1" stop-color="#414d63"/></linearGradient></defs>
+                <rect width="404" height="270" fill="url(#nw)"/>
+                <g fill="#59667d"><rect x="20" y="90" width="90" height="180"/><rect x="250" y="70" width="120" height="200"/></g>
+                <g fill="#4b586e"><rect x="120" y="120" width="120" height="150"/></g>
+                <g fill="#6f7c92" opacity=".8"><rect x="132" y="140" width="18" height="24"/><rect x="160" y="140" width="18" height="24"/><rect x="188" y="140" width="18" height="24"/><rect x="132" y="180" width="18" height="24"/><rect x="160" y="180" width="18" height="24"/></g>
+                <rect x="0" y="250" width="404" height="20" fill="#39445a"/>
+              </svg>
+              <span class="cap">HOJE</span>
+            </div>
+            <div class="reveal-layer layer-past oldphoto grain" id="pastLayer">
+              <svg class="sky-svg" viewBox="0 0 404 270" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+                <g fill="#5e3c24" opacity=".55"><rect x="18" y="80" width="100" height="190"/><rect x="248" y="60" width="120" height="210"/></g>
+                <g fill="#6e4526" opacity=".7"><rect x="118" y="70" width="130" height="200"/></g>
+                <!-- marquee / awning of old cinema -->
+                <rect x="118" y="118" width="130" height="26" fill="#c79a5f" opacity=".8"/>
+                <g fill="#3a2413" opacity=".8"><rect x="150" y="150" width="16" height="30"/><rect x="176" y="150" width="16" height="30"/><rect x="202" y="150" width="16" height="30"/></g>
+                <rect x="0" y="252" width="404" height="18" fill="#3a2413"/>
+              </svg>
+              <span class="cap" id="pastCap">1958</span>
+            </div>
+            <div class="rhandle" id="rhandle"><div class="knob"><svg viewBox="0 0 24 24"><path d="M8 7l-4 5 4 5M16 7l4 5-4 5"/></svg></div></div>
+          </div>
+        </div>
+
+        <div class="ficha-body">
+          <div class="fk-era" id="fkEra">Anos 50 · Foto + relato</div>
+          <h1 class="fk-title" id="fkTitle">Cine Marrocos</h1>
+          <div class="fk-loc"><svg viewBox="0 0 24 24"><path d="M12 21s7-5.7 7-11a7 7 0 1 0-14 0c0 5.3 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg><span id="fkLoc">Rua do Comércio, 210</span></div>
+
+          <div class="audio">
+            <span class="play"><svg viewBox="0 0 24 24"><path d="M7 5v14l12-7z"/></svg></span>
+            <span class="wave">
+              <i style="height:40%"></i><i style="height:70%"></i><i style="height:100%"></i><i style="height:55%"></i><i style="height:85%"></i><i style="height:45%"></i><i style="height:75%"></i><i style="height:60%"></i><i style="height:95%"></i><i style="height:50%"></i><i style="height:70%"></i><i style="height:40%"></i>
+            </span>
+            <span class="time">1:12</span>
+          </div>
+
+          <p class="fk-story" id="fkStory"></p>
+
+          <div class="byline">
+            <div class="av" id="fkAv">Í</div>
+            <div><div class="who" id="fkWho">Íris N.</div><div class="role">Guardiã · Nível 4</div></div>
+            <div class="verified"><svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg> verificado</div>
+          </div>
+        </div>
+
+        <div class="fk-actions">
+          <button class="act"><svg viewBox="0 0 24 24"><path d="M14 9V5l7 7-7 7v-4H3V9z"/></svg>Compartilhar</button>
+          <button class="act"><svg viewBox="0 0 24 24"><path d="M12 20a8 8 0 1 0-8-8"/><path d="M12 8v4l3 2"/></svg>Linha do tempo</button>
+          <button class="act"><svg viewBox="0 0 24 24"><path d="M4 22V4h13l-2 4 2 4H6"/></svg>Reportar</button>
+        </div>
+
+        <div class="more-h">Mais memórias deste local</div>
+        <div class="more-row">
+          <div class="mcard" onclick="openFicha('praca')"><div class="mimg oldphoto grain"><span class="yr">1962</span></div><div class="mt">Coreto da Praça</div><div class="md">Arquivo da Cidade</div></div>
+          <div class="mcard" onclick="openFicha('mural')"><div class="mimg oldphoto grain"><span class="yr">2019</span></div><div class="mt">Mural do Beco</div><div class="md">Théo A.</div></div>
+          <div class="mcard" onclick="openFicha('cine')"><div class="mimg oldphoto grain"><span class="yr">1974</span></div><div class="mt">Última sessão</div><div class="md">Arquivo</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== ADD ===================== -->
+    <section id="add" class="screen">
+      <div class="add-sheet">
+        <div class="add-head">
+          <span class="add-title">Nova memória</span>
+          <button class="x" onclick="show('map')"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+        </div>
+        <div class="steps"><i class="on"></i><i class="on"></i><i></i><i></i></div>
+
+        <div class="field">
+          <label>Foto ou vídeo <span class="req">*</span></label>
+          <div class="photobox">
+            <svg viewBox="0 0 24 24"><path d="M4 8l2-3h4l1 2h6a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8z"/><circle cx="12" cy="13" r="3.4"/></svg>
+            <b>Tirar foto ou enviar da galeria</b>
+            <span>Tem foto de papel? A gente te ajuda a enquadrar.</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>A história <span class="req">*</span></label>
+          <textarea class="inp" placeholder="O que aconteceu aqui? Conte o causo, quem viveu, o que mudou…"></textarea>
+        </div>
+
+        <div class="field">
+          <label>Local <span class="req">*</span></label>
+          <div class="loc-mini nowphoto">
+            <span class="lm-pin"><svg viewBox="0 0 24 24"><path d="M12 21s7-5.7 7-11a7 7 0 1 0-14 0c0 5.3 7 11 7 11z"/></svg></span>
+            <span class="lm-tag"><span class="gps">GPS</span> Rua do Comércio, 210 · toque p/ ajustar</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Época</label>
+          <div class="era-row">
+            <span class="era">Anos 40</span><span class="era on">Anos 50</span><span class="era">Anos 60</span><span class="era">Anos 70</span><span class="era">Atual</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Marcadores</label>
+          <div class="tags">
+            <span class="tg on">Cinema</span><span class="tg">Lazer</span><span class="tg on">Centro</span><span class="tg">Demolido</span><span class="tg">Família</span>
+          </div>
+        </div>
+
+        <button class="submit">Enviar memória</button>
+        <div class="mod-note">
+          <svg viewBox="0 0 24 24"><path d="M12 3l7 4v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V7z"/><path d="M9.5 12l1.8 1.8L15 10"/></svg>
+          Sua memória passa por uma checagem rápida da comunidade antes de aparecer no mapa.
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== TRILHAS ===================== -->
+    <section id="trilhas" class="screen">
+      <div class="pad">
+        <span class="eyebrow">Percursos</span>
+        <h1 class="h-big" style="margin-top:8px">Trilhas da cidade</h1>
+        <p class="h-sub">Roteiros que costuram memórias em uma caminhada. Feitos pela comunidade, escolas e arquivos.</p>
+
+        <div class="trail" onclick="openFicha('cine')">
+          <div class="cover oldphoto grain"></div><div class="shade"></div>
+          <div class="go"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+          <div class="info">
+            <div class="kt">Anos dourados</div>
+            <div class="tt">O centro que não existe mais</div>
+            <div class="tm"><span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 2"/></svg> 45 min</span><span><svg viewBox="0 0 24 24"><path d="M12 21s7-5.7 7-11a7 7 0 1 0-14 0c0 5.3 7 11 7 11z"/></svg> 8 paradas</span></div>
+          </div>
+        </div>
+
+        <div class="trail" onclick="openFicha('mural')">
+          <div class="cover" style="background:linear-gradient(135deg,#2e6e68,#1c4a45)"></div><div class="shade"></div>
+          <div class="go"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+          <div class="info">
+            <div class="kt">Arte urbana</div>
+            <div class="tt">Murais do bairro operário</div>
+            <div class="tm"><span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 2"/></svg> 30 min</span><span><svg viewBox="0 0 24 24"><path d="M12 21s7-5.7 7-11a7 7 0 1 0-14 0c0 5.3 7 11 7 11z"/></svg> 6 paradas</span></div>
+          </div>
+        </div>
+
+        <div class="trail" onclick="openFicha('praca')">
+          <div class="cover" style="background:linear-gradient(135deg,#7a4a8a,#3c2148)"></div><div class="shade"></div>
+          <div class="go"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+          <div class="info">
+            <div class="kt">Projeto escolar · 8º ano</div>
+            <div class="tt">Nossa praça, nossa gente</div>
+            <div class="tm"><span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 2"/></svg> 25 min</span><span><svg viewBox="0 0 24 24"><path d="M12 21s7-5.7 7-11a7 7 0 1 0-14 0c0 5.3 7 11 7 11z"/></svg> 5 paradas</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== SALVOS ===================== -->
+    <section id="salvos" class="screen">
+      <div class="sec-title"><span class="eyebrow">Sua coleção</span><span class="wordmark">Salvos</span></div>
+      <div style="margin-top:10px">
+        <div class="saved-item" onclick="openFicha('cine')"><div class="si oldphoto grain"></div><div><div class="st">Cine Marrocos</div><div class="sl">Rua do Comércio, 210</div><div class="sd">1958 · Íris N.</div></div></div>
+        <div class="saved-item" onclick="openFicha('praca')"><div class="si oldphoto grain"></div><div><div class="st">Coreto da Praça</div><div class="sl">Praça do Rosário</div><div class="sd">1962 · Arquivo da Cidade</div></div></div>
+        <div class="saved-item" onclick="openFicha('mural')"><div class="si oldphoto grain"></div><div><div class="st">Mural do Beco</div><div class="sl">Beco da Estação</div><div class="sd">2019 · Théo A.</div></div></div>
+      </div>
+    </section>
+
+    <!-- ===================== PERFIL ===================== -->
+    <section id="perfil" class="screen">
+      <div class="prof-head">
+        <div class="prof-av">Í<span class="lv">Nv 4</span></div>
+        <div><div class="prof-name">Íris Nogueira</div><div class="prof-tag">Guardiã da Memória · Santos-SP</div></div>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="n">27</div><div class="l">memórias</div></div>
+        <div class="stat"><div class="n">1,4k</div><div class="l">visualizações</div></div>
+        <div class="stat"><div class="n">3</div><div class="l">coleções</div></div>
+      </div>
+
+      <div class="badges">
+        <div class="bh">Conquistas</div>
+        <div class="badge-row">
+          <div class="badge got"><div class="ic"><svg viewBox="0 0 24 24"><path d="M4 8h16v11H4z"/><path d="M4 8l3-4h10l3 4"/></svg></div><div class="bn">Primeira foto</div></div>
+          <div class="badge got"><div class="ic"><svg viewBox="0 0 24 24"><path d="M12 3l7 4v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V7z"/></svg></div><div class="bn">10 memórias</div></div>
+          <div class="badge got"><div class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 21a7 7 0 0 1 14 0"/></svg></div><div class="bn">Convidou amigos</div></div>
+          <div class="badge"><div class="ic"><svg viewBox="0 0 24 24"><path d="M12 2l3 6 6 .9-4.5 4.3 1 6L12 17l-5.5 3 1-6L3 8.9 9 8z"/></svg></div><div class="bn">Trilha própria</div></div>
+        </div>
+      </div>
+
+      <div class="rows">
+        <div class="row"><svg class="ri" viewBox="0 0 24 24"><path d="M12 3l7 4v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V7z"/><path d="M9.5 12l1.8 1.8L15 10"/></svg><div><div class="rt">Moderação da comunidade</div><div class="rd">Ajude a revisar novas memórias</div></div><span class="pill">4 novas</span></div>
+        <div class="row"><svg class="ri" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg><div><div class="rt">Minhas contribuições</div></div><svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+        <div class="row"><svg class="ri" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg><div><div class="rt">Acessibilidade</div><div class="rd">Fontes grandes · modo simples</div></div><svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+      </div>
+    </section>
+
+  </div><!-- /viewport -->
+
+  <!-- ===================== TABBAR ===================== -->
+  <nav class="tabbar">
+    <button class="tab on" data-scr="map" onclick="show('map')">
+      <svg viewBox="0 0 24 24"><path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/></svg>Mapa
+    </button>
+    <button class="tab" data-scr="trilhas" onclick="show('trilhas')">
+      <svg viewBox="0 0 24 24"><circle cx="6" cy="7" r="2.4"/><circle cx="18" cy="17" r="2.4"/><path d="M8 7h6a4 4 0 0 1 0 8H8"/></svg>Trilhas
+    </button>
+    <button class="tab fab" onclick="show('add')">
+      <span class="fab-btn"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span>
+      <span>Criar</span>
+    </button>
+    <button class="tab" data-scr="salvos" onclick="show('salvos')">
+      <svg viewBox="0 0 24 24"><path d="M6 3h12v18l-6-4-6 4z"/></svg>Salvos
+    </button>
+    <button class="tab" data-scr="perfil" onclick="show('perfil')">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 21a7 7 0 0 1 14 0"/></svg>Perfil
+    </button>
+  </nav>
+</div>
+
+<script>
+  const memories = {
+    cine:{era:'Anos 50 · Foto + relato', title:'Cine Marrocos', loc:'Rua do Comércio, 210', past:'1958',
+      who:'Íris N.', av:'Í',
+      story:'Aqui funcionou o <span class="drop">Cine Marrocos</span>, o point da cidade nos fins de semana. Minha mãe contava das filas que dobravam a esquina em cada estreia. O cinema fechou em 1974 e o prédio virou uma loja de departamentos — mas o letreiro ainda vive na memória de quem passou por aqui.'},
+    praca:{era:'Anos 60 · Foto histórica', title:'Coreto da Praça', loc:'Praça do Rosário', past:'1962',
+      who:'Arquivo da Cidade', av:'A',
+      story:'O <span class="drop">coreto original</span> da praça, onde havia retreta aos domingos. A banda tocava ao entardecer e a cidade descia pra ouvir. O coreto de hoje é uma réplica erguida em 1998, depois que o antigo foi demolido.'},
+    mural:{era:'Atual · Foto + microdoc', title:'Mural do Beco', loc:'Beco da Estação', past:'2019',
+      who:'Théo A.', av:'T',
+      story:'<span class="drop">Mural coletivo</span> pintado por artistas locais no festival de 2019. Cada painel conta um pedaço da história do bairro operário — das fábricas às pessoas que moveram esta parte da cidade.'}
+  };
+
+  function show(id){
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    const el=document.getElementById(id); el.classList.add('active'); el.scrollTop=0;
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+    const t=document.querySelector('.tab[data-scr="'+id+'"]'); if(t)t.classList.add('on');
+  }
+  function openFicha(key){
+    const m=memories[key]; if(!m)return;
+    document.getElementById('fkEra').textContent=m.era;
+    document.getElementById('fkTitle').textContent=m.title;
+    document.getElementById('fkLoc').textContent=m.loc;
+    document.getElementById('fkStory').innerHTML=m.story;
+    document.getElementById('fkWho').textContent=m.who;
+    document.getElementById('fkAv').textContent=m.av;
+    document.getElementById('pastCap').textContent=m.past;
+    setReveal(58);
+    show('ficha');
+  }
+  function toggleSave(b){
+    const p=b.querySelector('path'); const filled=p.getAttribute('fill')==='#F0A83A';
+    p.setAttribute('fill', filled?'none':'#F0A83A');
+  }
+
+  /* reveal slider */
+  const reveal=document.getElementById('reveal');
+  const past=document.getElementById('pastLayer');
+  const handle=document.getElementById('rhandle');
+  function setReveal(pct){
+    pct=Math.max(5,Math.min(95,pct));
+    past.style.clipPath='inset(0 '+(100-pct)+'% 0 0)';
+    handle.style.left=pct+'%';
+  }
+  let dragging=false;
+  function fromEvent(e){
+    const r=reveal.getBoundingClientRect();
+    const x=(e.touches?e.touches[0].clientX:e.clientX)-r.left;
+    setReveal(x/r.width*100);
+  }
+  reveal.addEventListener('pointerdown',e=>{dragging=true;reveal.setPointerCapture(e.pointerId);fromEvent(e);});
+  reveal.addEventListener('pointermove',e=>{if(dragging)fromEvent(e);});
+  reveal.addEventListener('pointerup',()=>dragging=false);
+  reveal.addEventListener('pointercancel',()=>dragging=false);
+
+  setReveal(58);
+</script>
+</body>
+</html>

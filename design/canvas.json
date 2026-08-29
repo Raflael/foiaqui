@@ -1,0 +1,41 @@
+{
+  "artboards": [
+    { "file": "Main.dc.html", "title": "A · Placa Esmaltada", "x": 0, "y": 0, "w": 390, "h": 844 },
+    { "file": "DirecaoB.dc.html", "title": "B · Ficha de Arquivo", "x": 470, "y": 0, "w": 390, "h": 844 },
+    { "file": "DirecaoC.dc.html", "title": "C · Caixa de Fotos", "x": 940, "y": 0, "w": 390, "h": 844 },
+    { "file": "TokensA.dc.html", "title": "A · tokens", "x": 0, "y": 964, "w": 390, "h": 400 },
+    { "file": "TokensB.dc.html", "title": "B · tokens", "x": 470, "y": 964, "w": 390, "h": 400 },
+    { "file": "TokensC.dc.html", "title": "C · tokens", "x": 940, "y": 964, "w": 390, "h": 400 }
+  ],
+  "annotations": [
+    {
+      "id": "brief",
+      "x": -470,
+      "y": 0,
+      "w": 380,
+      "text": "Três direções para a mesma tela: a Ficha do Cine Marrocos.\n\nCada uma nasce de uma referência real e brasileira — não de um humor estético. Escolha uma e eu aplico no app inteiro, depois escrevo o documento de razões.\n\nO que muda entre elas não é só a cor: é a linguagem de FORMA (o que substitui o retângulo arredondado) e QUEM o app parece ser."
+    },
+    {
+      "id": "nota-a",
+      "x": 0,
+      "y": -210,
+      "w": 390,
+      "text": "A — PLACA ESMALTADA\n\nA placa de rua esmaltada some das cidades desde os anos 80, trocada por alumínio e PVC. Ela É memória urbana desaparecendo.\n\nE placas comemorativas dizem literalmente AQUI FUNCIONOU, AQUI VIVEU. O nome do app é a linguagem da placa.\n\nTroco: perde o clima noturno; ganha legibilidade no sol, que é o uso real."
+    },
+    {
+      "id": "nota-b",
+      "x": 470,
+      "y": -210,
+      "w": 390,
+      "text": "B — FICHA DE ARQUIVO\n\nA pesquisa chama o produto de 'catálogo de pontos georreferenciados'. Esta direção leva isso a sério: cada memória tem número de acervo, campos e carimbo.\n\nÉ a que mais fala a língua de museus, escolas e arquivos — os parceiros que resolvem o mapa vazio.\n\nTroco: institucional demais para a Íris? Pode intimidar quem só quer contar um causo."
+    },
+    {
+      "id": "nota-c",
+      "x": 940,
+      "y": -210,
+      "w": 390,
+      "text": "C — CAIXA DE FOTOS\n\nA história de origem da Helena: a avó morreu e ela achou caixas de fotos de uma cidade que não existe mais.\n\nAqui a foto é objeto físico: borda branca, cantoneira de álbum, o carimbo laranja de data que o laboratório imprimia.\n\nTroco: é a mais emotiva e a mais próxima do que já temos — e por isso a que menos resolve o problema do sol na tela."
+    }
+  ],
+  "launch": { "view": "canvas" }
+}

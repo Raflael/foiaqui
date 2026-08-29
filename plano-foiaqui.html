@@ -1,0 +1,1026 @@
+<title>Rota do FoiAqui</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+
+<style>
+  /* ============================================================
+     Tokens: os do próprio FoiAqui (CLAUDE.md §3).
+     Documento escuro por decisão, não por omissão — a regra
+     estrutural do produto diz que escuro é navegação da cidade,
+     e um roteiro de trabalho é navegação. O papel entra só onde
+     entra no app: quando alguém fala.
+     ============================================================ */
+  :root {
+    --ink: #0E1420;
+    --ink-2: #161E2C;
+    --ink-3: #222C40;
+    --line: #2C3750;
+    --paper: #F2EBDC;
+    --paper-line: #D8C8AC;
+    --ember: #F0A83A;
+    --ember-soft: #F7C877;
+    --ember-deep: #C87E20;
+    --sepia: #8A5A38;
+    --teal: #2E6E68;
+    --teal-lift: #4E9A92;
+    --on-dark: #ECE6D8;
+    --dim: #96A0B2;
+    --on-paper: #2A2620;
+    --on-paper-dim: #6E6555;
+
+    --display: 'Fraunces', Georgia, 'Times New Roman', serif;
+    --sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    --mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+    --measure: 68ch;
+    --gap: 1.5rem;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ink);
+    color: var(--on-dark);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ember);
+    outline-offset: 3px;
+    border-radius: 3px;
+  }
+
+  /* ---------------- shell ---------------- */
+  .shell {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 1.5rem 6rem;
+  }
+  @media (min-width: 1000px) {
+    .shell { grid-template-columns: 210px minmax(0, 1fr); gap: 4rem; padding-right: 2.5rem; }
+  }
+
+  /* ---------------- rail ---------------- */
+  .rail { display: none; }
+  @media (min-width: 1000px) {
+    .rail {
+      display: block;
+      position: sticky;
+      top: 0;
+      align-self: start;
+      max-height: 100vh;
+      overflow-y: auto;
+      padding: 4.5rem 0 3rem;
+      font-family: var(--mono);
+      font-size: .74rem;
+      letter-spacing: .04em;
+    }
+  }
+  .rail a {
+    display: block;
+    color: var(--dim);
+    text-decoration: none;
+    padding: .42rem 0 .42rem .9rem;
+    border-left: 2px solid var(--line);
+    transition: color .15s, border-color .15s;
+  }
+  .rail a:hover { color: var(--on-dark); border-left-color: var(--ember-deep); }
+  .rail a.on { color: var(--ember); border-left-color: var(--ember); }
+  .rail .rail-sec {
+    color: var(--on-paper-dim);
+    text-transform: uppercase;
+    letter-spacing: .16em;
+    font-size: .64rem;
+    padding: 1.6rem 0 .5rem;
+  }
+  .rail .rail-sec:first-child { padding-top: 0; }
+
+  /* ---------------- masthead ---------------- */
+  header.mast { padding: 5rem 0 3.5rem; max-width: var(--measure); }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: .72rem;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--ember);
+    margin: 0 0 1.4rem;
+  }
+  h1 {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: clamp(2.6rem, 7vw, 4.1rem);
+    line-height: 1.02;
+    letter-spacing: -.025em;
+    margin: 0 0 1.4rem;
+    text-wrap: balance;
+  }
+  h1 em { font-style: normal; font-weight: 900; color: var(--ember-soft); }
+  .standfirst {
+    font-size: 1.16rem;
+    line-height: 1.6;
+    color: var(--dim);
+    margin: 0;
+  }
+  .standfirst strong { color: var(--on-dark); font-weight: 500; }
+
+  .meta-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2.2rem;
+    margin-top: 3rem;
+    padding-top: 1.6rem;
+    border-top: 1px solid var(--line);
+    font-family: var(--mono);
+    font-size: .76rem;
+  }
+  .meta-strip div span {
+    display: block;
+    color: var(--on-paper-dim);
+    text-transform: uppercase;
+    letter-spacing: .14em;
+    font-size: .64rem;
+    margin-bottom: .35rem;
+  }
+  .meta-strip div b { color: var(--on-dark); font-weight: 500; font-variant-numeric: tabular-nums; }
+
+  /* ---------------- sections ---------------- */
+  section { padding: 3.4rem 0; border-top: 1px solid var(--line); scroll-margin-top: 1.5rem; }
+  section > * { max-width: var(--measure); }
+  section > .wide { max-width: none; }
+
+  h2 {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: clamp(1.7rem, 3.6vw, 2.3rem);
+    line-height: 1.12;
+    letter-spacing: -.02em;
+    margin: 0 0 .7rem;
+    text-wrap: balance;
+  }
+  h3 {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 1.24rem;
+    line-height: 1.25;
+    margin: 2.6rem 0 .6rem;
+    color: var(--on-dark);
+  }
+  .lede { color: var(--dim); font-size: 1.02rem; margin: 0 0 2rem; }
+  p { margin: 0 0 1.05rem; }
+  a { color: var(--ember-soft); }
+
+  /* ---------------- quote (papel: alguém falando) ---------------- */
+  .voice {
+    background: var(--paper);
+    color: var(--on-paper);
+    border-radius: 4px 4px 16px 4px;
+    padding: 1.6rem 1.8rem;
+    margin: 2rem 0;
+    max-width: 62ch;
+  }
+  .voice p {
+    font-family: var(--display);
+    font-size: 1.1rem;
+    line-height: 1.5;
+    margin: 0 0 .9rem;
+  }
+  .voice cite {
+    display: block;
+    font-family: var(--mono);
+    font-style: normal;
+    font-size: .7rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--on-paper-dim);
+  }
+
+  /* ---------------- findings ---------------- */
+  .finding {
+    border-left: 3px solid var(--ember);
+    padding: .1rem 0 .1rem 1.4rem;
+    margin: 0 0 2.2rem;
+  }
+  .finding.ok { border-left-color: var(--teal-lift); }
+  .finding h3 { margin: 0 0 .5rem; }
+  .finding p { color: var(--dim); margin-bottom: .5rem; }
+  .finding p strong { color: var(--on-dark); font-weight: 500; }
+
+  /* ---------------- tags ---------------- */
+  .tag {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: .64rem;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    padding: .16rem .48rem;
+    border-radius: 4px;
+    border: 1px solid var(--line);
+    color: var(--dim);
+    white-space: nowrap;
+    vertical-align: 1px;
+  }
+  .tag-d { border-color: var(--ember-deep); color: var(--ember-soft); }
+  .tag-po { border-color: var(--sepia); color: #C89A72; }
+  .tag-bm { border-color: var(--teal); color: var(--teal-lift); }
+  .tag-code { border-color: var(--line); color: var(--dim); }
+
+  /* ---------------- phases ---------------- */
+  .phase { margin: 0 0 1rem; }
+  .phase-head {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin: 2.8rem 0 .3rem;
+    scroll-margin-top: 1.5rem;
+  }
+  .phase-num {
+    font-family: var(--mono);
+    font-size: .78rem;
+    font-weight: 600;
+    color: var(--ember);
+    border: 1px solid var(--ember-deep);
+    border-radius: 4px;
+    padding: .1rem .45rem;
+    flex: 0 0 auto;
+    font-variant-numeric: tabular-nums;
+  }
+  .phase-head h3 { margin: 0; }
+  .phase-why { color: var(--dim); font-size: .95rem; margin: 0 0 1.1rem; }
+
+  .progress {
+    display: flex;
+    align-items: center;
+    gap: .7rem;
+    margin: 0 0 1rem;
+    font-family: var(--mono);
+    font-size: .7rem;
+    color: var(--dim);
+  }
+  .progress-track {
+    flex: 1;
+    height: 3px;
+    background: var(--ink-3);
+    border-radius: 2px;
+    overflow: hidden;
+    max-width: 220px;
+  }
+  .progress-fill {
+    display: block;
+    height: 100%;
+    width: 0%;
+    background: var(--ember);
+    transition: width .25s ease;
+  }
+  .progress b { color: var(--ember-soft); font-weight: 500; font-variant-numeric: tabular-nums; }
+
+  ul.tasks { list-style: none; margin: 0; padding: 0; }
+  ul.tasks li {
+    display: flex;
+    gap: .8rem;
+    align-items: flex-start;
+    padding: .52rem 0;
+    border-bottom: 1px solid rgba(44, 55, 80, .5);
+  }
+  ul.tasks li:last-child { border-bottom: 0; }
+  ul.tasks input {
+    appearance: none;
+    flex: 0 0 auto;
+    width: 15px;
+    height: 15px;
+    margin: .42rem 0 0;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    background: transparent;
+    cursor: pointer;
+    position: relative;
+  }
+  ul.tasks input:hover { border-color: var(--ember-deep); }
+  ul.tasks input:checked { background: var(--teal); border-color: var(--teal); }
+  ul.tasks input:checked::after {
+    content: "";
+    position: absolute;
+    left: 4px; top: 1px;
+    width: 4px; height: 8px;
+    border: solid var(--on-dark);
+    border-width: 0 1.6px 1.6px 0;
+    transform: rotate(45deg);
+  }
+  ul.tasks label { cursor: pointer; flex: 1; }
+  ul.tasks input:checked + label { color: var(--on-paper-dim); text-decoration: line-through; text-decoration-color: var(--line); }
+  ul.tasks input:checked + label .tag { opacity: .45; }
+  .task-text { margin-right: .45rem; }
+
+  /* ---------------- table ---------------- */
+  .scroller { overflow-x: auto; margin: 1.6rem 0; }
+  table { border-collapse: collapse; width: 100%; min-width: 620px; font-size: .92rem; }
+  th, td { text-align: left; padding: .72rem .9rem .72rem 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th {
+    font-family: var(--mono);
+    font-size: .66rem;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--on-paper-dim);
+    font-weight: 500;
+  }
+  td b { font-weight: 500; color: var(--on-dark); }
+  td { color: var(--dim); }
+  .chip {
+    font-family: var(--mono);
+    font-size: .66rem;
+    letter-spacing: .06em;
+    padding: .14rem .45rem;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+  .chip-real { background: rgba(46,110,104,.22); color: var(--teal-lift); }
+  .chip-fake { background: rgba(240,168,58,.14); color: var(--ember-soft); }
+  .chip-none { background: rgba(150,160,178,.12); color: var(--dim); }
+
+  /* ---------------- decisions ---------------- */
+  ol.decide { padding-left: 0; list-style: none; counter-reset: d; margin: 1.5rem 0 0; }
+  ol.decide li {
+    counter-increment: d;
+    padding: 1.1rem 0 1.1rem 2.6rem;
+    border-top: 1px solid var(--line);
+    position: relative;
+  }
+  ol.decide li::before {
+    content: counter(d);
+    position: absolute;
+    left: 0; top: 1.15rem;
+    font-family: var(--mono);
+    font-size: .78rem;
+    color: var(--ember);
+    font-variant-numeric: tabular-nums;
+  }
+  ol.decide b { display: block; font-weight: 600; margin-bottom: .25rem; }
+  ol.decide span { color: var(--dim); font-size: .95rem; }
+
+  footer {
+    padding: 3rem 0 0;
+    border-top: 1px solid var(--line);
+    font-family: var(--mono);
+    font-size: .72rem;
+    color: var(--on-paper-dim);
+    line-height: 1.8;
+    max-width: var(--measure);
+  }
+</style>
+
+<div class="shell">
+  <nav class="rail" aria-label="Seções">
+    <div class="rail-sec">Diagnóstico</div>
+    <a href="#estado">Onde estamos</a>
+    <a href="#achados">O que o estudo mudou</a>
+    <a href="#principios">Inegociáveis</a>
+    <div class="rail-sec">Execução</div>
+    <a href="#fase-0">0 · Correções de rota</a>
+    <a href="#fase-1">1 · Os cinco essenciais</a>
+    <a href="#fase-2">2 · Confiança</a>
+    <a href="#fase-3">3 · Dados reais</a>
+    <a href="#fase-4">4 · Máquina do tempo</a>
+    <a href="#fase-5">5 · A rua</a>
+    <a href="#continua">Faixa contínua</a>
+    <div class="rail-sec">Fecho</div>
+    <a href="#sucesso">Como saberemos</a>
+    <a href="#riscos">Riscos</a>
+    <a href="#decidir">Decidir agora</a>
+  </nav>
+
+  <main>
+    <header class="mast">
+      <p class="eyebrow">Plano de produto · FoiAqui</p>
+      <h1>A cidade ainda não <em>acendeu</em></h1>
+      <p class="standfirst">
+        Temos telas bonitas e fiéis ao protótipo. Não temos produto: nada persiste, nada é
+        moderado, nada vem de um lugar real. Este é o caminho de um protótipo navegável até um
+        app que a Íris, de 70 anos, consegue usar na calçada — <strong>ancorado na pesquisa que
+        já existe</strong>, não em palpite meu.
+      </p>
+      <div class="meta-strip">
+        <div><span>Tarefas</span><b>82</b></div>
+        <div><span>Fases</span><b>6 + contínua</b></div>
+        <div><span>Telas navegáveis</span><b>7</b></div>
+        <div><span>Com dado real</span><b>0</b></div>
+      </div>
+    </header>
+
+    <!-- ============ ESTADO ============ -->
+    <section id="estado">
+      <h2>Onde estamos</h2>
+      <p class="lede">
+        O sitemap inteiro existe e navega. Quase nada por trás dele é real.
+      </p>
+
+      <div class="wide scroller">
+        <table>
+          <thead>
+            <tr><th>Tela</th><th>Aparência</th><th>Comportamento</th><th>O que falta</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>Mapa</b></td>
+              <td><span class="chip chip-real">fiel</span></td>
+              <td><span class="chip chip-fake">fachada</span></td>
+              <td>Mapa é SVG desenhado. Busca e chips não filtram. Contador é fixo.</td>
+            </tr>
+            <tr>
+              <td><b>Ficha</b></td>
+              <td><span class="chip chip-fake">errada</span></td>
+              <td><span class="chip chip-fake">fachada</span></td>
+              <td>É modal de tela cheia; a pesquisa decidiu bottom sheet. Áudio não toca.</td>
+            </tr>
+            <tr>
+              <td><b>Câmera AR</b></td>
+              <td><span class="chip chip-real">fiel</span></td>
+              <td><span class="chip chip-fake">fachada</span></td>
+              <td>Cards em posição fixa, sem relação com o que a câmera vê. Fica ligada pra sempre.</td>
+            </tr>
+            <tr>
+              <td><b>Adicionar</b></td>
+              <td><span class="chip chip-real">fiel</span></td>
+              <td><span class="chip chip-fake">fachada</span></td>
+              <td>Não captura foto, áudio nem vídeo. Local é texto fixo. Envio é <code>setTimeout</code>.</td>
+            </tr>
+            <tr>
+              <td><b>Trilhas</b></td>
+              <td><span class="chip chip-real">fiel</span></td>
+              <td><span class="chip chip-none">ausente</span></td>
+              <td>Tocar abre a primeira parada. Não existe tela de percurso.</td>
+            </tr>
+            <tr>
+              <td><b>Salvos</b></td>
+              <td><span class="chip chip-real">fiel</span></td>
+              <td><span class="chip chip-real">funciona</span></td>
+              <td>Único estado real do app — e some ao fechar.</td>
+            </tr>
+            <tr>
+              <td><b>Perfil</b></td>
+              <td><span class="chip chip-real">fiel</span></td>
+              <td><span class="chip chip-fake">parcial</span></td>
+              <td>Acessibilidade funciona. Moderação e contribuições não levam a lugar nenhum.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        Vale dizer o que <em>está</em> certo, porque é a base de tudo o que vem: os tokens de cor
+        e tipografia estão centralizados e nenhum componente tem cor solta; o texto todo passa
+        por componentes que respeitam &ldquo;fonte grande&rdquo;; toda animação decorativa
+        consulta reduce-motion; e o slider passado&#8596;presente roda na UI thread sem roubar o
+        scroll. Essa fundação aguenta o resto.
+      </p>
+    </section>
+
+    <!-- ============ ACHADOS ============ -->
+    <section id="achados">
+      <h2>O que o estudo mudou</h2>
+      <p class="lede">
+        Eu construí as telas antes de ler o <code>FoiAqui-UX.xlsx</code>. Lendo depois, cinco
+        coisas mudaram — uma delas é um erro meu contra uma decisão que já estava tomada.
+      </p>
+
+      <div class="finding">
+        <h3>A ficha está no formato errado <span class="tag tag-d">Decisão 2</span></h3>
+        <p>
+          A pesquisa decidiu <strong>bottom sheet deslizante</strong>, copiando o Google Maps, com
+          justificativa explícita: &ldquo;mantém o usuário no contexto geográfico e permite passar
+          de uma memória para outra sem recarregar telas&rdquo;. Eu entreguei um modal de tela
+          cheia, que cobre o mapa e quebra exatamente isso. É a feature de maior prioridade da
+          planilha inteira — a única com nota 1 em &ldquo;quantos concorrentes têm&rdquo; e
+          marcada Essencial (MVP).
+        </p>
+        <p><strong>Consequência:</strong> Fase 0, primeira tarefa.</p>
+      </div>
+
+      <div class="finding">
+        <h3>Moderação é um dos cinco essenciais, não um selo <span class="tag tag-po">Helena</span></h3>
+        <p>
+          A Helena lista cinco features sem as quais &ldquo;não é o FoiAqui&rdquo;: geolocalização,
+          AR, adicionar memória, banco colaborativo e <strong>moderação da comunidade</strong>. Hoje
+          temos uma pílula escrita &ldquo;4 novas&rdquo; que não abre nada. A Decisão 5 detalha o
+          fluxo inteiro, copiando o Niantic Wayfarer: envio &rarr; revisão por pares &rarr;
+          aprovação com critérios públicos &rarr; <strong>recusa justificada</strong>.
+        </p>
+      </div>
+
+      <div class="finding">
+        <h3>A AR nunca pode ficar ligada <span class="tag tag-d">Decisão 9</span></h3>
+        <p>
+          &ldquo;Entrar, entregar o momento, sair.&rdquo; Uso contínuo causa cansaço de braço, enjoo
+          e queima bateria. Nossa tela de AR fica aberta indefinidamente. E a Decisão 8 é mais dura:
+          AR é <strong>camada opcional com fallback obrigatório</strong> em mapa e lista — o
+          Historypin apostou nela e tirou os apps das lojas em 2015.
+        </p>
+      </div>
+
+      <div class="finding">
+        <h3>O maior medo da Helena não tem uma linha de código <span class="tag tag-po">Helena</span></h3>
+        <p>
+          O &ldquo;banco vazio&rdquo;: ninguém usa um mapa sem histórias. A Decisão 6 responde com
+          parcerias fechadas <em>antes</em> do lançamento, e a Decisão 6 do benchmarking observa que
+          o Historypin só tem densidade onde há parceiro ativo. Isso muda o produto, não só o
+          marketing: precisamos de <strong>contas institucionais e upload em lote</strong>.
+        </p>
+      </div>
+
+      <div class="finding ok">
+        <h3>O que já acertamos por sorte ou por leitura do CLAUDE.md</h3>
+        <p>
+          Abrir direto no mapa sem splash nem onboarding obrigatório (Decisão 1) — o coach mark
+          dispensável já é o &ldquo;onboarding contextual&rdquo; que a decisão pede. Data e local
+          obrigatórios (Decisão 3). Áudio como mídia de primeira classe, não anexo (Decisão 4).
+          Alvos de 44px e alto contraste para uso na rua (Decisão 7).
+        </p>
+      </div>
+
+      <div class="voice">
+        <p>
+          &ldquo;Não quero o app pronto — quero validar que a experiência funciona e que as pessoas
+          entendem e se emocionam com ela.&rdquo;
+        </p>
+        <cite>Helena Braga, CEO · entrevista com a PO</cite>
+      </div>
+
+      <p>
+        Registro a tensão, porque ela decide sequência: a meta declarada da PO para os dois meses é
+        um <strong>protótipo testado com recomendações de UX</strong> — não um app funcionando.
+        Você me disse que quer o app de verdade. As duas coisas cabem no mesmo caminho, mas mudam a
+        ordem: se o alvo é a validação da Helena, as Fases 0 e 1 bastam e o esforço migra para
+        teste com usuários; se o alvo é produto, a Fase 3 deixa de ser opcional. Está listado em
+        <a href="#decidir">Decidir agora</a>.
+      </p>
+    </section>
+
+    <!-- ============ PRINCIPIOS ============ -->
+    <section id="principios">
+      <h2>Inegociáveis</h2>
+      <p class="lede">
+        Sete regras que vêm da pesquisa, não do meu gosto. Toda tarefa abaixo passa por elas.
+      </p>
+
+      <ol class="decide">
+        <li>
+          <b>O mapa é a porta, sempre</b>
+          <span>Abrir direto nele, centrado na pessoa. Onboarding só como dica contextual sobre o mapa. <span class="tag tag-d">D1</span></span>
+        </li>
+        <li>
+          <b>Nunca tirar a pessoa do contexto geográfico</b>
+          <span>A memória sobe sobre o mapa em bottom sheet. Passar de uma para outra não recarrega tela. <span class="tag tag-d">D2</span></span>
+        </li>
+        <li>
+          <b>Sem quando e onde, não é memória</b>
+          <span>Data e local obrigatórios em todo envio. É o que viabiliza linha do tempo, sobreposição e coleções depois. <span class="tag tag-d">D3</span></span>
+        </li>
+        <li>
+          <b>A voz vale mais que a nitidez</b>
+          <span>Áudio é mídia de primeira classe. Gravar 30 segundos é mais fácil que escrever, e carrega o afeto. <span class="tag tag-d">D4</span></span>
+        </li>
+        <li>
+          <b>Reconhecimento, nunca placar</b>
+          <span>Destacar autor e memória da semana. Jamais ranking por volume — enche o acervo de conteúdo raso. <span class="tag tag-d">D12</span></span>
+        </li>
+        <li>
+          <b>A AR é convidada, não anfitriã</b>
+          <span>Camada opcional, sempre com fallback em mapa e lista, acionada só em momentos de valor e encerrada em seguida. <span class="tag tag-d">D8 D9</span></span>
+        </li>
+        <li>
+          <b>O contexto real é a calçada</b>
+          <span>Sol na tela, mão ocupada, sinal fraco, 70 anos de idade. Isso decide tipografia, alvo de toque e mensagem de erro. <span class="tag tag-d">D7</span></span>
+        </li>
+      </ol>
+    </section>
+
+    <!-- ============ FASE 0 ============ -->
+    <section id="fase-0">
+      <h2>As fases</h2>
+      <p class="lede">
+        Numeradas porque há dependência real: cada uma destrava a seguinte. Marque as tarefas
+        conforme forem saindo — o navegador guarda o progresso neste aparelho.
+      </p>
+
+      <div class="phase">
+        <div class="phase-head">
+          <span class="phase-num">Fase 0</span>
+          <h3>Correções de rota</h3>
+        </div>
+        <p class="phase-why">
+          Onde o código contradiz uma decisão já tomada na pesquisa. Curta, e vem antes de tudo:
+          construir por cima de uma arquitetura errada é caro depois.
+        </p>
+        <div class="progress" data-for="p0">
+          <span class="progress-track"><b class="progress-fill"></b></span>
+          <span><b class="done">0</b> de <span class="total">0</span></span>
+        </div>
+        <ul class="tasks" data-phase="p0">
+          <li><input type="checkbox" id="t01"><label for="t01"><span class="task-text">Trocar a ficha de modal full-screen para bottom sheet sobre o mapa</span><span class="tag tag-d">D2</span></label></li>
+          <li><input type="checkbox" id="t02"><label for="t02"><span class="task-text">Três alturas na sheet: espiada, meio e cheia, com arraste</span><span class="tag tag-d">D2</span></label></li>
+          <li><input type="checkbox" id="t03"><label for="t03"><span class="task-text">Trocar de memória dentro da sheet sem recarregar tela nem perder o mapa</span><span class="tag tag-d">D2</span></label></li>
+          <li><input type="checkbox" id="t04"><label for="t04"><span class="task-text">Mapa recentraliza no pin aberto, deslocado para a metade visível</span><span class="tag tag-d">D2</span></label></li>
+          <li><input type="checkbox" id="t05"><label for="t05"><span class="task-text">AR: botão de saída sempre visível e retorno automático após inatividade</span><span class="tag tag-d">D9</span></label></li>
+          <li><input type="checkbox" id="t06"><label for="t06"><span class="task-text">AR: alternância explícita para lista de memórias próximas</span><span class="tag tag-d">D8</span></label></li>
+          <li><input type="checkbox" id="t07"><label for="t07"><span class="task-text">Persistir a dispensa do coach mark; não repetir a dica toda sessão</span><span class="tag tag-d">D1</span></label></li>
+          <li><input type="checkbox" id="t08"><label for="t08"><span class="task-text">Auditar alvos de toque e contraste com a tela no brilho máximo, na rua</span><span class="tag tag-d">D7</span></label></li>
+        </ul>
+      </div>
+
+      <div class="phase">
+        <div class="phase-head" id="fase-1">
+          <span class="phase-num">Fase 1</span>
+          <h3>Os cinco essenciais</h3>
+        </div>
+        <p class="phase-why">
+          As cinco features sem as quais, nas palavras da Helena, &ldquo;não é o FoiAqui&rdquo;.
+          Ainda sobre dados locais — o objetivo aqui é que <em>funcione</em>, não que persista.
+        </p>
+        <div class="progress" data-for="p1">
+          <span class="progress-track"><b class="progress-fill"></b></span>
+          <span><b class="done">0</b> de <span class="total">0</span></span>
+        </div>
+
+        <h3 style="font-size:1rem;margin:1.4rem 0 .4rem;color:var(--ember-soft)">Geolocalização e mapa</h3>
+        <ul class="tasks" data-phase="p1">
+          <li><input type="checkbox" id="t09"><label for="t09"><span class="task-text">Criar development build por EAS Build na nuvem (não precisa de Android SDK local)</span><span class="tag tag-code">infra</span></label></li>
+          <li><input type="checkbox" id="t10"><label for="t10"><span class="task-text">Substituir o <code>MapCanvas</code> stub por <code>react-native-maps</code></span><span class="tag tag-code">CM §7</span></label></li>
+          <li><input type="checkbox" id="t11"><label for="t11"><span class="task-text">Estilo de mapa escuro custom, derivado dos tokens, não do preset do Google</span><span class="tag tag-code">CM §3</span></label></li>
+          <li><input type="checkbox" id="t12"><label for="t12"><span class="task-text">Pins como marcadores reais, preservando a gota âmbar e o pulso</span><span class="tag tag-code">CM §3</span></label></li>
+          <li><input type="checkbox" id="t13"><label for="t13"><span class="task-text">Agrupar pins quando houver densidade, sem esconder memória</span><span class="tag tag-bm">Maps</span></label></li>
+          <li><input type="checkbox" id="t14"><label for="t14"><span class="task-text"><code>expo-location</code> com pedido de permissão explicado em português claro</span><span class="tag tag-d">D1</span></label></li>
+          <li><input type="checkbox" id="t15"><label for="t15"><span class="task-text">GPS impreciso: mostrar raio de incerteza em vez de fingir precisão</span><span class="tag tag-d">D7</span></label></li>
+          <li><input type="checkbox" id="t16"><label for="t16"><span class="task-text">Busca funcional por lugar, época e tema</span><span class="tag tag-po">Helena</span></label></li>
+          <li><input type="checkbox" id="t17"><label for="t17"><span class="task-text">Chips de filtro filtrando os pins de verdade, com contagem viva</span><span class="tag tag-code">fachada</span></label></li>
+          <li><input type="checkbox" id="t18"><label for="t18"><span class="task-text">Alternância mapa &#8596; lista — é o fallback que a Decisão 8 exige</span><span class="tag tag-d">D8</span></label></li>
+          <li><input type="checkbox" id="t19"><label for="t19"><span class="task-text">Contador do quarteirão calculado a partir do viewport real</span><span class="tag tag-code">fachada</span></label></li>
+        </ul>
+
+        <h3 style="font-size:1rem;margin:1.8rem 0 .4rem;color:var(--ember-soft)">Adicionar memória</h3>
+        <ul class="tasks" data-phase="p1">
+          <li><input type="checkbox" id="t20"><label for="t20"><span class="task-text">Captura real de foto e escolha da galeria</span><span class="tag tag-po">Helena</span></label></li>
+          <li><input type="checkbox" id="t21"><label for="t21"><span class="task-text">Enquadramento assistido para fotografar foto de papel, com correção de perspectiva</span><span class="tag tag-po">Helena</span></label></li>
+          <li><input type="checkbox" id="t22"><label for="t22"><span class="task-text">Gravação de áudio com forma de onda real e prévia antes de enviar</span><span class="tag tag-d">D4</span></label></li>
+          <li><input type="checkbox" id="t23"><label for="t23"><span class="task-text">Vídeo curto para microdocumentário, com limite de duração</span><span class="tag tag-po">Helena</span></label></li>
+          <li><input type="checkbox" id="t24"><label for="t24"><span class="task-text">Ajuste manual do pin no mapa com endereço reverso</span><span class="tag tag-d">D3</span></label></li>
+          <li><input type="checkbox" id="t25"><label for="t25"><span class="task-text">Data aproximada: aceitar &ldquo;por volta de 1958&rdquo; sem exigir dia exato</span><span class="tag tag-d">D3</span></label></li>
+          <li><input type="checkbox" id="t26"><label for="t26"><span class="task-text">Rascunho salvo sozinho — a pessoa está na rua e pode perder o app</span><span class="tag tag-d">D7</span></label></li>
+          <li><input type="checkbox" id="t27"><label for="t27"><span class="task-text">Prévia final mostrando a memória como ela vai aparecer no mapa</span><span class="tag tag-code">UX</span></label></li>
+          <li><input type="checkbox" id="t28"><label for="t28"><span class="task-text">Modo guiado por voz para quem não digita confortável</span><span class="tag tag-po">Íris</span></label></li>
+        </ul>
+
+        <h3 style="font-size:1rem;margin:1.8rem 0 .4rem;color:var(--ember-soft)">A memória em si</h3>
+        <ul class="tasks" data-phase="p1">
+          <li><input type="checkbox" id="t29"><label for="t29"><span class="task-text">Player de áudio funcional, com barra de progresso arrastável</span><span class="tag tag-d">D4</span></label></li>
+          <li><input type="checkbox" id="t30"><label for="t30"><span class="task-text">Slider passado&#8596;presente com fotos reais e alinhamento manual das duas</span><span class="tag tag-d">D9 bench</span></label></li>
+          <li><input type="checkbox" id="t31"><label for="t31"><span class="task-text">Compartilhar gerando link profundo que abre a memória no app</span><span class="tag tag-bm">canais</span></label></li>
+          <li><input type="checkbox" id="t32"><label for="t32"><span class="task-text">&ldquo;Mais memórias deste local&rdquo; por proximidade real, não lista fixa</span><span class="tag tag-code">fachada</span></label></li>
+          <li><input type="checkbox" id="t33"><label for="t33"><span class="task-text">Legenda automática do áudio, para surdez e para uso sem fone</span><span class="tag tag-d">D7</span></label></li>
+        </ul>
+      </div>
+
+      <div class="phase">
+        <div class="phase-head" id="fase-2">
+          <span class="phase-num">Fase 2</span>
+          <h3>Confiança</h3>
+        </div>
+        <p class="phase-why">
+          O segundo medo da Helena: qualidade e veracidade. Conteúdo aberto sobre lugares reais
+          atrai spam, ofensa e disputa de narrativa — e precisa existir <em>desde o lançamento</em>.
+          Modelo copiado do Niantic Wayfarer.
+        </p>
+        <div class="progress" data-for="p2">
+          <span class="progress-track"><b class="progress-fill"></b></span>
+          <span><b class="done">0</b> de <span class="total">0</span></span>
+        </div>
+        <ul class="tasks" data-phase="p2">
+          <li><input type="checkbox" id="t34"><label for="t34"><span class="task-text">Estados da memória: rascunho, em revisão, publicada, recusada, removida</span><span class="tag tag-d">D5</span></label></li>
+          <li><input type="checkbox" id="t35"><label for="t35"><span class="task-text">Fila de revisão por pares, com uma memória por vez e decisão em três toques</span><span class="tag tag-d">D5</span></label></li>
+          <li><input type="checkbox" id="t36"><label for="t36"><span class="task-text">Critérios de conteúdo públicos, linkados de dentro da fila e do envio</span><span class="tag tag-d">D5</span></label></li>
+          <li><input type="checkbox" id="t37"><label for="t37"><span class="task-text">Recusa sempre justificada — o autor nunca fica sem saber por quê</span><span class="tag tag-d">D5</span></label></li>
+          <li><input type="checkbox" id="t38"><label for="t38"><span class="task-text">Reputação do revisor: peso do voto cresce com histórico de acerto</span><span class="tag tag-bm">Wayfarer</span></label></li>
+          <li><input type="checkbox" id="t39"><label for="t39"><span class="task-text">Denúncia de conteúdo já publicado, com triagem separada da fila de entrada</span><span class="tag tag-bm">Wayfarer</span></label></li>
+          <li><input type="checkbox" id="t40"><label for="t40"><span class="task-text">Regra explícita do selo &ldquo;verificado&rdquo;: quem verifica e com base em quê</span><span class="tag tag-code">hoje é enfeite</span></label></li>
+          <li><input type="checkbox" id="t41"><label for="t41"><span class="task-text">Recurso da recusa: o autor pode contestar uma vez</span><span class="tag tag-bm">Wayfarer</span></label></li>
+          <li><input type="checkbox" id="t42"><label for="t42"><span class="task-text">Disputa de narrativa: permitir versões concorrentes do mesmo lugar em vez de eleger uma</span><span class="tag tag-po">Helena</span></label></li>
+          <li><input type="checkbox" id="t43"><label for="t43"><span class="task-text">Contas institucionais para museu, escola e arquivo, com selo próprio</span><span class="tag tag-d">D6</span></label></li>
+          <li><input type="checkbox" id="t44"><label for="t44"><span class="task-text">Upload em lote para instituições — é o que resolve o mapa vazio</span><span class="tag tag-d">D6</span></label></li>
+          <li><input type="checkbox" id="t45"><label for="t45"><span class="task-text">Licença de uso por mídia, com metadados abertos</span><span class="tag tag-bm">Historypin</span></label></li>
+          <li><input type="checkbox" id="t46"><label for="t46"><span class="task-text">Consentimento de direito de imagem no envio e remoção a pedido (LGPD)</span><span class="tag tag-bm">BMC custos</span></label></li>
+        </ul>
+      </div>
+
+      <div class="phase">
+        <div class="phase-head" id="fase-3">
+          <span class="phase-num">Fase 3</span>
+          <h3>Dados reais</h3>
+        </div>
+        <p class="phase-why">
+          Onde o protótipo vira produto. É a fase que a meta declarada da PO não exige e que a sua
+          exige. Nada acima depende dela para ser <em>testado</em>; tudo acima depende dela para
+          <em>existir</em> depois do teste.
+        </p>
+        <div class="progress" data-for="p3">
+          <span class="progress-track"><b class="progress-fill"></b></span>
+          <span><b class="done">0</b> de <span class="total">0</span></span>
+        </div>
+        <ul class="tasks" data-phase="p3">
+          <li><input type="checkbox" id="t47"><label for="t47"><span class="task-text">Escolher o backend; avaliar Postgres com PostGIS pela consulta geográfica</span><span class="tag tag-code">decisão</span></label></li>
+          <li><input type="checkbox" id="t48"><label for="t48"><span class="task-text">Modelar o esquema a partir dos tipos que já existem em <code>src/types</code></span><span class="tag tag-code">CM §5</span></label></li>
+          <li><input type="checkbox" id="t49"><label for="t49"><span class="task-text">Consulta por área visível do mapa, não por lista inteira</span><span class="tag tag-code">perf</span></label></li>
+          <li><input type="checkbox" id="t50"><label for="t50"><span class="task-text">Login social preservando &ldquo;explorar sem login&rdquo; como caminho completo</span><span class="tag tag-d">D1</span></label></li>
+          <li><input type="checkbox" id="t51"><label for="t51"><span class="task-text">Upload de mídia com compressão no aparelho antes de subir</span><span class="tag tag-d">D7</span></label></li>
+          <li><input type="checkbox" id="t52"><label for="t52"><span class="task-text">Cache do que já foi visto, para o mapa abrir cheio mesmo sem rede</span><span class="tag tag-d">D7</span></label></li>
+          <li><input type="checkbox" id="t53"><label for="t53"><span class="task-text">Fila de envio offline: grava na rua, sobe quando houver sinal</span><span class="tag tag-d">D7</span></label></li>
+          <li><input type="checkbox" id="t54"><label for="t54"><span class="task-text">Migrar os mocks preservando Cine, Coreto e Mural como semente</span><span class="tag tag-code">CM §5</span></label></li>
+          <li><input type="checkbox" id="t55"><label for="t55"><span class="task-text">Ambientes separados de desenvolvimento, homologação e produção</span><span class="tag tag-code">infra</span></label></li>
+          <li><input type="checkbox" id="t56"><label for="t56"><span class="task-text">Publicação nas lojas, com ficha e capturas fiéis à identidade</span><span class="tag tag-bm">BMC canais</span></label></li>
+        </ul>
+      </div>
+
+      <div class="phase">
+        <div class="phase-head" id="fase-4">
+          <span class="phase-num">Fase 4</span>
+          <h3>Máquina do tempo</h3>
+        </div>
+        <p class="phase-why">
+          Tudo que a planilha marcou como v2. Só faz sentido com acervo existindo — e só é possível
+          porque a data foi obrigatória desde o MVP.
+        </p>
+        <div class="progress" data-for="p4">
+          <span class="progress-track"><b class="progress-fill"></b></span>
+          <span><b class="done">0</b> de <span class="total">0</span></span>
+        </div>
+        <ul class="tasks" data-phase="p4">
+          <li><input type="checkbox" id="t57"><label for="t57"><span class="task-text">Controle de linha do tempo sobre o mapa, no padrão do Street View histórico</span><span class="tag tag-d">D11</span></label></li>
+          <li><input type="checkbox" id="t58"><label for="t58"><span class="task-text">Histograma de densidade por década, para a pessoa ver onde há acervo</span><span class="tag tag-d">D11</span></label></li>
+          <li><input type="checkbox" id="t59"><label for="t59"><span class="task-text">Coleções: criar, curar e seguir</span><span class="tag tag-d">D10</span></label></li>
+          <li><input type="checkbox" id="t60"><label for="t60"><span class="task-text">Tela de trilha com paradas ordenadas — a única tela do sitemap que nunca existiu</span><span class="tag tag-d">D10</span></label></li>
+          <li><input type="checkbox" id="t61"><label for="t61"><span class="task-text">Navegação parada a parada, pensada para caminhar com o celular na mão</span><span class="tag tag-d">D7</span></label></li>
+          <li><input type="checkbox" id="t62"><label for="t62"><span class="task-text">Memória da semana e destaque de autor</span><span class="tag tag-d">D12</span></label></li>
+          <li><input type="checkbox" id="t63"><label for="t63"><span class="task-text">Registrar como não-objetivo: nenhum ranking por volume de envios</span><span class="tag tag-d">D12</span></label></li>
+          <li><input type="checkbox" id="t64"><label for="t64"><span class="task-text">Perfil público do contribuidor, com o acervo dele</span><span class="tag tag-d">D12</span></label></li>
+          <li><input type="checkbox" id="t65"><label for="t65"><span class="task-text">Avisos: sua memória foi aprovada, alguém guardou sua história</span><span class="tag tag-d">D12</span></label></li>
+          <li><input type="checkbox" id="t66"><label for="t66"><span class="task-text">QR code em ponto histórico abrindo a memória daquele lugar</span><span class="tag tag-bm">BMC canais</span></label></li>
+        </ul>
+      </div>
+
+      <div class="phase">
+        <div class="phase-head" id="fase-5">
+          <span class="phase-num">Fase 5</span>
+          <h3>A rua</h3>
+        </div>
+        <p class="phase-why">
+          AR de verdade. A planilha é explícita: só entra se as métricas justificarem, porque foi
+          exatamente aqui que o Historypin quebrou. Tratar como aposta revisável, não como destino.
+        </p>
+        <div class="progress" data-for="p5">
+          <span class="progress-track"><b class="progress-fill"></b></span>
+          <span><b class="done">0</b> de <span class="total">0</span></span>
+        </div>
+        <ul class="tasks" data-phase="p5">
+          <li><input type="checkbox" id="t67"><label for="t67"><span class="task-text">Revisar a aposta com dados de uso antes de escrever a primeira linha</span><span class="tag tag-d">D8</span></label></li>
+          <li><input type="checkbox" id="t68"><label for="t68"><span class="task-text">Ancoragem geoespacial real, substituindo os cards em posição fixa</span><span class="tag tag-d">D8</span></label></li>
+          <li><input type="checkbox" id="t69"><label for="t69"><span class="task-text">Alinhamento assistido da foto antiga sobre a vista atual</span><span class="tag tag-bm">Historypin</span></label></li>
+          <li><input type="checkbox" id="t70"><label for="t70"><span class="task-text">Orçamento de bateria medido, com corte automático</span><span class="tag tag-d">D9</span></label></li>
+          <li><input type="checkbox" id="t71"><label for="t71"><span class="task-text">Tours guiados com áudio, para escola e turismo</span><span class="tag tag-d">D10</span></label></li>
+        </ul>
+      </div>
+
+      <div class="phase">
+        <div class="phase-head" id="continua">
+          <span class="phase-num">Contínua</span>
+          <h3>Faixa que atravessa tudo</h3>
+        </div>
+        <p class="phase-why">
+          Não é uma fase, é um hábito. Cada item volta a cada entrega.
+        </p>
+        <div class="progress" data-for="pc">
+          <span class="progress-track"><b class="progress-fill"></b></span>
+          <span><b class="done">0</b> de <span class="total">0</span></span>
+        </div>
+        <ul class="tasks" data-phase="pc">
+          <li><input type="checkbox" id="t72"><label for="t72"><span class="task-text">Auditoria com leitor de tela em cada tela nova (TalkBack e VoiceOver)</span><span class="tag tag-d">D7</span></label></li>
+          <li><input type="checkbox" id="t73"><label for="t73"><span class="task-text">Contraste conferido no nível AA, com a tela no sol</span><span class="tag tag-d">D7</span></label></li>
+          <li><input type="checkbox" id="t74"><label for="t74"><span class="task-text">&ldquo;Fonte grande&rdquo; testada em todas as telas, não só nas que eu lembrei</span><span class="tag tag-d">D7</span></label></li>
+          <li><input type="checkbox" id="t75"><label for="t75"><span class="task-text">Teste de usabilidade com pessoa de 70+ a cada fase — a Íris é requisito, não persona decorativa</span><span class="tag tag-po">Helena</span></label></li>
+          <li><input type="checkbox" id="t76"><label for="t76"><span class="task-text">Teste com o outro lado: turista ou estudante que só consome</span><span class="tag tag-po">Helena</span></label></li>
+          <li><input type="checkbox" id="t77"><label for="t77"><span class="task-text">Medir tempo até o primeiro pin visível — é o primeiro valor do produto</span><span class="tag tag-bm">Maps</span></label></li>
+          <li><input type="checkbox" id="t78"><label for="t78"><span class="task-text">Medir consumo de bateria em sessão de rua</span><span class="tag tag-d">D9</span></label></li>
+          <li><input type="checkbox" id="t79"><label for="t79"><span class="task-text">Instrumentar as três métricas da Helena: memórias criadas, contribuidores ativos, retorno</span><span class="tag tag-po">Helena</span></label></li>
+          <li><input type="checkbox" id="t80"><label for="t80"><span class="task-text">Testes automatizados nos fluxos que não podem quebrar: enviar e moderar</span><span class="tag tag-code">qualidade</span></label></li>
+          <li><input type="checkbox" id="t81"><label for="t81"><span class="task-text">Manter o CLAUDE.md como fonte única, atualizado a cada decisão nova</span><span class="tag tag-code">CM</span></label></li>
+          <li><input type="checkbox" id="t82"><label for="t82"><span class="task-text">Verificar o dado de 500 milhões de contribuidores do Maps antes de usar em entregável</span><span class="tag tag-bm">Fontes</span></label></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============ SUCESSO ============ -->
+    <section id="sucesso">
+      <h2>Como saberemos que funcionou</h2>
+      <p class="lede">
+        A Helena já definiu, e a definição dela é boa: vitalidade dos dois lados.
+      </p>
+
+      <div class="voice">
+        <p>
+          &ldquo;Se o acervo cresce e as pessoas retornam, está funcionando.&rdquo;
+        </p>
+        <cite>Helena Braga · sobre métricas de sucesso</cite>
+      </div>
+
+      <div class="wide scroller">
+        <table>
+          <thead>
+            <tr><th>Sinal</th><th>O que mede</th><th>Por que importa</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>Memórias criadas</b></td>
+              <td>Volume de envios aprovados por semana</td>
+              <td>O acervo é o ativo central do modelo de negócio. Sem ele, não há licença institucional a vender.</td>
+            </tr>
+            <tr>
+              <td><b>Contribuidores ativos</b></td>
+              <td>Pessoas distintas que enviaram no período</td>
+              <td>Volume concentrado em poucas pessoas é frágil. O lado que cria é o mais difícil dos dois.</td>
+            </tr>
+            <tr>
+              <td><b>Descoberta e retorno</b></td>
+              <td>Quem abriu, viu memória e voltou</td>
+              <td>É o lado que consome sustentando o lado que cria. Um alimenta o outro.</td>
+            </tr>
+            <tr>
+              <td><b>Saúde da moderação</b></td>
+              <td>Tempo até a primeira revisão; taxa de recusa</td>
+              <td>Fila parada mata o entusiasmo de quem enviou. Recusa alta demais afasta; baixa demais suja o acervo.</td>
+            </tr>
+            <tr>
+              <td><b>Densidade por região</b></td>
+              <td>Memórias por quilômetro quadrado</td>
+              <td>Foi a métrica que denunciou a fraqueza do Historypin: sem parceiro local, o mapa fica vazio.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============ RISCOS ============ -->
+    <section id="riscos">
+      <h2>Riscos</h2>
+      <p class="lede">
+        Os três primeiros são da própria Helena. Os dois últimos são meus, e vêm do código.
+      </p>
+
+      <div class="wide scroller">
+        <table>
+          <thead>
+            <tr><th>Risco</th><th>Por que é real</th><th>O que fazemos</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>Banco vazio</b></td>
+              <td>Ninguém usa um mapa sem histórias, e o Historypin prova que a ausência de parceiro é visível.</td>
+              <td>Contas institucionais e upload em lote na Fase 2, antes de qualquer lançamento público.</td>
+            </tr>
+            <tr>
+              <td><b>Conteúdo falso ou ofensivo</b></td>
+              <td>Conteúdo aberto sobre lugar real atrai spam e disputa de narrativa desde o dia 1.</td>
+              <td>Moderação por pares completa na Fase 2, com critérios públicos e recusa justificada.</td>
+            </tr>
+            <tr>
+              <td><b>AR pesada e frustrante</b></td>
+              <td>Foi onde o Historypin quebrou. Cansa o braço, enjoa e queima bateria.</td>
+              <td>AR permanece opcional com fallback obrigatório. Fase 5 só abre com métrica que justifique.</td>
+            </tr>
+            <tr>
+              <td><b>Acessibilidade virar verniz</b></td>
+              <td>Hoje &ldquo;fonte grande&rdquo; funciona porque o app é pequeno. Cresce e a consistência se perde.</td>
+              <td>Auditoria por leitor de tela em toda tela nova, e teste com 70+ a cada fase.</td>
+            </tr>
+            <tr>
+              <td><b>Dependência de dev build</b></td>
+              <td>O mapa real e a AR não rodam em Expo Go. Cada teste passa a exigir build.</td>
+              <td>EAS Build na nuvem desde a Fase 1, para o ciclo não travar em ferramenta local.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============ DECIDIR ============ -->
+    <section id="decidir">
+      <h2>Decidir agora</h2>
+      <p class="lede">
+        Cinco perguntas que mudam o plano de verdade. Não consigo respondê-las sozinho.
+      </p>
+
+      <ol class="decide">
+        <li>
+          <b>O alvo é o protótipo testado da Helena ou o app publicado?</b>
+          <span>Muda tudo depois da Fase 1. Se for o protótipo, a Fase 3 sai do caminho e o esforço vira teste com usuário. Se for o app, a Fase 3 é obrigatória e o prazo cresce.</span>
+        </li>
+        <li>
+          <b>Qual cidade recebe o piloto?</b>
+          <span>A pesquisa usa Santos-SP nas personas. Densidade só acontece em uma cidade por vez, e a escolha decide com quais arquivos e escolas conversar.</span>
+        </li>
+        <li>
+          <b>Já há alguma instituição conversando com vocês?</b>
+          <span>É o que decide se a Fase 2 constrói upload em lote agora ou depois. Sem parceiro, o mapa nasce vazio.</span>
+        </li>
+        <li>
+          <b>Quem modera nos primeiros meses?</b>
+          <span>Revisão por pares precisa de pares. Antes de haver comunidade, alguém do time revisa — e isso é trabalho recorrente, não código.</span>
+        </li>
+        <li>
+          <b>Confirmo o número de contribuidores do Google Maps?</b>
+          <span>A aba Fontes marca os 500 milhões como não verificado e pede confirmação antes de usar em entregável. Se a planilha vai virar relatório, isso precisa sair ou ser checado.</span>
+        </li>
+      </ol>
+    </section>
+
+    <footer>
+      <p>
+        Fontes: <b>FoiAqui-UX.xlsx</b> — entrevista com a PO, benchmarking (Pokémon GO · Google
+        Maps · Historypin), comparativo de features, 12 decisões de design, Business Model Canvas.
+        <b>CLAUDE.md</b> — identidade visual, sitemap e regras de construção.
+        <b>foiaqui-prototipo.html</b> — referência de aparência e fluxo.<br>
+        Tarefas marcadas ficam guardadas só neste navegador.
+      </p>
+    </footer>
+  </main>
+</div>
+
+<script>
+  // Progresso por fase, guardado localmente. Conveniência de leitura —
+  // se o armazenamento falhar (aba privada, site data bloqueado), a página
+  // segue funcionando como documento normal.
+  (function () {
+    var KEY = 'foiaqui-rota-v1';
+    var boxes = Array.prototype.slice.call(document.querySelectorAll('ul.tasks input'));
+
+    function load() {
+      try {
+        return JSON.parse(localStorage.getItem(KEY) || '{}') || {};
+      } catch (e) { return {}; }
+    }
+    function save(state) {
+      try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* sem persistência */ }
+    }
+
+    var state = load();
+    boxes.forEach(function (b) { if (state[b.id]) b.checked = true; });
+
+    function refresh() {
+      document.querySelectorAll('.progress').forEach(function (p) {
+        var phase = p.getAttribute('data-for');
+        var inputs = document.querySelectorAll('ul.tasks[data-phase="' + phase + '"] input');
+        var total = inputs.length;
+        var done = 0;
+        inputs.forEach(function (i) { if (i.checked) done++; });
+        p.querySelector('.done').textContent = done;
+        p.querySelector('.total').textContent = total;
+        p.querySelector('.progress-fill').style.width = total ? (done / total * 100) + '%' : '0%';
+      });
+    }
+
+    boxes.forEach(function (b) {
+      b.addEventListener('change', function () {
+        state[b.id] = b.checked;
+        if (!b.checked) delete state[b.id];
+        save(state);
+        refresh();
+      });
+    });
+
+    refresh();
+
+    // Marca a seção visível no rail lateral.
+    var links = Array.prototype.slice.call(document.querySelectorAll('.rail a'));
+    var targets = links
+      .map(function (a) { return document.querySelector(a.getAttribute('href')); })
+      .filter(Boolean);
+
+    if ('IntersectionObserver' in window && targets.length) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) {
+          if (!en.isIntersecting) return;
+          links.forEach(function (a) {
+            a.classList.toggle('on', a.getAttribute('href') === '#' + en.target.id);
+          });
+        });
+      }, { rootMargin: '-10% 0px -75% 0px' });
+      targets.forEach(function (t) { io.observe(t); });
+    }
+  })();
+</script>
