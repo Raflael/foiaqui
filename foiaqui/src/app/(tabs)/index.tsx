@@ -6,6 +6,7 @@ import Animated, { useAnimatedStyle, withSpring, withTiming } from 'react-native
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Chip } from '@/components/Chip';
+import { MemoryRow } from '@/components/MemoryCard';
 import { Glass } from '@/components/Glass';
 import { Icon, type IconName } from '@/components/Icon';
 import { MapCanvas } from '@/components/MapCanvas';
@@ -13,6 +14,7 @@ import { MemoryPin } from '@/components/MemoryPin';
 import { SearchBar } from '@/components/SearchBar';
 import { Body, Mono } from '@/components/Type';
 import { YouAreHere } from '@/components/YouAreHere';
+import { distanceTo, formatDistance } from '@/data/location';
 import { mapFilters, memories } from '@/data/memories';
 import { useMotionEnabled } from '@/hooks/useMotion';
 import { useSettings } from '@/store/settings';
@@ -32,6 +34,8 @@ const FOCUS_AT = 0.24;
 const MAX_SHIFT = 0.4;
 /** Topo da folha na altura "meio" — precisa bater com `tops.mid` do MemorySheet. */
 const SHEET_MID = 0.46;
+/** Altura ocupada pela busca + linha de chips, que flutuam sobre o conteúdo. */
+const TOP_CHROME = 124;
 
 export default function MapScreen() {
   const insets = useSafeAreaInsets();
@@ -41,6 +45,12 @@ export default function MapScreen() {
   // null = sem recorte, mostra tudo. Chip clicado de novo limpa o filtro:
   // na rua a pessoa precisa desfazer sem procurar um "x".
   const [filterId, setFilterId] = useState<string | null>(null);
+  /**
+   * Mapa e lista mostram exatamente o mesmo recorte.
+   * A Decisão 8 exige que a AR tenha sempre equivalente em mapa E lista —
+   * e a lista é o que sobra quando o GPS erra ou a rede cai.
+   */
+  const [view, setView] = useState<'mapa' | 'lista'>('mapa');
   const coachDismissed = useSettings((s) => s.coachDismissed);
   const dismissCoach = useSettings((s) => s.dismissCoach);
 
@@ -52,6 +62,7 @@ export default function MapScreen() {
 
   const filter = mapFilters.find((f) => f.id === filterId) ?? null;
   const shown = filter ? memories.filter(filter.match) : memories;
+  const byDistance = [...shown].sort((a, b) => distanceTo(a) - distanceTo(b));
 
   /**
    * Quando a ficha sobe, o mapa desliza para trazer o pin aberto à faixa que
@@ -83,6 +94,7 @@ export default function MapScreen() {
 
   return (
     <View style={styles.screen}>
+      {view === 'mapa' ? (
       <Animated.View style={[StyleSheet.absoluteFill, mapStyle]}>
         <MapCanvas>
           {shown.map((memory) => (
@@ -91,7 +103,7 @@ export default function MapScreen() {
               pos={memory.mapPos}
               icon={PIN_ICONS[memory.id] ?? 'pin'}
               label={`${memory.shortName} · ${memory.year}`}
-              accessibilityLabel={`, . Abrir memória.`}
+              accessibilityLabel={`${memory.title}, ${memory.year}. Abrir memória.`}
               active={memory.id === openId}
               onPress={() => openSheet(memory.id)}
             />
@@ -99,9 +111,42 @@ export default function MapScreen() {
           <YouAreHere left="47%" top="63%" />
         </MapCanvas>
       </Animated.View>
+      ) : (
+        <ScrollView
+          style={StyleSheet.absoluteFill}
+          contentContainerStyle={{
+            paddingTop: insets.top + TOP_CHROME,
+            paddingBottom: TABBAR_HEIGHT + insets.bottom + space.xxl,
+          }}
+          showsVerticalScrollIndicator={false}>
+          {byDistance.map((memory) => (
+            <MemoryRow
+              key={memory.id}
+              memory={memory}
+              distance={formatDistance(distanceTo(memory))}
+              onPress={() => openSheet(memory.id)}
+            />
+          ))}
+          {byDistance.length === 0 ? (
+            <View style={styles.empty}>
+              <Icon name="bookmark" size={30} color={colors.calLine} strokeWidth={1.6} />
+              <Body style={styles.emptyText}>
+                Nada {filter?.countLabel} por aqui ainda. Que tal contar a primeira?
+              </Body>
+            </View>
+          ) : null}
+        </ScrollView>
+      )}
 
       <View style={[styles.top, { top: insets.top + space.md }]}>
-        <SearchBar />
+        <SearchBar
+          action={{
+            icon: view === 'mapa' ? 'list' : 'map',
+            label: view === 'mapa' ? 'Ver em lista' : 'Ver no mapa',
+            active: view === 'lista',
+            onPress: () => setView((v) => (v === 'mapa' ? 'lista' : 'mapa')),
+          }}
+        />
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -132,7 +177,7 @@ export default function MapScreen() {
         )}
       </Glass>
 
-      {!coachDismissed ? (
+      {!coachDismissed && view === 'mapa' ? (
         <Pressable
           style={[styles.coach, { bottom: floorGap + 66 + space.md }]}
           onPress={dismissCoach}
@@ -186,6 +231,9 @@ const styles = StyleSheet.create({
   countText: { fontSize: 12, color: colors.grafiteDim },
   countNumber: { fontSize: 12, color: colors.esmalte, fontWeight: '700' },
   countStrong: { fontSize: 12, color: colors.grafite, fontWeight: '600' },
+
+  empty: { alignItems: 'center', gap: space.md, paddingHorizontal: space.xxl, paddingTop: 60 },
+  emptyText: { fontSize: 14, lineHeight: 21, color: colors.grafiteDim, textAlign: 'center' },
 
   coach: {
     position: 'absolute',

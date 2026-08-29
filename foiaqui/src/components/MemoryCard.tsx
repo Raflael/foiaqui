@@ -45,20 +45,31 @@ export function MemoryCard({
   );
 }
 
-/** Linha de lista da tela Salvos. */
-export function MemoryRow({ memory, onPress }: { memory: Memory; onPress: () => void }) {
+/** Linha de lista: usada em Salvos e na visão de lista do mapa. */
+export function MemoryRow({
+  memory,
+  distance,
+  onPress,
+}: {
+  memory: Memory;
+  /** quando vem, substitui o autor na linha de dados — na rua a distância importa mais */
+  distance?: string;
+  onPress: () => void;
+}) {
   return (
     <Pressable
       onPress={onPress}
       style={({ pressed }) => [styles.row, pressed && { backgroundColor: colors.cal2 }]}
       accessibilityRole="button"
-      accessibilityLabel={`${memory.title}, ${memory.place}, ${memory.year}`}>
+      accessibilityLabel={`${memory.title}, ${memory.place}, ${memory.year}${
+        distance ? `, a ${distance}` : ''
+      }`}>
       <PhotoPlaceholder variant="past" style={styles.rowThumb} />
       <View style={styles.rowText}>
         <Plaque style={styles.rowTitle}>{memory.title}</Plaque>
         <Body style={styles.rowPlace}>{memory.place}</Body>
         <Mono style={styles.rowMeta}>
-          {memory.year} · {memory.author.name}
+          {memory.year} · {distance ?? memory.author.name}
         </Mono>
       </View>
     </Pressable>
