@@ -1,4 +1,4 @@
-import { distanceTo, NEARBY_M } from '@/data/location';
+import { distanceTo, NEARBY_M, type Position } from '@/data/location';
 import type { Memory } from '@/types';
 
 /**
@@ -83,6 +83,12 @@ export const memoryById = (id?: string) => memories.find((m) => m.id === id);
  * atual, de propósito: é o caso que exercita o estado vazio, que na rua acontece
  * o tempo todo.
  */
+/** O que o filtro precisa saber além da própria memória. */
+export interface FilterContext {
+  /** onde a pessoa está agora — GPS de verdade ou fallback */
+  from: Position;
+}
+
 export interface MapFilter {
   id: string;
   /** texto do chip */
@@ -93,7 +99,7 @@ export interface MapFilter {
    * derivar do label dá frases quebradas como "em perto de mim".
    */
   countLabel: string;
-  match: (memory: Memory) => boolean;
+  match: (memory: Memory, ctx: FilterContext) => boolean;
 }
 
 export const mapFilters: MapFilter[] = [
@@ -101,7 +107,8 @@ export const mapFilters: MapFilter[] = [
     id: 'perto',
     label: 'Perto de mim',
     countLabel: 'perto de você',
-    match: (m) => distanceTo(m) <= NEARBY_M,
+    // agora com a posição real: "perto de mim" passou a significar perto de você
+    match: (m, ctx) => distanceTo(m, ctx.from) <= NEARBY_M,
   },
   { id: 'anos60', label: 'Anos 60', countLabel: 'dos anos 60', match: (m) => m.era === 'Anos 60' },
   {

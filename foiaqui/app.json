@@ -55,7 +55,22 @@
           "microphonePermission": "O FoiAqui usa o microfone para você gravar o relato de uma memória.",
           "recordAudioAndroid": true
         }
-      ]
+      ],
+      "expo-audio",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "O FoiAqui mostra as memórias do lugar onde você está. Sua localização não é guardada nem compartilhada."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "O FoiAqui acessa suas fotos para você enviar a imagem de uma memória — inclusive a foto de uma foto antiga de papel.",
+          "cameraPermission": "O FoiAqui usa a câmera para você fotografar a memória no próprio lugar."
+        }
+      ],
+      "expo-image"
     ],
     "experiments": {
       "typedRoutes": true,

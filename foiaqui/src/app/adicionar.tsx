@@ -1,3 +1,11 @@
+import {
+  AudioModule,
+  RecordingPresets,
+  useAudioRecorder,
+  useAudioRecorderState,
+} from 'expo-audio';
+import { Image } from 'expo-image';
+import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import {
@@ -22,6 +30,10 @@ const TAGS = ['Cinema', 'Lazer', 'Centro', 'Demolido', 'Família', 'Arte urbana'
 
 const STEPS = ['Mídia', 'História', 'Local', 'Época'] as const;
 
+/** 78 -> "1:18" */
+const formatSeconds = (s: number) =>
+  `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+
 /**
  * Adicionar memória — fluxo guiado, um assunto por tela.
  *
@@ -29,15 +41,19 @@ const STEPS = ['Mídia', 'História', 'Local', 'Época'] as const;
  * aqui tem 70 anos e vai preencher isso em pé, na rua. Data e local são
  * obrigatórios (decisão de produto: memória sem quando/onde não vira pin).
  *
- * Front-only: a captura de mídia é simulada. Quando entrar `expo-image-picker`,
- * só `pickMedia()` muda.
+ * A captura de foto, vídeo e áudio é real. O que ainda é simulado é o envio:
+ * não há backend, então o "enviar" espera e mostra a mensagem de moderação.
  */
 export default function AdicionarScreen() {
   const insets = useSafeAreaInsets();
 
   const [step, setStep] = useState(0);
-  const [hasPhoto, setHasPhoto] = useState(false);
-  const [hasAudio, setHasAudio] = useState(false);
+  const [media, setMedia] = useState<{ uri: string; type: 'image' | 'video' } | null>(null);
+  const [audio, setAudio] = useState<{ uri: string; seconds: number } | null>(null);
+  const [mediaErro, setMediaErro] = useState<string | null>(null);
+
+  const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
+  const recState = useAudioRecorderState(recorder);
   const [story, setStory] = useState('');
   const [era, setEra] = useState<string | null>(null);
   const [tags, setTags] = useState<string[]>([]);
@@ -48,8 +64,64 @@ export default function AdicionarScreen() {
     setTags((t) => (t.includes(tag) ? t.filter((x) => x !== tag) : [...t, tag]));
 
   // o local vem do GPS já preenchido, então o passo 3 nasce válido
-  const canContinue = [hasPhoto, story.trim().length >= 10, true, era !== null][step];
+  const canContinue = [media !== null, story.trim().length >= 10, true, era !== null][step];
   const isLast = step === STEPS.length - 1;
+
+  /** Guarda o que voltou do seletor, seja da câmera ou da galeria. */
+  const guardar = (r: ImagePicker.ImagePickerResult) => {
+    if (r.canceled || !r.assets?.[0]) return;
+    const a = r.assets[0];
+    setMediaErro(null);
+    setMedia({ uri: a.uri, type: a.type === 'video' ? 'video' : 'image' });
+  };
+
+  const tirarFoto = async () => {
+    const perm = await ImagePicker.requestCameraPermissionsAsync();
+    if (!perm.granted) {
+      setMediaErro('Sem acesso à câmera. Você ainda pode enviar da galeria.');
+      return;
+    }
+    guardar(
+      await ImagePicker.launchCameraAsync({
+        mediaTypes: ['images', 'videos'],
+        quality: 0.85,
+        // microdocumentário, não filme: um minuto é o teto
+        videoMaxDuration: 60,
+      }),
+    );
+  };
+
+  const escolherDaGaleria = async () => {
+    const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!perm.granted) {
+      setMediaErro('Sem acesso às suas fotos. Você ainda pode tirar uma foto agora.');
+      return;
+    }
+    guardar(
+      await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ['images', 'videos'],
+        quality: 0.85,
+      }),
+    );
+  };
+
+  const gravarAudio = async () => {
+    if (recState.isRecording) {
+      await recorder.stop();
+      setAudio({
+        uri: recorder.uri ?? '',
+        seconds: Math.max(1, Math.round(recState.durationMillis / 1000)),
+      });
+      return;
+    }
+    const perm = await AudioModule.requestRecordingPermissionsAsync();
+    if (!perm.granted) {
+      setMediaErro('Sem acesso ao microfone. O relato em áudio é opcional.');
+      return;
+    }
+    await recorder.prepareToRecordAsync();
+    recorder.record();
+  };
 
   const submit = () => {
     setSending(true);
@@ -117,48 +189,91 @@ export default function AdicionarScreen() {
           {step === 0 ? (
             <>
               <Label text="Foto ou vídeo" required />
-              <Pressable
-                onPress={() => setHasPhoto((v) => !v)}
-                accessibilityRole="button"
-                accessibilityLabel={
-                  hasPhoto ? 'Trocar a foto escolhida' : 'Tirar foto ou enviar da galeria'
-                }>
-                {hasPhoto ? (
-                  <PhotoPlaceholder variant="past" style={styles.photoFilled}>
-                    <View style={styles.photoSwap}>
-                      <Icon name="image" size={16} color="#FFFFFF" />
-                      <Body style={styles.photoSwapText}>Trocar</Body>
+
+              {media ? (
+                <View>
+                  <Image source={{ uri: media.uri }} style={styles.photoFilled} contentFit="cover" />
+                  {media.type === 'video' ? (
+                    <View style={styles.videoBadge}>
+                      <Icon name="play" size={12} color={colors.sobreEsmalte} filled />
+                      <Mono style={styles.videoBadgeText}>VÍDEO</Mono>
                     </View>
-                  </PhotoPlaceholder>
-                ) : (
-                  <View style={styles.photobox}>
-                    <Icon name="camera" size={30} color={colors.esmalte} strokeWidth={1.8} />
-                    <Body style={styles.photoboxTitle}>Tirar foto ou enviar da galeria</Body>
-                    <Body style={styles.photoboxHint}>
-                      Tem foto de papel? A gente te ajuda a enquadrar.
-                    </Body>
-                  </View>
-                )}
-              </Pressable>
+                  ) : null}
+                  <Pressable
+                    style={styles.photoSwap}
+                    onPress={() => setMedia(null)}
+                    accessibilityRole="button"
+                    accessibilityLabel="Remover e escolher outra mídia">
+                    <Icon name="x" size={15} color="#FFFFFF" strokeWidth={2.2} />
+                    <Body style={styles.photoSwapText}>Trocar</Body>
+                  </Pressable>
+                </View>
+              ) : (
+                <View style={styles.photobox}>
+                  <Icon name="camera" size={28} color={colors.esmalte} strokeWidth={1.8} />
+                  <Body style={styles.photoboxHint}>
+                    Tem foto de papel? Fotografe ela mesma — vale tanto quanto digitalizar.
+                  </Body>
+                </View>
+              )}
+
+              {/*
+                Dois botões explícitos em vez de um menu escondido: a Íris não
+                deve precisar descobrir que existe uma escolha atrás do toque.
+              */}
+              <View style={styles.pickRow}>
+                <Pressable
+                  style={styles.pickBtn}
+                  onPress={tirarFoto}
+                  accessibilityRole="button"
+                  accessibilityLabel="Tirar foto ou gravar vídeo agora">
+                  <Icon name="camera" size={19} color={colors.sobreEsmalte} strokeWidth={2} />
+                  <Body style={styles.pickBtnText}>Tirar foto</Body>
+                </Pressable>
+                <Pressable
+                  style={[styles.pickBtn, styles.pickBtnGhost]}
+                  onPress={escolherDaGaleria}
+                  accessibilityRole="button"
+                  accessibilityLabel="Escolher foto ou vídeo da galeria">
+                  <Icon name="image" size={19} color={colors.esmalte} strokeWidth={2} />
+                  <Body style={[styles.pickBtnText, { color: colors.esmalte }]}>Da galeria</Body>
+                </Pressable>
+              </View>
 
               <Label text="Áudio" hint="quem viveu contando — vale mais que legenda" />
               <Pressable
-                style={[styles.audioBtn, hasAudio && styles.audioBtnOn]}
-                onPress={() => setHasAudio((v) => !v)}
+                style={[
+                  styles.audioBtn,
+                  recState.isRecording && styles.audioBtnRec,
+                  audio && styles.audioBtnOn,
+                ]}
+                onPress={gravarAudio}
                 accessibilityRole="button"
-                accessibilityState={{ selected: hasAudio }}
+                accessibilityState={{ selected: !!audio }}
                 accessibilityLabel={
-                  hasAudio ? 'Remover o áudio gravado' : 'Gravar um relato em áudio'
+                  recState.isRecording
+                    ? 'Parar a gravação'
+                    : audio
+                      ? 'Gravar outro relato por cima'
+                      : 'Gravar um relato em áudio'
                 }>
                 <Icon
-                  name={hasAudio ? 'checkCircle' : 'play'}
+                  name={recState.isRecording ? 'pause' : audio ? 'checkCircle' : 'play'}
                   size={20}
-                  color={hasAudio ? colors.conferido : colors.esmalte}
+                  color={recState.isRecording ? colors.ferrugem : audio ? colors.conferido : colors.esmalte}
+                  filled={recState.isRecording}
                 />
                 <Body style={styles.audioBtnText}>
-                  {hasAudio ? 'Áudio gravado · 0:48' : 'Gravar um relato'}
+                  {recState.isRecording
+                    ? `Gravando… ${formatSeconds(Math.round(recState.durationMillis / 1000))}`
+                    : audio
+                      ? `Relato gravado · ${formatSeconds(audio.seconds)}`
+                      : 'Gravar um relato'}
                 </Body>
+                {recState.isRecording ? <View style={styles.recDot} /> : null}
               </Pressable>
+
+              {mediaErro ? <Body style={styles.mediaErro}>{mediaErro}</Body> : null}
             </>
           ) : null}
 
@@ -340,6 +455,47 @@ const styles = StyleSheet.create({
   photoboxTitle: { fontSize: 14, fontWeight: '700', color: colors.grafite, textAlign: 'center' },
   photoboxHint: { fontSize: 12, color: colors.grafiteDim, textAlign: 'center' },
   photoFilled: { height: 150, borderRadius: radius.md },
+  videoBadge: {
+    position: 'absolute',
+    left: 10,
+    top: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: radius.sm,
+    backgroundColor: colors.esmalte,
+  },
+  videoBadgeText: { fontSize: 9.5, letterSpacing: 1, color: colors.sobreEsmalte },
+
+  pickRow: { flexDirection: 'row', gap: space.sm, marginTop: space.md },
+  pickBtn: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: space.sm,
+    minHeight: HIT + 6,
+    borderRadius: radius.md,
+    backgroundColor: colors.esmalte,
+  },
+  pickBtnGhost: {
+    backgroundColor: colors.cal,
+    borderWidth: 1.5,
+    borderColor: colors.esmalte,
+  },
+  pickBtnText: { fontSize: 14, fontWeight: '600', color: colors.sobreEsmalte },
+
+  audioBtnRec: { borderColor: colors.ferrugem, backgroundColor: colors.cal },
+  recDot: {
+    width: 9,
+    height: 9,
+    borderRadius: 4.5,
+    backgroundColor: colors.ferrugem,
+  },
+  mediaErro: { marginTop: space.md, fontSize: 12.5, lineHeight: 18, color: colors.ferrugem },
+
   photoSwap: {
     position: 'absolute',
     right: 10,

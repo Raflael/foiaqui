@@ -1,21 +1,25 @@
 import type { Memory } from '@/types';
 
+export interface Position {
+  lat: number;
+  lng: number;
+}
+
 /**
- * Posição simulada da pessoa, no centro de Santos.
+ * Posição usada quando o GPS não responde — permissão negada, sem sinal,
+ * modo avião, emulador.
  *
- * Fase 1 troca isto por `expo-location`. A conta de distância abaixo já é a
- * de verdade, então quando o GPS entrar só esta constante muda — nada mais.
+ * Centro de Santos, perto das três memórias do acervo. Não é "posição falsa":
+ * é o que permite o app abrir mostrando alguma coisa em vez de uma tela morta.
+ * A interface diz claramente quando está usando isto (ver `useCurrentPosition`).
  */
-export const currentPosition = { lat: -23.934, lng: -46.3275 };
+export const fallbackPosition: Position = { lat: -23.934, lng: -46.3275 };
 
 const EARTH_M = 6_371_000;
 const rad = (deg: number) => (deg * Math.PI) / 180;
 
 /** Distância em metros entre dois pontos (Haversine). */
-export function distanceMeters(
-  a: { lat: number; lng: number },
-  b: { lat: number; lng: number },
-): number {
+export function distanceMeters(a: Position, b: Position): number {
   const dLat = rad(b.lat - a.lat);
   const dLng = rad(b.lng - a.lng);
   const h =
@@ -25,8 +29,8 @@ export function distanceMeters(
 }
 
 /** Metros até a memória, a partir de onde a pessoa está. */
-export const distanceTo = (memory: Memory) =>
-  distanceMeters(currentPosition, memory.coords);
+export const distanceTo = (memory: Memory, from: Position) =>
+  distanceMeters(from, memory.coords);
 
 /** "aqui" · "120 m" · "1,4 km" — como a distância aparece na interface. */
 export function formatDistance(meters: number): string {

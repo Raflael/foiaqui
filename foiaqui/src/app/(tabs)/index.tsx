@@ -2,7 +2,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { Circle, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Chip } from '@/components/Chip';
@@ -13,9 +13,10 @@ import { MemoryPin } from '@/components/MemoryPin';
 import { SearchBar } from '@/components/SearchBar';
 import { Body, Mono } from '@/components/Type';
 import { YouAreHere } from '@/components/YouAreHere';
-import { currentPosition, distanceTo, formatDistance } from '@/data/location';
+import { distanceTo, fallbackPosition, formatDistance } from '@/data/location';
 import { mapStyle } from '@/data/mapStyle';
 import { mapFilters, matchesQuery, memories } from '@/data/memories';
+import { useCurrentPosition } from '@/hooks/useCurrentPosition';
 import { useMotionEnabled } from '@/hooks/useMotion';
 import { useSettings } from '@/store/settings';
 import { useSheet } from '@/store/sheet';
@@ -28,13 +29,19 @@ const PIN_ICONS: Record<string, IconName> = {
   mural: 'circlePlus',
 };
 
+/**
+ * Acima deste raio o GPS não sabe direito onde você está, e o app precisa
+ * dizer isso — Decisão 7: "prever estados de erro e GPS impreciso".
+ */
+const FUZZY_M = 40;
+
 /** Altura ocupada pela busca + linha de chips, que flutuam sobre o conteúdo. */
 const TOP_CHROME = 124;
 
 /** Enquadramento inicial: cabe as três memórias com folga. */
 const INITIAL_REGION = {
-  latitude: currentPosition.lat,
-  longitude: currentPosition.lng,
+  latitude: fallbackPosition.lat,
+  longitude: fallbackPosition.lng,
   latitudeDelta: 0.012,
   longitudeDelta: 0.012,
 };
@@ -44,6 +51,7 @@ export default function MapScreen() {
   const { height: H } = useWindowDimensions();
   const motion = useMotionEnabled();
   const mapRef = useRef<MapView>(null);
+  const { position, accuracy, source, denied } = useCurrentPosition();
 
   // null = sem recorte, mostra tudo. Chip clicado de novo limpa o filtro:
   // na rua a pessoa precisa desfazer sem procurar um "x".
@@ -68,9 +76,11 @@ export default function MapScreen() {
   const filter = mapFilters.find((f) => f.id === filterId) ?? null;
   // busca e chip se somam, não se substituem: "Anos 60" + "praça" é um recorte só
   const shown = memories
-    .filter((m) => (filter ? filter.match(m) : true))
+    .filter((m) => (filter ? filter.match(m, { from: position }) : true))
     .filter((m) => matchesQuery(m, query));
-  const byDistance = [...shown].sort((a, b) => distanceTo(a) - distanceTo(b));
+  const byDistance = [...shown].sort(
+    (a, b) => distanceTo(a, position) - distanceTo(b, position),
+  );
 
   /**
    * O padding diz ao mapa qual faixa continua visível, então `animateCamera`
@@ -78,6 +88,18 @@ export default function MapScreen() {
    * Decisão 2: abrir a memória sem perder de vista onde ela fica.
    */
   const sheetOccupies = openId && snap !== 'peek' ? H * 0.54 : TABBAR_HEIGHT + insets.bottom;
+
+  // primeira leitura do GPS: leva o mapa até onde a pessoa está de verdade
+  const centered = useRef(false);
+  useEffect(() => {
+    if (source !== 'gps' || centered.current || openId) return;
+    centered.current = true;
+    mapRef.current?.animateCamera(
+      { center: { latitude: position.lat, longitude: position.lng } },
+      { duration: motion ? 600 : 0 },
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [source, position.lat, position.lng]);
 
   useEffect(() => {
     const target = shown.find((m) => m.id === openId);
@@ -123,8 +145,22 @@ export default function MapScreen() {
           showsMyLocationButton={false}
           rotateEnabled={false}
           pitchEnabled={false}>
+          {/*
+            Raio de incerteza: quando o GPS não sabe direito, o app mostra o
+            quanto não sabe. Ponto cravado sobre erro de 80 metros é mentira.
+          */}
+          {accuracy && accuracy > FUZZY_M ? (
+            <Circle
+              center={{ latitude: position.lat, longitude: position.lng }}
+              radius={accuracy}
+              strokeColor="rgba(26,29,35,0.22)"
+              fillColor="rgba(26,29,35,0.07)"
+              strokeWidth={1}
+            />
+          ) : null}
+
           <Marker
-            coordinate={{ latitude: currentPosition.lat, longitude: currentPosition.lng }}
+            coordinate={{ latitude: position.lat, longitude: position.lng }}
             anchor={{ x: 0.5, y: 0.5 }}
             tracksViewChanges={false}
             accessibilityLabel="Sua localização atual">
@@ -159,7 +195,7 @@ export default function MapScreen() {
             <MemoryRow
               key={memory.id}
               memory={memory}
-              distance={formatDistance(distanceTo(memory))}
+              distance={formatDistance(distanceTo(memory, position))}
               onPress={() => openSheet(memory.id)}
             />
           ))}
@@ -224,6 +260,16 @@ export default function MapScreen() {
             {query ? ' encontradas' : filter ? ` ${filter.countLabel}` : ' por perto'}
           </Body>
         )}
+
+        {/*
+          Sem GPS o app não finge saber onde você está. Dizer isso é o que
+          permite entender por que "perto de mim" trouxe o que trouxe.
+        */}
+        {denied ? (
+          <Body style={styles.countNote}>
+            Sem sua localização &mdash; mostrando o centro de Santos
+          </Body>
+        ) : null}
       </Glass>
 
       {!coachDismissed && view === 'mapa' ? (
@@ -278,6 +324,7 @@ const styles = StyleSheet.create({
   countText: { fontSize: 12, color: colors.grafiteDim },
   countNumber: { fontSize: 12, color: colors.esmalte, fontWeight: '700' },
   countStrong: { fontSize: 12, color: colors.grafite, fontWeight: '600' },
+  countNote: { fontSize: 11, color: colors.ferrugem, marginTop: 3 },
 
   empty: { alignItems: 'center', gap: space.md, paddingHorizontal: space.xxl, paddingTop: 60 },
   emptyText: { fontSize: 14, lineHeight: 21, color: colors.grafiteDim, textAlign: 'center' },
