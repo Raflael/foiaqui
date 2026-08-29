@@ -1,3 +1,4 @@
+import { distanceTo, NEARBY_M } from '@/data/location';
 import type { Memory } from '@/types';
 
 /**
@@ -77,14 +78,49 @@ export const memories: Memory[] = [
 
 export const memoryById = (id?: string) => memories.find((m) => m.id === id);
 
-/** Chips de filtro da busca no mapa. */
-export const mapFilters = [
-  'Perto de mim',
-  'Anos 60',
-  'Cinemas antigos',
-  'Arte urbana',
-  'Escolas',
-] as const;
+/**
+ * Chips de filtro do mapa.
+ *
+ * Cada um carrega o próprio critério em vez de ser só um rótulo — era isso que
+ * faltava para eles filtrarem de verdade. "Escolas" não casa com nada no acervo
+ * atual, de propósito: é o caso que exercita o estado vazio, que na rua acontece
+ * o tempo todo.
+ */
+export interface MapFilter {
+  id: string;
+  /** texto do chip */
+  label: string;
+  /**
+   * Como o filtro é dito no contador: "2 memórias PERTO DE VOCÊ".
+   * Separado do rótulo porque em português a preposição muda com o termo —
+   * derivar do label dá frases quebradas como "em perto de mim".
+   */
+  countLabel: string;
+  match: (memory: Memory) => boolean;
+}
+
+export const mapFilters: MapFilter[] = [
+  {
+    id: 'perto',
+    label: 'Perto de mim',
+    countLabel: 'perto de você',
+    match: (m) => distanceTo(m) <= NEARBY_M,
+  },
+  { id: 'anos60', label: 'Anos 60', countLabel: 'dos anos 60', match: (m) => m.era === 'Anos 60' },
+  {
+    id: 'cinema',
+    label: 'Cinemas antigos',
+    countLabel: 'em cinemas antigos',
+    match: (m) => m.tags.includes('Cinema'),
+  },
+  {
+    id: 'arte',
+    label: 'Arte urbana',
+    countLabel: 'de arte urbana',
+    match: (m) => m.tags.includes('Arte urbana'),
+  },
+  { id: 'escola', label: 'Escolas', countLabel: 'de escolas', match: (m) => m.tags.includes('Escola') },
+];
 
 /** Épocas oferecidas no fluxo de adicionar memória. */
 export const eras = ['Anos 40', 'Anos 50', 'Anos 60', 'Anos 70', 'Atual'] as const;

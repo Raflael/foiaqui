@@ -38,7 +38,9 @@ export default function MapScreen() {
   const { height: H } = useWindowDimensions();
   const motion = useMotionEnabled();
 
-  const [filter, setFilter] = useState<string>(mapFilters[0]);
+  // null = sem recorte, mostra tudo. Chip clicado de novo limpa o filtro:
+  // na rua a pessoa precisa desfazer sem procurar um "x".
+  const [filterId, setFilterId] = useState<string | null>(null);
   const coachDismissed = useSettings((s) => s.coachDismissed);
   const dismissCoach = useSettings((s) => s.dismissCoach);
 
@@ -47,6 +49,9 @@ export default function MapScreen() {
   const openSheet = useSheet((s) => s.open);
 
   const floorGap = TABBAR_HEIGHT + insets.bottom + space.xl;
+
+  const filter = mapFilters.find((f) => f.id === filterId) ?? null;
+  const shown = filter ? memories.filter(filter.match) : memories;
 
   /**
    * Quando a ficha sobe, o mapa desliza para trazer o pin aberto à faixa que
@@ -58,7 +63,7 @@ export default function MapScreen() {
    * - a referência é sempre a altura "meio", então passar de meio para cheia
    *   (onde o mapa nem aparece) não mexe o mapa de novo.
    */
-  const selected = memories.find((m) => m.id === openId);
+  const selected = shown.find((m) => m.id === openId);
   const pinY = selected ? (parseFloat(selected.mapPos.top) / 100) * H : 0;
   const coveredFrom = H * SHEET_MID - 72;
   const shift =
@@ -80,7 +85,7 @@ export default function MapScreen() {
     <View style={styles.screen}>
       <Animated.View style={[StyleSheet.absoluteFill, mapStyle]}>
         <MapCanvas>
-          {memories.map((memory) => (
+          {shown.map((memory) => (
             <MemoryPin
               key={memory.id}
               pos={memory.mapPos}
@@ -102,15 +107,29 @@ export default function MapScreen() {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.chips}>
           {mapFilters.map((f) => (
-            <Chip key={f} label={f} active={filter === f} onPress={() => setFilter(f)} />
+            <Chip
+              key={f.id}
+              label={f.label}
+              active={filterId === f.id}
+              onPress={() => setFilterId((cur) => (cur === f.id ? null : f.id))}
+            />
           ))}
         </ScrollView>
       </View>
 
       <Glass style={[styles.count, { bottom: floorGap }]}>
-        <Body style={styles.countText}>
-          <Mono style={styles.countNumber}>18</Mono> memórias neste quarteirão
-        </Body>
+        {shown.length === 0 ? (
+          <Body style={styles.countText}>
+            Nenhuma memória <Body style={styles.countStrong}>{filter?.countLabel}</Body> por aqui.
+            Que tal contar a primeira?
+          </Body>
+        ) : (
+          <Body style={styles.countText}>
+            <Mono style={styles.countNumber}>{shown.length}</Mono>{' '}
+            {shown.length === 1 ? 'memória' : 'memórias'}
+            {filter ? ` ${filter.countLabel}` : ' neste quarteirão'}
+          </Body>
+        )}
       </Glass>
 
       {!coachDismissed ? (
@@ -165,7 +184,8 @@ const styles = StyleSheet.create({
     paddingVertical: 9,
   },
   countText: { fontSize: 12, color: colors.grafiteDim },
-  countNumber: { fontSize: 12, color: colors.ferrugemClara, fontWeight: '700' },
+  countNumber: { fontSize: 12, color: colors.esmalte, fontWeight: '700' },
+  countStrong: { fontSize: 12, color: colors.grafite, fontWeight: '600' },
 
   coach: {
     position: 'absolute',
