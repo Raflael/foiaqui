@@ -40,7 +40,9 @@ export const memories: Memory[] = [
     },
     kind: 'Registro documental',
     verified: true,
-    media: [{ type: 'photo', uri: 'past' }],
+    media: [{ type: 'photo', uri: 'present' }],
+    presentImageUri: require('@/assets/fotos/mercado.jpg'),
+    creditoFoto: 'Foto: Carlos de Paula · CC BY 3.0 · Wikimedia Commons',
     tags: ['Comércio', 'Centro', 'Documento'],
   },
   {
@@ -200,7 +202,9 @@ export const memories: Memory[] = [
     },
     kind: 'Registro documental',
     verified: true,
-    media: [{ type: 'photo', uri: 'past' }],
+    media: [{ type: 'photo', uri: 'present' }],
+    presentImageUri: require('@/assets/fotos/parahyba.jpg'),
+    creditoFoto: 'Foto: Themium · CC BY-SA 4.0 · Wikimedia Commons',
     tags: ['Indústria', 'Trabalho', 'Tombado'],
   },
   {
@@ -225,7 +229,9 @@ export const memories: Memory[] = [
     },
     kind: 'Registro documental',
     verified: true,
-    media: [{ type: 'photo', uri: 'past' }],
+    media: [{ type: 'photo', uri: 'present' }],
+    presentImageUri: require('@/assets/fotos/parahyba.jpg'),
+    creditoFoto: 'Foto: Themium · CC BY-SA 4.0 · Wikimedia Commons',
     tags: ['Indústria', 'Trabalho', 'Moradia'],
   },
   {
@@ -250,6 +256,8 @@ export const memories: Memory[] = [
     kind: 'Registro documental',
     verified: true,
     media: [{ type: 'photo', uri: 'present' }],
+    presentImageUri: require('@/assets/fotos/parahyba.jpg'),
+    creditoFoto: 'Foto: Themium · CC BY-SA 4.0 · Wikimedia Commons',
     tags: ['Indústria', 'Tombado', 'Parque'],
   },
   {
@@ -274,7 +282,9 @@ export const memories: Memory[] = [
     },
     kind: 'Registro documental',
     verified: true,
-    media: [{ type: 'photo', uri: 'past' }],
+    media: [{ type: 'photo', uri: 'present' }],
+    presentImageUri: require('@/assets/fotos/estacao.jpg'),
+    creditoFoto: 'Foto: pingflood via Mapillary · CC BY-SA 4.0 · Wikimedia Commons',
     tags: ['Transporte', 'Indústria', 'Centro'],
   },
   {
@@ -299,6 +309,8 @@ export const memories: Memory[] = [
     kind: 'Registro documental',
     verified: true,
     media: [{ type: 'photo', uri: 'present' }],
+    presentImageUri: require('@/assets/fotos/paco.jpg'),
+    creditoFoto: 'Foto: Themium · CC BY-SA 4.0 · Wikimedia Commons',
     tags: ['Poder público', 'Centro', 'Tombado'],
   },
   {
