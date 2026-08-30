@@ -68,6 +68,7 @@ export default function RootLayout() {
             <Stack.Screen name="reportar" options={{ presentation: 'modal' }} />
             <Stack.Screen name="entrar" options={{ presentation: 'modal' }} />
             <Stack.Screen name="adicionar" options={{ presentation: 'modal' }} />
+            <Stack.Screen name="foto-antiga" options={{ presentation: 'modal' }} />
             <Stack.Screen
               name="ar"
               options={{ presentation: 'fullScreenModal', animation: 'fade' }}

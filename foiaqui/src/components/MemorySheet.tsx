@@ -819,6 +819,34 @@ export function MemorySheet() {
                 <Icon name="plus" size={17} color={colors.sobreFerrugem} strokeWidth={2.6} />
                 <Body style={styles.contarAquiText}>Contar a minha aqui</Body>
               </Pressable>
+
+              {/*
+                A porta estreita ao lado da porta larga.
+                Escrever um relato trava a maior parte das pessoas; ter a foto
+                do álbum não trava ninguém. Como o acervo é justamente pobre em
+                imagem antiga — quase todo lugar tem o hoje e não tem o ontem —,
+                esta é a contribuição mais fácil de dar e a mais rara de
+                receber. Ela aparece em destaque quando o lugar ainda não tem
+                nenhuma foto de antes: é ali que a falta é real.
+              */}
+              <Pressable
+                style={[styles.trazerFoto, !shown.pastImageUri && styles.trazerFotoFalta]}
+                onPress={() => {
+                  close();
+                  router.push({
+                    pathname: '/foto-antiga',
+                    params: { ponto: shown.pontoId as string, de: shown.id },
+                  });
+                }}
+                accessibilityRole="button"
+                accessibilityLabel="Contribuir apenas com uma foto antiga deste lugar">
+                <Icon name="image" size={16} color={colors.esmalte} strokeWidth={2.1} />
+                <Body style={styles.trazerFotoText}>
+                  {shown.pastImageUri
+                    ? 'Tenho outra foto antiga daqui'
+                    : 'Tenho uma foto de como era aqui'}
+                </Body>
+              </Pressable>
             </>
           ) : null}
 
@@ -1108,6 +1136,19 @@ const styles = StyleSheet.create({
     backgroundColor: colors.ferrugem,
   },
   contarAquiText: { fontSize: 14.5, fontWeight: '600', color: colors.sobreFerrugem },
+
+  trazerFoto: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: space.sm,
+    minHeight: HIT,
+    marginTop: 1,
+    borderWidth: 1.5,
+    borderColor: colors.esmalte,
+  },
+  trazerFotoFalta: { backgroundColor: colors.cal2 },
+  trazerFotoText: { fontSize: 14, fontWeight: '600', color: colors.esmalte },
 
   procedencia: {
     marginTop: space.lg,
