@@ -284,16 +284,37 @@ Com isso, as cinco coisas que a PO chamou de essenciais estão de pé — as dua
 últimas com ressalva honesta na tela: uma revisão só já publica (faltam pares
 de verdade), e a AR é bússola, não ARKit.
 
-**Próximo:** o primeiro teste de usabilidade, e só depois o dossiê. Se for
-codar antes, o que sobrou é v2/v3 da pesquisa: linha do tempo sobre o mapa
-(Decisão 11) e coleções (Decisão 10).
+**O v2 da pesquisa está fechado** (30/08/2026): linha do tempo sobre o mapa
+(Decisão 11, régua de décadas com as vazias incluídas) e coleções (Decisão 10,
+em Salvos — criar, renomear, guardar; a mesma memória pode estar em várias).
+Também entraram: identidade local (`store/perfil.ts` + `app/entrar.tsx`, o
+nome saiu do código-fonte; exigido ao publicar, nunca na porta), denúncia de
+memória publicada (`app/reportar.tsx`, devolve à fila com o critério
+apontado), pontos reais de São José (`data/pontos.ts`, 8 lugares e 12 memórias
+de 1865 a 2021, coordenadas do OpenStreetMap e fonte pública declarada, feed
+por lugar na ficha), fotos com licença livre do Wikimedia Commons (o slider
+compara duas fotos reais no Vicentina Aranha), vídeo que toca (`expo-video`;
+o herói da ficha quando existe), o ícone do app gerado da identidade
+(`npm run icone`) e o dossiê completo (`docs/dossie.html` + `npm run dossie`
+para o PDF — página, PDF e repositório são a mesma fonte).
 
-Duas dívidas conhecidas:
-- As coordenadas das memórias semeadas em São José dos Campos são aproximações;
-  precisam ser conferidas no lugar.
-- O dossiê do projeto (PDF + documentação completa) está adiado de propósito
-  para depois do primeiro teste de usabilidade — escrever antes seria
-  documentar suposição.
+O app é distribuído como APK autônomo (`eas-cli build --profile preview`).
+O `eas.json` fixa `node: 24.11.1` nos três perfis — a nuvem validava o
+lockfile com npm 10 e a máquina com npm 11, e as duas discordavam; com o
+mesmo Node dos dois lados a validação converge por construção. Antes de
+disparar build: `npm ci --dry-run` (o erro da nuvem custa 15 min e o local,
+5 segundos) — e o log real de um build falho está em
+`eas-cli build:view <id> --json`, campo `logFiles`.
+
+**Próximo:** o primeiro teste de usabilidade — é a única linha do escopo da PO
+ainda aberta, e nenhuma decisão daqui foi confrontada com uma pessoa de fora.
+
+Dívidas conhecidas:
+- Zero testes automatizados. As funções puras (`nomeCurto`, `agrupar`,
+  `decadasDo`, `matchesQuery`) são todas testáveis e todas já quebraram.
+- Hook depois de retorno antecipado derrubou o APK uma vez; a regra
+  `react-hooks/rules-of-hooks` do lint pega — por isso o lint é portão.
+- Sem tratamento de rede instável (parte da Decisão 7 ainda aberta).
 
 **Antes de commitar:** `npx tsc --noEmit`, `npx expo lint`, `npm run contraste`
 (falha se algum par reprovar em AA) e um `npx expo export --platform android`

@@ -65,14 +65,15 @@ OpenStreetMap e fonte pública declarada em cada uma.
 | Tela | Comportamento real |
 |:--|:--|
 | **Mapa** | `react-native-maps` com estilo próprio · busca por lugar, época e tema · filtros que filtram · agrupamento de pins · distância real até você |
-| **Ficha** | bottom sheet de três alturas · slider passado↔presente · áudio que toca · compartilhar com deep link · memórias vizinhas por proximidade |
+| **Ficha** | bottom sheet de três alturas · slider passado↔presente · áudio e **vídeo** que tocam · fonte e crédito de foto declarados · o feed das outras histórias do mesmo lugar |
 | **Câmera AR** | câmera real e **bússola**: os cards seguem a direção em que o aparelho aponta, somem fora do campo de visão e indicam para que lado girar · sai sozinha por inatividade |
 | **Adicionar** | 4 passos · foto e vídeo pela câmera ou galeria · gravação de áudio · GPS com ajuste manual e geocodificação reversa · década **e** ano exato · rascunho salvo sozinho |
 | **Trilhas** | lista de percursos e tela de trilha com mini-mapa, paradas numeradas e traçado |
 | **Moderação** | fila de revisão por pares · quatro critérios públicos · recusa que exige apontar o critério · denúncia devolve o publicado para a fila · aprovar publica no mapa |
 | **Linha do tempo** | régua de décadas sobre o mapa, **incluindo as vazias** — o buraco é a informação: "ninguém contou nada dos anos 90 aqui" é um convite |
 | **Identidade** | seu nome assina o que você cria, guardado no aparelho · exigido ao publicar, nunca na porta (Decisão 1) |
-| **Salvos · Perfil** | acervo local · nível e conquistas derivados do uso real |
+| **Salvos** | coleções de verdade (Decisão 10): criar, renomear, guardar — a mesma memória pode estar em várias |
+| **Perfil** | identidade local que assina o que você cria · nível e conquistas derivados do uso real |
 
 <details>
 <summary><b>E o que ainda não existe</b> — para ninguém se enganar com a demo</summary>
@@ -87,7 +88,9 @@ OpenStreetMap e fonte pública declarada em cada uma.
   `em_revisao` para sempre: não há outras pessoas para revisá-las.
 - **A AR não é AR.** É câmera com sobreposição orientada por bússola e GPS.
   ARKit/ARCore é a última fase, e por um motivo documentado (Decisão 8).
-- **As fotos antigas são placeholders.** Gradientes, não acervo real.
+- **A maior parte das fotos antigas ainda é placeholder.** Cinco memórias já
+  têm foto real (Wikimedia Commons, com crédito na ficha); as demais mostram
+  o gradiente desenhado até existir acervo digitalizado.
 
 </details>
 

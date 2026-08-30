@@ -483,7 +483,7 @@
           <tr><td class="num">07</td><td>Projetar para uso na rua.</td><td>Pokémon GO + Google Maps</td><td>O contexto real é sol na tela, mão ocupada e sinal instável. Isso muda tipografia, alvo de toque e mensagem de erro.</td><td>Paleta clara, alvos ≥ 44 px, contraste medido por script que reprova o commit.</td><td>MVP</td></tr>
           <tr><td class="num">08</td><td>AR como camada opcional, com <em>fallback</em>.</td><td>Historypin <em>(caso negativo)</em></td><td>O Historypin apostou em AR mobile e retirou os apps em 2015. Custo alto demais para equipe pequena.</td><td>AR nunca é requisito para usar o produto.</td><td>v3</td></tr>
           <tr><td class="num">09</td><td>Nunca deixar a AR ligada continuamente.</td><td>Pokémon GO</td><td>Uso contínuo causa cansaço físico, enjoo e queima bateria. O padrão é entrar, entregar o momento, sair.</td><td>A tela de AR se fecha sozinha após 45 s sem interação.</td><td>v3</td></tr>
-          <tr><td class="num">10</td><td>Hierarquia pino → coleção → roteiro.</td><td>Historypin</td><td>Roteiro só faz sentido depois que houver densidade de pinos.</td><td>Trilhas existem; curadoria de coleções ainda não.</td><td>v2</td></tr>
+          <tr><td class="num">10</td><td>Hierarquia pino → coleção → roteiro.</td><td>Historypin</td><td>Roteiro só faz sentido depois que houver densidade de pinos.</td><td>Coleções em Salvos: criar, renomear, guardar. A mesma memória pode estar em várias — é marcador, não pasta.</td><td>v2</td></tr>
           <tr><td class="num">11</td><td>Linha do tempo sobre o mapa.</td><td>Google Maps <em>(Street View histórico)</em></td><td>É a UX já validada para navegar entre épocas do mesmo lugar; evita inventar um padrão que o usuário teria de aprender.</td><td>Régua de décadas no rodapé, incluindo as vazias.</td><td>v2</td></tr>
           <tr><td class="num">12</td><td>Gamificar reconhecimento, não volume.</td><td>Local Guides + ausência no Historypin</td><td>Sem incentivo a contribuição despenca; com incentivo por volume, o acervo enche de conteúdo raso.</td><td>Níveis poucos e largos que nomeiam o papel. Não existe ranking.</td><td>v2</td></tr>
         </tbody>
@@ -646,7 +646,7 @@
             <li>Folha de três alturas sobre o mapa, arrastável, que nunca esconde o contexto por completo.</li>
             <li>Cabeçalho em chapa esmaltada com o verbo, o título, o período e o endereço.</li>
             <li>Comparação passado ↔ presente arrastável quando existem as duas fotos — e uma foto só quando só há uma, porque divisor sobre imagem única promete algo que não vai acontecer.</li>
-            <li>Áudio que toca, procedência com fonte e crédito de imagem, e o feed das outras histórias do mesmo lugar em ordem de tempo.</li>
+            <li>Áudio e vídeo que tocam, procedência com fonte e crédito de imagem, e o feed das outras histórias do mesmo lugar em ordem de tempo.</li>
             <li>“Contar a minha aqui”, que abre o formulário com o lugar já escolhido.</li>
           </ul>
         </dd></dl>
@@ -745,6 +745,17 @@
         <dl><dt>O que faz</dt><dd>Percurso com capa, tempo estimado, mini-mapa com paradas numeradas e traçado, e a lista ordenada com a distância de cada parada até você.</dd></dl>
         <dl><dt>Por quê</dt><dd>Decisão 10: roteiro é o topo da hierarquia e só faz sentido depois que houver densidade de pinos.</dd></dl>
         <dl class="recusado"><dt>O que foi recusado</dt><dd><strong>Esconder que o roteiro está incompleto.</strong> As trilhas têm mais paradas do que o acervo cobre, e a tela diz isso em voz alta: “N paradas ainda não têm memória. Você pode ser quem conta.” O buraco vira convite.</dd></dl>
+      </div>
+    </article>
+
+    <!-- SALVOS E COLEÇÕES -->
+    <article class="tela">
+      <div class="cabeca"><span class="nome">Salvos e coleções</span><span class="arquivo mono">app/(tabs)/salvos.tsx</span></div>
+      <div class="corpo">
+        <dl><dt>Pergunta que responde</dt><dd>Como eu guardo isto do meu jeito?</dd></dl>
+        <dl><dt>O que faz</dt><dd>Coleções nomeadas pela pessoa — "O centro da minha infância", "Trabalho do 8º ano" — que juntam memórias salvas. Criar, renomear, guardar, tirar. A mesma memória pode estar em várias: coleção é marcador, não pasta. O que está salvo fora de qualquer coleção aparece como "não organizados", em vez de sumir num limbo.</dd></dl>
+        <dl><dt>Por quê</dt><dd>Decisão 10: a hierarquia é pino → coleção → roteiro. A coleção é o que transforma guardar em curar — o acervo deixa de ser do app e passa a ser da pessoa.</dd></dl>
+        <dl class="recusado"><dt>O que foi recusado</dt><dd><strong>Perguntar a coleção na hora de salvar.</strong> Salvar continua sendo um toque no marcador, sem pergunta nenhuma. Organizar é um segundo momento, opcional: obrigar a escolher pasta mataria o gesto rápido, que é justamente o que faz alguém salvar.</dd></dl>
       </div>
     </article>
 
@@ -970,9 +981,8 @@
     <ul class="limpa">
       <li><strong>Nenhum teste de usabilidade foi feito.</strong> É o elo mais fraco do projeto e o próximo passo real — o objetivo declarado pela PO era “um protótipo testado”, e essa é a única linha do escopo ainda em aberto.</li>
       <li><strong>Não há backend.</strong> Sem servidor não há conta, sincronização entre aparelhos, nem revisão por pessoas distintas.</li>
-      <li><strong>Vídeo grava mas não toca</strong> — falta o reprodutor.</li>
-      <li><strong>Não há suíte de testes automatizados.</strong> As funções puras — nome curto, agrupamento, décadas, busca — são todas testáveis, e todas já quebraram pelo menos uma vez.</li>
-      <li><strong>Coleções (Decisão 10) e funcionamento com sinal ruim (Decisão 07)</strong> continuam esperando implementação.</li>
+      <li><strong>Não há suíte de testes automatizados.</strong> As funções puras — nome curto, agrupamento, décadas, busca — são todas testáveis, e todas já quebraram pelo menos uma vez. Um crash de release inteiro (hook depois de retorno antecipado) passou por typecheck e bundle e só caiu no lint.</li>
+      <li><strong>Funcionamento com sinal ruim (Decisão 07)</strong> continua esperando implementação.</li>
     </ul>
 
     <div class="caixa acento">
