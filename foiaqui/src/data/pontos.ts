@@ -63,6 +63,38 @@ export const pontos: Ponto[] = [
     coords: { lat: -23.1861851, lng: -45.886922 },
     hoje: 'Em funcionamento. É o bem tombado mais antigo de São José.',
   },
+  {
+    id: 'parahyba',
+    nome: 'Tecelagem Parahyba',
+    shortName: 'Parahyba',
+    endereco: 'Parque da Cidade, Bairro Santana',
+    coords: { lat: -23.1647672, lng: -45.8852943 },
+    hoje: 'Parque da Cidade Roberto Burle Marx e Fundação Cultural Cassiano Ricardo.',
+  },
+  {
+    id: 'estacao',
+    nome: 'Estação Ferroviária',
+    shortName: 'Estação',
+    endereco: 'Rua Maceió, Vila Terezinha',
+    coords: { lat: -23.1738329, lng: -45.8856472 },
+    hoje: 'Estação da linha do Vale, ainda de pé.',
+  },
+  {
+    id: 'paco',
+    nome: 'Paço Municipal',
+    shortName: 'Paço Municipal',
+    endereco: 'Praça Afonso Pena, 29, Centro',
+    coords: { lat: -23.1851309, lng: -45.887515 },
+    hoje: 'Sede do poder municipal, tombada em 1994.',
+  },
+  {
+    id: 'artesacra',
+    nome: 'Museu de Arte Sacra',
+    shortName: 'Arte Sacra',
+    endereco: 'Travessa Chico Luiz, 67, Centro',
+    coords: { lat: -23.1808363, lng: -45.885489 },
+    hoje: 'Museu na antiga Capela de Nossa Senhora Aparecida.',
+  },
 ];
 
 export const pontoPor = (id?: string | null) => pontos.find((p) => p.id === id);
