@@ -233,6 +233,10 @@ export function MemorySheet() {
    * que fazia o título mentir.
    */
   const acervo = [...criadas, ...seed].filter((m) => m.id !== shown.id);
+  /** o próximo capítulo desta história, quando existe */
+  const continuacao = shown.continuaEm
+    ? acervo.find((m) => m.id === shown.continuaEm)
+    : undefined;
 
   /**
    * O feed do lugar.
@@ -415,6 +419,28 @@ export function MemorySheet() {
             ) : null}
 
             <StoryText story={shown.story} emphasis={shown.emphasis} />
+
+            {/*
+              O próximo capítulo, logo depois do relato — onde o "e aí?"
+              nasce. Troca o conteúdo da folha sem navegar, como o feed.
+            */}
+            {continuacao ? (
+              <Pressable
+                style={styles.continua}
+                onPress={() => {
+                  swap(continuacao.id);
+                  scroller.current?.scrollTo({ y: 0, animated: motion });
+                }}
+                accessibilityRole="button"
+                accessibilityLabel={`A história continua em ${continuacao.title}, ${continuacao.year}. Abrir.`}>
+                <View style={{ flex: 1 }}>
+                  <Mono style={styles.continuaRotulo}>A HISTÓRIA CONTINUA</Mono>
+                  <Plaque style={styles.continuaTitulo}>{continuacao.title}</Plaque>
+                  <Mono style={styles.continuaAno}>{continuacao.year}</Mono>
+                </View>
+                <Icon name="chevronRight" size={18} color={colors.sobreEsmalteDim} />
+              </Pressable>
+            ) : null}
 
             <View style={styles.byline}>
               <View style={styles.avatar}>
@@ -831,6 +857,22 @@ const styles = StyleSheet.create({
   fonteLinha: { flexDirection: 'row', gap: 7, alignItems: 'flex-start', minHeight: 22 },
   fonteText: { flex: 1, fontSize: 12.5, lineHeight: 17.5, color: colors.esmalte },
   credito: { fontSize: 11.5, lineHeight: 16, color: colors.grafiteDim },
+
+  // o elo entre capítulos: uma chapa fina, deitada
+  continua: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: space.md,
+    marginTop: space.lg,
+    padding: space.lg,
+    backgroundColor: colors.esmalte,
+    borderLeftWidth: 4,
+    borderLeftColor: colors.ferrugem,
+    minHeight: HIT + 8,
+  },
+  continuaRotulo: { fontSize: 9.5, letterSpacing: 2, color: colors.sobreEsmalteDim },
+  continuaTitulo: { fontSize: 17, lineHeight: 19, color: colors.sobreEsmalte, marginTop: 4 },
+  continuaAno: { fontSize: 12, color: colors.sobreEsmalteDim, marginTop: 3 },
 
   moreTitle: { fontSize: 17, color: colors.grafite, paddingHorizontal: 22, paddingTop: space.xxl },
   moreRow: { gap: space.md, paddingHorizontal: 22, paddingTop: 10, paddingBottom: space.xl },

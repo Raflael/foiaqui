@@ -20,6 +20,7 @@ import type { Memory } from '@/types';
 export const memories: Memory[] = [
   {
     id: 'mercado-doacao',
+    continuaEm: 'mercado-1923',
     pontoId: 'mercado',
     title: 'O terreno da Rua do Fogo',
     shortName: 'Mercado',
@@ -70,6 +71,7 @@ export const memories: Memory[] = [
   },
   {
     id: 'vicentina-1924',
+    continuaEm: 'vicentina-clima',
     pontoId: 'vicentina',
     title: 'O sanatório Vicentina Aranha',
     shortName: 'Vicentina Aranha',
@@ -152,6 +154,7 @@ export const memories: Memory[] = [
   },
   {
     id: 'benedito-1876',
+    continuaEm: 'matriz-1934',
     pontoId: 'benedito',
     title: 'O bem mais antigo da cidade',
     shortName: 'São Benedito',
@@ -177,6 +180,7 @@ export const memories: Memory[] = [
 
   {
     id: 'parahyba-1925',
+    continuaEm: 'parahyba-vila',
     pontoId: 'parahyba',
     title: 'A Tecelagem Parahyba',
     shortName: 'Parahyba',
@@ -201,6 +205,7 @@ export const memories: Memory[] = [
   },
   {
     id: 'parahyba-vila',
+    continuaEm: 'parahyba-tombamento',
     pontoId: 'parahyba',
     title: 'A vila das 26 casas',
     shortName: 'Parahyba',
@@ -249,6 +254,7 @@ export const memories: Memory[] = [
   },
   {
     id: 'estacao-1925',
+    continuaEm: 'parahyba-1925',
     pontoId: 'estacao',
     title: 'A estação nova',
     shortName: 'Estação',

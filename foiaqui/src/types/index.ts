@@ -59,6 +59,15 @@ export interface Memory {
   presentImageUri?: string | number;
   /** crédito e licença — obrigatório quando a foto é de terceiros */
   creditoFoto?: string;
+  /**
+   * A memória onde esta história continua.
+   *
+   * Um lugar não se conta de uma vez: o terreno doado em 1865 vira o mercado
+   * de 1923, o sanatório vira o parque. O elo transforma fichas isoladas numa
+   * narrativa que se atravessa — e dá ao leitor o "e aí, o que aconteceu?"
+   * respondido com um toque.
+   */
+  continuaEm?: string;
 }
 
 export type TrailCover =
