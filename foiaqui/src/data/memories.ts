@@ -117,7 +117,9 @@ export const mapFilters: MapFilter[] = [
     // agora com a posição real: "perto de mim" passou a significar perto de você
     match: (m, ctx) => distanceTo(m, ctx.from) <= NEARBY_M,
   },
-  { id: 'anos60', label: 'Anos 60', countLabel: 'dos anos 60', match: (m) => m.era === 'Anos 60' },
+  // O filtro de época saiu daqui: virou a linha do tempo sobre o mapa
+  // (Decisão 11). Um chip fixo de "Anos 60" e uma régua de décadas são dois
+  // controles para a mesma pergunta, e o chip só cobria uma década.
   {
     id: 'cinema',
     label: 'Cinemas antigos',

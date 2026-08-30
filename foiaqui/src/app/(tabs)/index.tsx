@@ -15,7 +15,9 @@ import { Body, Mono } from '@/components/Type';
 import { YouAreHere } from '@/components/YouAreHere';
 import { distanceTo, fallbackPosition, formatDistance } from '@/data/location';
 import { useMarkerTracking } from '@/hooks/useMarkerTracking';
+import { Timeline } from '@/components/Timeline';
 import { agrupar, type Regiao } from '@/data/cluster';
+import { decadasDo, naDecada, rotuloLongo } from '@/data/decadas';
 import { mapStyle } from '@/data/mapStyle';
 import { mapFilters, matchesQuery } from '@/data/memories';
 import { useCurrentPosition } from '@/hooks/useCurrentPosition';
@@ -40,6 +42,8 @@ const FUZZY_M = 40;
 
 /** Altura ocupada pela busca + linha de chips, que flutuam sobre o conteúdo. */
 const TOP_CHROME = 124;
+/** altura da régua de décadas, para o resto do rodapé se empilhar acima dela */
+const TIMELINE_H = 74;
 
 /** Enquadramento inicial: cabe as três memórias com folga. */
 const INITIAL_REGION = {
@@ -59,6 +63,8 @@ export default function MapScreen() {
   // null = sem recorte, mostra tudo. Chip clicado de novo limpa o filtro:
   // na rua a pessoa precisa desfazer sem procurar um "x".
   const [filterId, setFilterId] = useState<string | null>(null);
+  /** década escolhida na linha do tempo; null = todas as épocas (Decisão 11) */
+  const [decada, setDecada] = useState<number | null>(null);
   /**
    * Mapa e lista mostram exatamente o mesmo recorte.
    * A Decisão 8 exige que a AR tenha sempre equivalente em mapa E lista —
@@ -81,7 +87,11 @@ export default function MapScreen() {
   // busca e chip se somam, não se substituem: "Anos 60" + "praça" é um recorte só
   const shown = memories
     .filter((m) => (filter ? filter.match(m, { from: position }) : true))
+    .filter((m) => naDecada(m, decada))
     .filter((m) => matchesQuery(m, query));
+  // a régua conta o acervo inteiro, não o recorte: as décadas vazias precisam
+  // continuar visíveis depois de filtrar, senão o buraco some junto
+  const decadas = decadasDo(memories);
   const byDistance = [...shown].sort(
     (a, b) => distanceTo(a, position) - distanceTo(b, position),
   );
@@ -134,7 +144,7 @@ export default function MapScreen() {
 
   const chaveDosPins = grupos.map((g) => g.itens.map((m) => m.id).join(',')).join('|');
   const { aoCarregarMapa, capturando } = useMarkerTracking(
-    `${openId}|${filterId}|${query}|${chaveDosPins}`,
+    `${openId}|${filterId}|${decada}|${query}|${chaveDosPins}`,
   );
 
   return (
@@ -282,7 +292,17 @@ export default function MapScreen() {
         </ScrollView>
       </View>
 
-      <Glass style={[styles.count, { bottom: floorGap }]}>
+      {/*
+        A régua fica no rodapé, colada no polegar: o contexto é uma mão só na
+        rua (Decisão 7). Some na lista, onde não há mapa para recortar.
+      */}
+      {view === 'mapa' ? (
+        <View style={[styles.linhaDoTempo, { bottom: floorGap }]}>
+          <Timeline decadas={decadas} selecionada={decada} onSelecionar={setDecada} />
+        </View>
+      ) : null}
+
+      <Glass style={[styles.count, { bottom: floorGap + TIMELINE_H + space.sm }]}>
         {shown.length === 0 ? (
           <Body style={styles.countText}>
             {query ? (
@@ -301,7 +321,13 @@ export default function MapScreen() {
           <Body style={styles.countText}>
             <Mono style={styles.countNumber}>{shown.length}</Mono>{' '}
             {shown.length === 1 ? 'memória' : 'memórias'}
-            {query ? ' encontradas' : filter ? ` ${filter.countLabel}` : ' no acervo'}
+            {query
+              ? ' encontradas'
+              : filter
+                ? ` ${filter.countLabel}`
+                : decada !== null
+                  ? ` ${rotuloLongo(decada).toLowerCase()}`
+                  : ' no acervo'}
           </Body>
         )}
 
@@ -311,7 +337,7 @@ export default function MapScreen() {
         */}
         {denied ? (
           <Body style={styles.countNote}>
-            Sem sua localização &mdash; mostrando o centro de Santos
+            Sem sua localização &mdash; mostrando o centro de São José dos Campos
           </Body>
         ) : null}
       </Glass>
@@ -331,7 +357,7 @@ export default function MapScreen() {
       ) : null}
 
       <Pressable
-        style={[styles.camFab, { bottom: floorGap }]}
+        style={[styles.camFab, { bottom: floorGap + TIMELINE_H + space.sm }]}
         onPress={() => router.push('/ar')}
         accessibilityRole="button"
         accessibilityLabel="Abrir câmera em realidade aumentada">
@@ -357,6 +383,8 @@ const styles = StyleSheet.create({
 
   top: { position: 'absolute', left: space.lg, right: space.lg, zIndex: 20, gap: space.md },
   chips: { gap: space.sm, paddingRight: space.lg },
+
+  linhaDoTempo: { position: 'absolute', left: space.lg, right: space.lg, zIndex: 20 },
 
   count: {
     position: 'absolute',
