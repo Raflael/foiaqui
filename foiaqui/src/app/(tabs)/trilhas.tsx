@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   info: { position: 'absolute', left: space.lg, right: space.lg, bottom: 14 },
-  theme: { fontSize: 10, letterSpacing: 2, color: colors.ferrugemClara },
+  theme: { fontSize: 10, letterSpacing: 2, color: colors.ferrugemSobreEscuro },
   cardTitle: { fontSize: 21, lineHeight: 23, color: colors.sobreEsmalte, marginTop: 5 },
   meta: { flexDirection: 'row', gap: 14, marginTop: 9 },
   metaItem: { flexDirection: 'row', alignItems: 'center', gap: 5, minHeight: 20 },

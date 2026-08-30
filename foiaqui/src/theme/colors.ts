@@ -37,6 +37,14 @@ export const colors = {
   // ferrugem — o tempo agindo sobre o esmalte
   ferrugem: '#B4471F',
   ferrugemClara: '#D4703F',
+  /**
+   * Ferrugem para TEXTO sobre fundo escuro (chrome da câmera, capa de trilha).
+   *
+   * A ferrugemClara é boa como preenchimento — no gradiente do FAB, num ícone
+   * grande — mas a 10px sobre o azul ela cai para 4,1:1 e reprova em AA. Cor
+   * que funciona como massa não funciona automaticamente como letra miúda.
+   */
+  ferrugemSobreEscuro: '#EC9A72',
   /** texto sobre superfície de ferrugem */
   sobreFerrugem: '#F4F3EE',
 
@@ -68,7 +76,7 @@ export const alpha = {
   /** chrome opaco sobre a câmera, onde o fundo é imprevisível */
   chrome: 'rgba(15,43,84,0.93)',
   /** véu que escurece capa de foto para o texto sobreviver por cima */
-  veu: 'rgba(15,43,84,0.88)',
+  veu: 'rgba(15,43,84,0.94)',
   /** tinta de ferrugem para fundo de estado conquistado */
   ferrugemTinta: 'rgba(180,71,31,0.10)',
 } as const;

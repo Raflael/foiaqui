@@ -15,6 +15,11 @@ import { alpha, colors } from '@/theme';
  *
  * No "modo simples" o blur sai e vira fundo opaco: mais contraste, menos GPU,
  * texto mais legível na rua.
+ *
+ * As opacidades são medidas, não estéticas. O pior caso do vidro escuro é a
+ * câmera apontada para o céu: a 0,62 o texto BRANCO caía para 3,83:1 e
+ * reprovava em AA — justamente na tela que se usa no sol. A 0,90 passa com
+ * folga. O mesmo vale para o vidro claro sobre a água do mapa.
  */
 export function Glass({
   style,
@@ -39,7 +44,7 @@ export function Glass({
 
   return (
     <BlurView intensity={intensity} tint={dark ? 'dark' : 'light'} style={[styles.base, border, style]}>
-      <View style={[StyleSheet.absoluteFill, { backgroundColor: dark ? 'rgba(15,43,84,0.62)' : 'rgba(244,243,238,0.66)' }]} />
+      <View style={[StyleSheet.absoluteFill, { backgroundColor: dark ? 'rgba(15,43,84,0.90)' : 'rgba(244,243,238,0.86)' }]} />
       {children}
     </BlurView>
   );

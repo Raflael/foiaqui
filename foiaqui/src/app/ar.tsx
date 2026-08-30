@@ -158,7 +158,7 @@ export default function ARScreen() {
       {/* nada no campo de visão: dizer para onde virar é mais útil que tela vazia */}
       {foraDeVista && maisProxima ? (
         <Glass tone="dark" style={[styles.bussola, { top: insets.top + 110 }]}>
-          <Icon name="sparkle" size={16} color={colors.ferrugemClara} />
+          <Icon name="sparkle" size={16} color={colors.ferrugemSobreEscuro} />
           <Body style={styles.bussolaText}>
             Gire {relativeAngle(bearingTo(position, maisProxima.coords), heading ?? 0) > 0
               ? 'à direita'
@@ -177,7 +177,7 @@ export default function ARScreen() {
       ) : null}
 
       <Glass tone="dark" style={[styles.hint, { top: insets.top + space.md }]}>
-        <Icon name="sparkle" size={18} color={colors.ferrugemClara} />
+        <Icon name="sparkle" size={18} color={colors.ferrugemSobreEscuro} />
         <View style={{ flex: 1 }}>
           <Body style={styles.hintText}>Aponte para um prédio ou praça</Body>
           <Mono style={styles.hintNote}>volta ao mapa sozinha para poupar bateria</Mono>
@@ -526,7 +526,7 @@ const styles = StyleSheet.create({
   },
   listThumb: { width: 48, height: 48, borderRadius: radius.sm },
   listRowTitle: { fontSize: 15, color: colors.sobreEsmalte },
-  listRowMeta: { fontSize: 10.5, color: colors.ferrugemClara, marginTop: 3 },
+  listRowMeta: { fontSize: 10.5, color: colors.ferrugemSobreEscuro, marginTop: 3 },
 
   card: { position: 'absolute', width: 214, zIndex: 16 },
   cardInner: {
@@ -542,7 +542,7 @@ const styles = StyleSheet.create({
   },
   cardThumb: { width: 46, height: 46, borderRadius: radius.sm },
   cardTitle: { fontSize: 14, lineHeight: 16, color: colors.sobreEsmalte },
-  cardMeta: { fontSize: 10.5, letterSpacing: 0.5, color: colors.ferrugemClara, marginTop: 3 },
+  cardMeta: { fontSize: 10.5, letterSpacing: 0.5, color: colors.ferrugemSobreEscuro, marginTop: 3 },
   // fio e ponto no centro do card: ele aponta para o ponto no chão
   tail: {
     position: 'absolute',

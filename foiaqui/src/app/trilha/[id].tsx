@@ -235,7 +235,7 @@ const styles = StyleSheet.create({
     zIndex: 5,
   },
   capaInfo: { paddingHorizontal: space.xl, paddingBottom: space.xl },
-  tema: { fontSize: 10.5, letterSpacing: 2.4, color: colors.ferrugemClara },
+  tema: { fontSize: 10.5, letterSpacing: 2.4, color: colors.ferrugemSobreEscuro },
   titulo: { fontSize: 27, lineHeight: 29, color: colors.sobreEsmalte, marginTop: 6 },
 
   numeros: { flexDirection: 'row', paddingHorizontal: space.xl, paddingTop: space.xl, gap: space.sm },
