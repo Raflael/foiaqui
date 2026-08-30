@@ -354,6 +354,7 @@ CLAUDE.md                 fonte única de verdade do produto e do design
 FoiAqui-UX.xlsx           pesquisa: entrevista com a PO, benchmarking, 12 decisões, BMC
 foiaqui-prototipo.html    protótipo original — referência de FLUXO (aparência superada)
 design/                   as 3 direções de identidade estudadas + o documento da escolhida
+docs/                     o dossiê e a rota (docs/rota.html — o plano em cinco horizontes)
 foiaqui/
   src/theme/              cores, tipografia, espaçamento — nada de hex solto fora daqui
   src/components/         Plaque, MemorySheet, MemoryPin, RevealSlider, Glass, Type...
