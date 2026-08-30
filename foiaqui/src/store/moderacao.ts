@@ -3,6 +3,7 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
 import { filaSemeada } from '@/data/fila';
+import { memories as seed } from '@/data/memories';
 import { perfil } from '@/data/profile';
 import type { Memory } from '@/types';
 
@@ -18,8 +19,26 @@ export interface Parecer {
   quando: number;
 }
 
+export interface Denuncia {
+  memoriaId: string;
+  criterioId: string;
+  nota?: string;
+  quando: number;
+}
+
 interface ModeracaoState {
   pareceres: Parecer[];
+  /**
+   * Denúncias de memórias JÁ publicadas.
+   *
+   * A revisão pega o que entra; a denúncia pega o que passou. Sem ela a
+   * moderação só olha para frente, e conteúdo problemático que escapou de um
+   * parecer fica publicado para sempre. É a mesma exigência da recusa: quem
+   * denuncia aponta qual critério foi ferido, para o relato chegar a quem
+   * revisa já dizendo o que olhar.
+   */
+  denuncias: Denuncia[];
+  denunciar: (denuncia: Denuncia) => void;
   /** "não sei julgar": sai da fila sem virar decisão */
   pulados: string[];
   registrar: (parecer: Parecer) => void;
@@ -56,7 +75,12 @@ export const useModeracao = create<ModeracaoState>()(
   persist(
     (set) => ({
       pareceres: [],
+      denuncias: [],
       pulados: [],
+      denunciar: (denuncia) =>
+        set((s) => ({
+          denuncias: [denuncia, ...s.denuncias.filter((d) => d.memoriaId !== denuncia.memoriaId)],
+        })),
       registrar: (parecer) =>
         set((s) => ({
           pareceres: [parecer, ...s.pareceres.filter((p) => p.memoriaId !== parecer.memoriaId)],
@@ -66,7 +90,7 @@ export const useModeracao = create<ModeracaoState>()(
         set((s) => ({
           pulados: s.pulados.includes(memoriaId) ? s.pulados : [...s.pulados, memoriaId],
         })),
-      reabrir: () => set({ pareceres: [], pulados: [] }),
+      reabrir: () => set({ pareceres: [], pulados: [], denuncias: [] }),
     }),
     {
       name: 'foiaqui-moderacao',
@@ -78,14 +102,37 @@ export const useModeracao = create<ModeracaoState>()(
 /** É sua? Não se revisa a própria memória. */
 const minha = (m: Memory) => m.author.name === perfil.nome;
 
-/** O que ainda espera parecer seu. */
+/**
+ * O que espera parecer seu: o que nunca foi revisado, e o que foi DENUNCIADO
+ * depois de publicado.
+ *
+ * A denúncia precisa ter consequência visível, senão o botão "Reportar" é
+ * teatro: a memória volta para a fila com o apontamento junto. Um parecer
+ * anterior à denúncia não conta — foi dado antes de alguém ver o problema.
+ */
 export const useFila = (): Memory[] => {
   const pareceres = useModeracao((s) => s.pareceres);
+  const denuncias = useModeracao((s) => s.denuncias);
   const pulados = useModeracao((s) => s.pulados);
-  const decididas = new Set(pareceres.map((p) => p.memoriaId));
-  return filaSemeada.filter(
-    (m) => !minha(m) && !decididas.has(m.id) && !pulados.includes(m.id),
-  );
+
+  const parecerDe = new Map(pareceres.map((p) => [p.memoriaId, p]));
+  const pendente = (m: Memory, desde = 0) => {
+    if (minha(m) || pulados.includes(m.id)) return false;
+    const p = parecerDe.get(m.id);
+    return !p || p.quando < desde;
+  };
+
+  const naFila = filaSemeada.filter((m) => pendente(m));
+
+  const denunciadas = denuncias
+    .map((d) => {
+      const m = seed.find((x) => x.id === d.memoriaId) ?? filaSemeada.find((x) => x.id === d.memoriaId);
+      return m && pendente(m, d.quando) ? m : null;
+    })
+    .filter((m): m is Memory => m !== null);
+
+  // denúncia na frente: é conteúdo já visível para todo mundo
+  return [...denunciadas, ...naFila];
 };
 
 /** As que você aprovou — elas passam a existir no mapa. */
@@ -101,6 +148,10 @@ export const useAprovadas = (): Memory[] => {
 
 /** Quantas você já revisou — vira reconhecimento no perfil, nunca ranking. */
 export const useRevisoes = () => useModeracao((s) => s.pareceres.length);
+
+/** Esta memória foi denunciada? */
+export const useDenuncia = (id?: string | null) =>
+  useModeracao((s) => (id ? s.denuncias.find((d) => d.memoriaId === id) : undefined));
 
 /** O parecer dado a uma memória, se houver. */
 export const useParecer = (id?: string | null) =>

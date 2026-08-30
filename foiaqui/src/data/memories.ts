@@ -1,3 +1,4 @@
+import { rotuloLongo } from '@/data/decadas';
 import { distanceTo, NEARBY_M, type Position } from '@/data/location';
 import type { Memory } from '@/types';
 
@@ -217,22 +218,64 @@ export const mapFilters: MapFilter[] = [
   // (Decisão 11). Um chip fixo de "Anos 60" e uma régua de décadas são dois
   // controles para a mesma pergunta, e o chip só cobria uma década.
   {
-    id: 'cinema',
-    label: 'Cinemas antigos',
-    countLabel: 'em cinemas antigos',
-    match: (m) => m.tags.includes('Cinema'),
+    id: 'tombado',
+    label: 'Tombados',
+    countLabel: 'de bens tombados',
+    match: (m) => m.tags.includes('Tombado'),
   },
   {
-    id: 'arte',
-    label: 'Arte urbana',
-    countLabel: 'de arte urbana',
-    match: (m) => m.tags.includes('Arte urbana'),
+    id: 'sanatorial',
+    label: 'Fase sanatorial',
+    countLabel: 'da fase sanatorial',
+    match: (m) => m.tags.includes('Tuberculose'),
   },
-  { id: 'escola', label: 'Escolas', countLabel: 'de escolas', match: (m) => m.tags.includes('Escola') },
+  {
+    id: 'comercio',
+    label: 'Comércio',
+    countLabel: 'de comércio',
+    match: (m) => m.tags.includes('Comércio'),
+  },
+  {
+    id: 'religiao',
+    label: 'Religião',
+    countLabel: 'de vida religiosa',
+    match: (m) => m.tags.includes('Religião'),
+  },
+  {
+    id: 'escola',
+    label: 'Escolas',
+    countLabel: 'de escolas',
+    // Vazio de propósito, e é o único assim: exercita o estado vazio, que na
+    // rua acontece o tempo todo. Os outros filtros ficaram órfãos quando o
+    // acervo trocou de conteúdo — "Cinemas antigos" e "Arte urbana" buscavam
+    // tags que deixaram de existir e devolviam zero sempre, o que é bem
+    // diferente de devolver zero de propósito.
+    match: (m) => m.tags.includes('Escola'),
+  },
 ];
 
 /** Épocas oferecidas no fluxo de adicionar memória. */
-export const eras = ['Anos 40', 'Anos 50', 'Anos 60', 'Anos 70', 'Atual'] as const;
+/**
+ * As épocas oferecidas a quem envia.
+ *
+ * Era uma lista fixa que ia dos anos 40 aos 70. Quando o acervo passou a ter
+ * 1865, 1876 e 1923, ficou impossível classificar a própria memória semeada
+ * pelo formulário do app — a régua de quem envia era mais estreita que a
+ * realidade da cidade. Agora ela é gerada, vai de "antes de 1900" até a década
+ * corrente, e envelhece sozinha.
+ *
+ * Continua existindo mesmo com o campo de ano exato ao lado: quem lembra "foi
+ * nos anos 60" e não sabe o ano precisa de um jeito de dizer isso sem chutar
+ * um número, e chute registrado como data vira dado falso.
+ */
+export const eras: string[] = (() => {
+  const atual = new Date().getFullYear();
+  const ultimaDecada = Math.floor(atual / 10) * 10;
+  const lista = ['Antes de 1900'];
+  for (let d = 1900; d <= ultimaDecada; d += 10) lista.push(rotuloLongo(d));
+  lista.push('Atual');
+  return lista;
+})();
 
 /**
  * Normaliza para busca: sem acento, sem caixa.

@@ -30,7 +30,9 @@ import { Plaque as PlaquePlate } from '@/components/Plaque';
 import { RevealSlider } from '@/components/RevealSlider';
 import { router } from 'expo-router';
 
+import { anoDe, rotuloLongo } from '@/data/decadas';
 import { fonteDaImagem } from '@/data/imagens';
+import { useLinhaDoTempo } from '@/store/linhaDoTempo';
 import { Body, Mono, Plaque, Story } from '@/components/Type';
 import { distanceMeters, formatDistance } from '@/data/location';
 import { memories as seed } from '@/data/memories';
@@ -221,6 +223,9 @@ export function MemorySheet() {
     .map((m) => ({ m, metros: distanceMeters(shown.coords, m.coords) }))
     .sort((a, b) => a.metros - b.metros);
   // ou as duas fotos existem, ou nenhuma (e aí as duas cenas são desenhadas)
+  const anoDaMemoria = anoDe(shown);
+  const decadaDaMemoria = anoDaMemoria !== null ? Math.floor(anoDaMemoria / 10) * 10 : null;
+  const escolherDecada = useLinhaDoTempo((s) => s.escolher);
   const comparavel = !!shown.pastImageUri === !!shown.presentImageUri;
   const isOpen = openId !== null;
 
@@ -433,8 +438,32 @@ export function MemorySheet() {
                 })
               }
             />
-            <Action icon="timeline" label="Linha do tempo" />
-            <Action icon="flag" label="Reportar" />
+            {/*
+              "Linha do tempo" leva o mapa para a década desta memória e fecha
+              a folha. Era um botão sem ação — desenhado, anunciado como botão
+              para o leitor de tela, e inerte. Agora ele responde a pergunta
+              que faz sentido ali: "o que mais aconteceu nesta época?"
+            */}
+            <Action
+              icon="timeline"
+              label={decadaDaMemoria !== null ? rotuloLongo(decadaDaMemoria) : 'Linha do tempo'}
+              onPress={
+                decadaDaMemoria !== null
+                  ? () => {
+                      escolherDecada(decadaDaMemoria);
+                      close();
+                    }
+                  : undefined
+              }
+            />
+            <Action
+              icon="flag"
+              label="Reportar"
+              onPress={() => {
+                close();
+                router.push({ pathname: '/reportar', params: { id: shown.id } });
+              }}
+            />
           </View>
 
           {/*

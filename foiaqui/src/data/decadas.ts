@@ -19,8 +19,20 @@ export function anoDe(memory: Memory): number | null {
 
 const inicioDaDecada = (ano: number) => Math.floor(ano / 10) * 10;
 
+/**
+ * "Anos 60" para o século XX, "Anos 2010" para o XXI.
+ *
+ * Dois dígitos sozinhos colidem: "Anos 10" é 1910 ou 2010? Com um acervo que
+ * vai de 1865 até hoje isso não é hipótese, é a régua real do app. O século XX
+ * fica na forma curta porque é como se fala; o XXI vai por extenso, que
+ * também é como se fala.
+ */
 export const rotuloLongo = (inicio: number) =>
-  inicio >= 2000 && inicio < 2010 ? 'Anos 2000' : `Anos ${String(inicio).slice(2)}`;
+  inicio >= 2000 ? `Anos ${inicio}` : `Anos ${String(inicio).slice(2)}`;
+
+/** Rótulo curto da régua: a virada de século aparece inteira, para ancorar. */
+export const rotuloCurto = (inicio: number) =>
+  inicio % 100 === 0 ? String(inicio) : String(inicio).slice(2);
 
 /**
  * A linha do tempo do acervo (Decisão 11).
@@ -51,7 +63,7 @@ export function decadasDo(memorias: Memory[], hoje = new Date().getFullYear()): 
   for (let d = inicio; d <= fim; d += 10) {
     out.push({
       inicio: d,
-      rotulo: String(d).slice(2),
+      rotulo: rotuloCurto(d),
       rotuloLongo: rotuloLongo(d),
       total: contagem.get(d) ?? 0,
     });

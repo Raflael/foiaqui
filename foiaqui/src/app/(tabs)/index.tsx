@@ -15,6 +15,7 @@ import { Body, Mono } from '@/components/Type';
 import { YouAreHere } from '@/components/YouAreHere';
 import { distanceTo, fallbackPosition, formatDistance } from '@/data/location';
 import { useMarkerTracking } from '@/hooks/useMarkerTracking';
+import { useLinhaDoTempo } from '@/store/linhaDoTempo';
 import { Timeline } from '@/components/Timeline';
 import { agrupar, type Regiao } from '@/data/cluster';
 import { decadasDo, naDecada, rotuloLongo } from '@/data/decadas';
@@ -29,11 +30,24 @@ import { useSheet } from '@/store/sheet';
 import { colors, HIT, radius, space, TABBAR_HEIGHT } from '@/theme';
 
 /** Cada memória ganha o ícone do que ela foi. Com dados reais isso viria da categoria. */
-const PIN_ICONS: Record<string, IconName> = {
-  cine: 'film',
-  praca: 'bandstand',
-  mural: 'circlePlus',
-};
+/**
+ * O ícone do pin vem do ASSUNTO, não do id.
+ *
+ * Antes era um mapa de id → ícone com três entradas fixas. Quando o acervo
+ * trocou de conteúdo, as três chaves deixaram de existir e todo pin caiu no
+ * ícone genérico sem ninguém notar — configuração órfã não dá erro, só para
+ * de funcionar. Ligado à tag, ele continua valendo para memória que ainda nem
+ * foi escrita.
+ */
+const ICONE_POR_TAG: [string, IconName][] = [
+  ['Tuberculose', 'shield'],
+  ['Religião', 'bandstand'],
+  ['Comércio', 'film'],
+  ['Escola', 'list'],
+];
+
+const iconeDe = (m: { tags: string[] }): IconName =>
+  ICONE_POR_TAG.find(([tag]) => m.tags.includes(tag))?.[1] ?? 'pin';
 
 /**
  * Acima deste raio o GPS não sabe direito onde você está, e o app precisa
@@ -64,8 +78,9 @@ export default function MapScreen() {
   // null = sem recorte, mostra tudo. Chip clicado de novo limpa o filtro:
   // na rua a pessoa precisa desfazer sem procurar um "x".
   const [filterId, setFilterId] = useState<string | null>(null);
-  /** década escolhida na linha do tempo; null = todas as épocas (Decisão 11) */
-  const [decada, setDecada] = useState<number | null>(null);
+  // a década vive num store: a ficha também a escolhe (ver store/linhaDoTempo)
+  const decada = useLinhaDoTempo((s) => s.decada);
+  const setDecada = useLinhaDoTempo((s) => s.escolher);
   /**
    * Mapa e lista mostram exatamente o mesmo recorte.
    * A Decisão 8 exige que a AR tenha sempre equivalente em mapa E lista —
@@ -227,7 +242,7 @@ export default function MapScreen() {
                   />
                 ) : g.itens.length === 1 ? (
                   <MemoryPin
-                    icon={PIN_ICONS[memory.id] ?? 'pin'}
+                    icon={iconeDe(memory)}
                     label={`${memory.shortName} · ${memory.year}`}
                     active={memory.id === openId}
                     pending={memory.status === 'em_revisao'}
