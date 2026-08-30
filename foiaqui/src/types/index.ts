@@ -51,8 +51,14 @@ export interface Memory {
   /** duração do áudio em segundos, quando há relato falado */
   audioSeconds?: number;
   tags: string[];
-  pastImageUri?: string;
-  presentImageUri?: string;
+  /**
+   * Foto antiga e foto atual. Aceita URI (o que a pessoa tirou) ou o número
+   * que `require()` devolve (o que vem empacotado no app).
+   */
+  pastImageUri?: string | number;
+  presentImageUri?: string | number;
+  /** crédito e licença — obrigatório quando a foto é de terceiros */
+  creditoFoto?: string;
 }
 
 export type TrailCover =

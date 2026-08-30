@@ -12,6 +12,7 @@ import Animated, {
 
 import { Icon } from '@/components/Icon';
 import { PhotoPlaceholder, StreetScene } from '@/components/PhotoPlaceholder';
+import { fonteDaImagem } from '@/data/imagens';
 import { Mono } from '@/components/Type';
 import { useMotionEnabled } from '@/hooks/useMotion';
 import { colors, HIT, radius } from '@/theme';
@@ -46,8 +47,8 @@ export function RevealSlider({
 }: {
   pastLabel: string;
   nowLabel?: string;
-  pastUri?: string;
-  presentUri?: string;
+  pastUri?: string | number;
+  presentUri?: string | number;
   height?: number;
 }) {
   const motion = useMotionEnabled();
@@ -112,7 +113,11 @@ export function RevealSlider({
         {/* base: a vista de hoje, sempre inteira por baixo */}
         <PhotoPlaceholder variant="present" style={StyleSheet.absoluteFill}>
           {presentUri ? (
-            <Image source={{ uri: presentUri }} style={StyleSheet.absoluteFill} contentFit="cover" />
+            <Image
+              source={fonteDaImagem(presentUri)}
+              style={StyleSheet.absoluteFill}
+              contentFit="cover"
+            />
           ) : (
             <StreetScene variant="present" />
           )}
@@ -126,7 +131,11 @@ export function RevealSlider({
           <View style={{ width: width || undefined, height }}>
             <PhotoPlaceholder variant="past" style={StyleSheet.absoluteFill}>
               {pastUri ? (
-                <Image source={{ uri: pastUri }} style={StyleSheet.absoluteFill} contentFit="cover" />
+                <Image
+                  source={fonteDaImagem(pastUri)}
+                  style={StyleSheet.absoluteFill}
+                  contentFit="cover"
+                />
               ) : (
                 <StreetScene variant="past" />
               )}

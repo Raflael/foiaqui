@@ -3,6 +3,7 @@ import { Image } from 'expo-image';
 import { useEffect, useRef, useState } from 'react';
 import {
   BackHandler,
+  Linking,
   Pressable,
   Share,
   ScrollView,
@@ -28,6 +29,8 @@ import { MemoryCard } from '@/components/MemoryCard';
 import { Plaque as PlaquePlate } from '@/components/Plaque';
 import { RevealSlider } from '@/components/RevealSlider';
 import { router } from 'expo-router';
+
+import { fonteDaImagem } from '@/data/imagens';
 import { Body, Mono, Plaque, Story } from '@/components/Type';
 import { distanceMeters, formatDistance } from '@/data/location';
 import { memories as seed } from '@/data/memories';
@@ -318,7 +321,7 @@ export function MemorySheet() {
               */
               <View style={{ height: 240 }}>
                 <Image
-                  source={{ uri: (shown.pastImageUri ?? shown.presentImageUri)! }}
+                  source={fonteDaImagem(shown.pastImageUri ?? shown.presentImageUri)}
                   style={StyleSheet.absoluteFill}
                   contentFit="cover"
                 />
@@ -388,6 +391,30 @@ export function MemorySheet() {
               ) : null}
             </View>
           </View>
+
+          {/*
+            Procedência. O app pergunta "dá para saber quando foi?" a quem
+            envia; mostrar de onde veio a própria informação é a contrapartida.
+            E o crédito da foto não é gentileza — as imagens são de terceiros,
+            sob licença que exige atribuição.
+          */}
+          {shown.fonte || shown.creditoFoto ? (
+            <View style={styles.procedencia}>
+              {shown.fonte ? (
+                <Pressable
+                  style={styles.fonteLinha}
+                  onPress={() => Linking.openURL(shown.fonte!.url)}
+                  accessibilityRole="link"
+                  accessibilityLabel={`Abrir a fonte: ${shown.fonte.titulo}`}>
+                  <Icon name="list" size={13} color={colors.esmalte} strokeWidth={2.2} />
+                  <Body style={styles.fonteText}>{shown.fonte.titulo}</Body>
+                </Pressable>
+              ) : null}
+              {shown.creditoFoto ? (
+                <Body style={styles.credito}>{shown.creditoFoto}</Body>
+              ) : null}
+            </View>
+          ) : null}
 
           <View style={styles.actions}>
             <Action
@@ -728,6 +755,17 @@ const styles = StyleSheet.create({
     backgroundColor: colors.ferrugem,
   },
   contarAquiText: { fontSize: 14.5, fontWeight: '600', color: colors.sobreFerrugem },
+
+  procedencia: {
+    marginTop: space.lg,
+    paddingTop: space.md,
+    borderTopWidth: 1,
+    borderTopColor: colors.calLine,
+    gap: 6,
+  },
+  fonteLinha: { flexDirection: 'row', gap: 7, alignItems: 'flex-start', minHeight: 22 },
+  fonteText: { flex: 1, fontSize: 12.5, lineHeight: 17.5, color: colors.esmalte },
+  credito: { fontSize: 11.5, lineHeight: 16, color: colors.grafiteDim },
 
   moreTitle: { fontSize: 17, color: colors.grafite, paddingHorizontal: 22, paddingTop: space.xxl },
   moreRow: { gap: space.md, paddingHorizontal: 22, paddingTop: 10, paddingBottom: space.xl },

@@ -62,7 +62,9 @@ export const memories: Memory[] = [
     },
     kind: 'Registro documental',
     verified: true,
-    media: [{ type: 'photo', uri: 'past' }],
+    media: [{ type: 'photo', uri: 'present' }],
+    presentImageUri: require('@/assets/fotos/mercado.jpg'),
+    creditoFoto: 'Foto: Carlos de Paula · CC BY 3.0 · Wikimedia Commons',
     tags: ['Comércio', 'Centro', 'Tombado'],
   },
   {
@@ -87,6 +89,12 @@ export const memories: Memory[] = [
     kind: 'Registro documental',
     verified: true,
     media: [{ type: 'photo', uri: 'past' }],
+    // o par que faz o slider passado↔presente funcionar com foto real:
+    // o sanatório em funcionamento, e o parque que ele virou
+    pastImageUri: require('@/assets/fotos/vicentina-sanatorio.jpg'),
+    presentImageUri: require('@/assets/fotos/vicentina-hoje.jpg'),
+    creditoFoto:
+      'Antes: Camila Santana · CC BY-SA 2.0 · Hoje: Ajmcbarreto · CC BY-SA 4.0 · Wikimedia Commons',
     tags: ['Saúde', 'Tuberculose', 'Tombado'],
   },
   {
@@ -111,6 +119,8 @@ export const memories: Memory[] = [
     kind: 'Registro documental',
     verified: true,
     media: [{ type: 'photo', uri: 'past' }],
+    pastImageUri: require('@/assets/fotos/vicentina-sanatorio.jpg'),
+    creditoFoto: 'Foto: Camila Santana · CC BY-SA 2.0 · Wikimedia Commons',
     tags: ['Saúde', 'Tuberculose', 'Cidade'],
   },
   {
@@ -134,7 +144,9 @@ export const memories: Memory[] = [
     },
     kind: 'Registro documental',
     verified: true,
-    media: [{ type: 'photo', uri: 'past' }],
+    media: [{ type: 'photo', uri: 'present' }],
+    presentImageUri: require('@/assets/fotos/matriz.jpg'),
+    creditoFoto: 'Foto: Themium · CC0 · Wikimedia Commons',
     tags: ['Religião', 'Centro', 'Fundação'],
   },
   {
