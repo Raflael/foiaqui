@@ -298,6 +298,36 @@ o herói da ficha quando existe), o ícone do app gerado da identidade
 (`npm run icone`) e o dossiê completo (`docs/dossie.html` + `npm run dossie`
 para o PDF — página, PDF e repositório são a mesma fonte).
 
+**A rodada de campo** (30/08/2026) atacou as barreiras de quem contribui e o
+que o app dizia sem fazer:
+
+- **Contribuir sem escrever**: `app/foto-antiga.tsx` aceita só a foto antiga de
+  um lugar que já existe — imagem, ano e uma frase. Herda o `presentImageUri`
+  da memória de origem, então o slider passado↔presente nasce completo. O ano
+  continua obrigatório (Decisão 3); o relato não. É a porta mais larga do
+  produto: "tenho a foto da vovó" não trava ninguém, "vou escrever um relato"
+  trava quase todo mundo.
+- **Modo entrevista** no formulário: um banco de perguntas para quem registra a
+  memória de outra pessoa, e o campo `contadaPor` — o app parou de creditar a
+  quem digitou o que é de quem viveu.
+- **Âncoras de época**: em vez do ano seco, marcos ("no tempo do sanatório") —
+  data aproximada é melhor que campo vazio.
+- **Corrigir memória enviada** (`/adicionar?editar=<id>`): reusa o MESMO
+  formulário e devolve à revisão, porque o texto que a comunidade aprovou não é
+  o texto de agora.
+- **Gaveta de rascunhos**: memória chama memória, e o formulário de um slot só
+  obrigava a escolher qual perder.
+- **Ler em voz alta** (`expo-speech`), **lupa com pinça** na foto, **compartilhar
+  como imagem** (`view-shot` + `expo-sharing`), **placa com QR** (`placa/[id]`),
+  **caminhada narrada** e **rota compartilhável** nas trilhas.
+- **Acervo livre** (`app/acervo-livre.tsx`): busca no Wikimedia Commons por
+  proximidade, com allowlist de licença — quem não tem foto própria ainda tem
+  o que trazer.
+
+A Lupa precisou de `GestureHandlerRootView` própria: o `Modal` do React Native
+monta numa árvore de views separada, e os gestos do app não chegam lá. Foi o
+motivo de o zoom abrir morto no aparelho.
+
 O app é distribuído como APK autônomo (`eas-cli build --profile preview`).
 O `eas.json` fixa `node: 24.11.1` nos três perfis — a nuvem validava o
 lockfile com npm 10 e a máquina com npm 11, e as duas discordavam; com o
@@ -308,6 +338,10 @@ disparar build: `npm ci --dry-run` (o erro da nuvem custa 15 min e o local,
 
 **Próximo:** o primeiro teste de usabilidade — é a única linha do escopo da PO
 ainda aberta, e nenhuma decisão daqui foi confrontada com uma pessoa de fora.
+O que sobra de código é: estados de carregamento, comportamento com sinal ruim
+(o resto da Decisão 7) e testes automatizados. Fora isso, só o que exige
+módulo nativo novo (busca por voz, notificação de proximidade, widget,
+transcrição de áudio) — vale agrupar numa build só.
 
 Dívidas conhecidas:
 - Zero testes automatizados. As funções puras (`nomeCurto`, `agrupar`,
