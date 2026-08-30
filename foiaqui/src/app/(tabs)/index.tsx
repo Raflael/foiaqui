@@ -17,6 +17,7 @@ import { distanceTo, fallbackPosition, formatDistance } from '@/data/location';
 import { useMarkerTracking } from '@/hooks/useMarkerTracking';
 import { useLinhaDoTempo } from '@/store/linhaDoTempo';
 import { Timeline } from '@/components/Timeline';
+import { manchas } from '@/data/calor';
 import { agrupar, type Regiao } from '@/data/cluster';
 import { anoDe, decadasDo, naDecada, rotuloLongo } from '@/data/decadas';
 import { pontoPor, pontos } from '@/data/pontos';
@@ -156,6 +157,8 @@ export default function MapScreen() {
    * alguém registra várias memórias do mesmo quarteirão.
    */
   const [regiao, setRegiao] = useState<Regiao>(INITIAL_REGION);
+  /** calor da memória: quanto cada pedaço da cidade tem para contar */
+  const [calor, setCalor] = useState(false);
   const grupos = agrupar(shown, regiao, W, H);
 
   const chaveDosPins = grupos.map((g) => g.itens.map((m) => m.id).join(',')).join('|');
@@ -258,6 +261,22 @@ export default function MapScreen() {
                   />
                 ) : null;
               })()
+            : null}
+
+          {/*
+            As manchas ficam ABAIXO dos pins na ordem de render, para o calor
+            nunca cobrir o que se toca. Atmosfera não disputa com alvo.
+          */}
+          {calor
+            ? manchas(shown, regiao, W, H).map((m, i) => (
+                <Circle
+                  key={`calor-${i}-${m.lat}`}
+                  center={{ latitude: m.lat, longitude: m.lng }}
+                  radius={m.raioM}
+                  strokeWidth={0}
+                  fillColor={`rgba(180,71,31,${Math.min(0.34, 0.12 + m.peso * 0.07)})`}
+                />
+              ))
             : null}
 
           {semHistoria.map((p) => (
@@ -394,6 +413,35 @@ export default function MapScreen() {
           ))}
         </ScrollView>
       </View>
+
+      {/*
+        O interruptor do calor. Fica acima do botão de AR, na mesma coluna:
+        são as duas leituras alternativas do mesmo mapa — uma olha para fora
+        (a câmera), outra olha para o conjunto.
+      */}
+      {view === 'mapa' ? (
+        <Pressable
+          style={[
+            styles.calorBtn,
+            calor && styles.calorBtnOn,
+            { bottom: floorGap + TIMELINE_H + space.sm + 66 + space.sm },
+          ]}
+          onPress={() => setCalor((c) => !c)}
+          accessibilityRole="button"
+          accessibilityState={{ selected: calor }}
+          accessibilityLabel={
+            calor
+              ? 'Desligar o mapa de calor da memória'
+              : 'Ver onde a cidade tem mais memórias guardadas'
+          }>
+          <Icon
+            name="sparkle"
+            size={20}
+            color={calor ? colors.sobreFerrugem : colors.esmalte}
+            strokeWidth={2.1}
+          />
+        </Pressable>
+      ) : null}
 
       {/*
         A régua fica no rodapé, colada no polegar: o contexto é uma mão só na
@@ -557,6 +605,20 @@ const styles = StyleSheet.create({
     borderRightColor: 'transparent',
     borderTopColor: colors.cal,
   },
+
+  calorBtn: {
+    position: 'absolute',
+    right: space.gutter,
+    zIndex: 31,
+    width: 46,
+    height: 46,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.cal,
+    borderWidth: 1.5,
+    borderColor: colors.esmalte,
+  },
+  calorBtnOn: { backgroundColor: colors.ferrugem, borderColor: colors.ferrugem },
 
   camFab: {
     position: 'absolute',
