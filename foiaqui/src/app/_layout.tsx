@@ -56,6 +56,7 @@ export default function RootLayout() {
               contentStyle: { backgroundColor: colors.cal },
             }}>
             <Stack.Screen name="(tabs)" />
+            <Stack.Screen name="trilha/[id]" />
             <Stack.Screen name="adicionar" options={{ presentation: 'modal' }} />
             <Stack.Screen
               name="ar"

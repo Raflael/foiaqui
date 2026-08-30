@@ -1,4 +1,5 @@
 import { LinearGradient } from 'expo-linear-gradient';
+import { router } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -6,7 +7,6 @@ import { Icon } from '@/components/Icon';
 import { PhotoPlaceholder } from '@/components/PhotoPlaceholder';
 import { Body, Eyebrow, Mono, Plaque } from '@/components/Type';
 import { trails } from '@/data/trails';
-import { useSheet } from '@/store/sheet';
 import { alpha, colors, radius, space, TABBAR_HEIGHT } from '@/theme';
 import type { Trail } from '@/types';
 
@@ -37,14 +37,10 @@ export default function TrilhasScreen() {
 }
 
 function TrailCard({ trail }: { trail: Trail }) {
-  const openSheet = useSheet((s) => s.open);
-  // sem tela de trilha ainda: abre a primeira parada, que é o conteúdo real por trás
-  const firstStop = trail.stopIds[0];
-
   return (
     <Pressable
       style={({ pressed }) => [styles.card, pressed && { opacity: 0.85 }]}
-      onPress={() => firstStop && openSheet(firstStop)}
+      onPress={() => router.push({ pathname: '/trilha/[id]', params: { id: trail.id } })}
       accessibilityRole="button"
       accessibilityLabel={`Trilha ${trail.title}. ${trail.theme}. ${trail.durationMin} minutos, ${trail.stopCount} paradas.`}>
       {trail.cover.kind === 'sepia' ? (
