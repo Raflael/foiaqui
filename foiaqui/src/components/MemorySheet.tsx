@@ -31,6 +31,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Icon, type IconName } from '@/components/Icon';
 import { MemoryCard } from '@/components/MemoryCard';
 import { Plaque as PlaquePlate } from '@/components/Plaque';
+import { Lupa } from '@/components/Lupa';
 import { RevealSlider } from '@/components/RevealSlider';
 import { router } from 'expo-router';
 
@@ -45,7 +46,7 @@ import { useMotionEnabled } from '@/hooks/useMotion';
 import { useAcervo, useMemoria } from '@/store/acervo';
 import { useSaved } from '@/store/saved';
 import { useSheet, type Snap } from '@/store/sheet';
-import { colors, HIT, radius, space } from '@/theme';
+import { alpha, colors, HIT, radius, space } from '@/theme';
 import type { Memory } from '@/types';
 
 /** Alturas da forma de onda, em % — as mesmas do protótipo. */
@@ -123,6 +124,9 @@ export function MemorySheet() {
    */
   const cartao = useRef<View>(null);
   const [gerando, setGerando] = useState(false);
+
+  /** qual foto está aberta em tela cheia (null = nenhuma) */
+  const [lupa, setLupa] = useState<{ fonte: string | number; legenda: string } | null>(null);
 
   // parar de falar ao trocar de memória ou fechar — senão a voz continua
   // narrando um texto que não está mais na tela
@@ -337,6 +341,13 @@ export function MemorySheet() {
 
   return (
     <View style={StyleSheet.absoluteFill} pointerEvents={isOpen ? 'box-none' : 'none'}>
+      <Lupa
+        fonte={lupa?.fonte}
+        legenda={lupa?.legenda}
+        aberta={!!lupa}
+        onFechar={() => setLupa(null)}
+      />
+
       {/*
         O cartão de compartilhar, renderizado fora da tela.
         Proporção fixa e a assinatura no rodapé — é isto que vai para o
@@ -462,7 +473,16 @@ export function MemorySheet() {
                 pessoa arrastar esperando ver o "depois" e encontrar um desenho
                 — pior que não ter o gesto.
               */
-              <View style={{ height: 240 }}>
+              <Pressable
+                style={{ height: 240 }}
+                onPress={() => {
+                  const f = shown.pastImageUri ?? shown.presentImageUri;
+                  if (f !== undefined) {
+                    setLupa({ fonte: f, legenda: shown.pastImageUri ? shown.year : 'Hoje' });
+                  }
+                }}
+                accessibilityRole="imagebutton"
+                accessibilityLabel={`Foto de ${shown.title}. Tocar para ver grande.`}>
                 <Image
                   source={fonteDaImagem(shown.pastImageUri ?? shown.presentImageUri)}
                   style={StyleSheet.absoluteFill}
@@ -473,9 +493,44 @@ export function MemorySheet() {
                     {shown.pastImageUri ? shown.year : 'HOJE'}
                   </Mono>
                 </View>
-              </View>
+                <View style={styles.ampliar}>
+                  <Icon name="search" size={13} color={colors.sobreEsmalte} strokeWidth={2.2} />
+                </View>
+              </Pressable>
             )}
           </View>
+
+          {/*
+            As duas fotos da comparação também abrem grandes. O slider mostra
+            o que mudou; a lupa mostra o que TEM — o rosto na porta da loja, o
+            letreiro, a placa do carro. São perguntas diferentes.
+          */}
+          {comparavel && (shown.pastImageUri || shown.presentImageUri) ? (
+            <View style={styles.verGrande}>
+              {shown.pastImageUri !== undefined ? (
+                <Pressable
+                  style={styles.verGrandeBtn}
+                  onPress={() =>
+                    setLupa({ fonte: shown.pastImageUri!, legenda: shown.year })
+                  }
+                  accessibilityRole="button"
+                  accessibilityLabel={`Ver grande a foto de ${shown.year}`}>
+                  <Icon name="search" size={14} color={colors.esmalte} strokeWidth={2.2} />
+                  <Body style={styles.verGrandeText}>Ver {shown.year} grande</Body>
+                </Pressable>
+              ) : null}
+              {shown.presentImageUri !== undefined ? (
+                <Pressable
+                  style={styles.verGrandeBtn}
+                  onPress={() => setLupa({ fonte: shown.presentImageUri!, legenda: 'Hoje' })}
+                  accessibilityRole="button"
+                  accessibilityLabel="Ver grande a foto de hoje">
+                  <Icon name="search" size={14} color={colors.esmalte} strokeWidth={2.2} />
+                  <Body style={styles.verGrandeText}>Ver hoje grande</Body>
+                </Pressable>
+              ) : null}
+            </View>
+          ) : null}
 
           <View style={styles.body}>
             {shown.audioSeconds ? (
@@ -879,6 +934,29 @@ const styles = StyleSheet.create({
   },
 
   hero: { marginHorizontal: 22, borderRadius: radius.md, overflow: 'hidden' },
+  ampliar: {
+    position: 'absolute',
+    right: 12,
+    bottom: 12,
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: alpha.chrome,
+  },
+  verGrande: { flexDirection: 'row', gap: space.sm, marginHorizontal: 22, marginTop: space.sm },
+  verGrandeBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    minHeight: HIT - 8,
+    paddingHorizontal: space.md,
+    borderWidth: 1,
+    borderColor: colors.calLine,
+  },
+  verGrandeText: { fontSize: 12.5, fontWeight: '600', color: colors.esmalte },
+
   soloCap: {
     position: 'absolute',
     left: 14,
