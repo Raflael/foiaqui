@@ -1,4 +1,6 @@
 import { useAudioPlayer, useAudioPlayerStatus } from 'expo-audio';
+import * as Sharing from 'expo-sharing';
+import * as Speech from 'expo-speech';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { Image } from 'expo-image';
 import { useEffect, useRef, useState } from 'react';
@@ -14,6 +16,7 @@ import {
   type LayoutChangeEvent,
 } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { captureRef } from 'react-native-view-shot';
 import Animated, {
   Extrapolation,
   interpolate,
@@ -91,6 +94,42 @@ export function MemorySheet() {
   const escolherDecada = useLinhaDoTempo((s) => s.escolher);
   // para o "como chegar": só mostramos distância quando a posição é real
   const { position, denied } = useCurrentPosition();
+
+  /**
+   * O app lendo o relato em voz alta.
+   *
+   * Não é o mesmo que o chip de áudio, e a interface precisa dizer isso: o
+   * áudio é A VOZ DE QUEM VIVEU, gravada; isto é a máquina lendo o texto. Um
+   * é acervo, o outro é acessibilidade — confundir os dois desvalorizaria o
+   * primeiro, que é o coração do produto.
+   *
+   * Existe porque a persona principal tem 70 anos e o contexto é sol na tela
+   * (Decisão 7): ler parágrafo em pé, na rua, com a vista cansada, é a
+   * barreira que nenhum tamanho de fonte resolve sozinho.
+   */
+  const [lendo, setLendo] = useState(false);
+
+  /**
+   * A placa como imagem, para compartilhar.
+   *
+   * Cada memória compartilhada é o melhor anúncio que o produto tem — e um
+   * bloco de texto no WhatsApp não mostra que isto é uma PLACA. A imagem
+   * mostra, e leva o nome do app junto.
+   *
+   * O cartão é renderizado fora da tela em vez de fotografar a chapa visível:
+   * a chapa na ficha tem a largura do celular de quem compartilha e pode
+   * estar parcialmente rolada para fora. O cartão dedicado tem proporção
+   * fixa, sempre inteiro, e cabe a assinatura no rodapé.
+   */
+  const cartao = useRef<View>(null);
+  const [gerando, setGerando] = useState(false);
+
+  // parar de falar ao trocar de memória ou fechar — senão a voz continua
+  // narrando um texto que não está mais na tela
+  useEffect(() => {
+    Speech.stop();
+    setLendo(false);
+  }, [openId]);
 
   const savedIds = useSaved((s) => s.ids);
   const toggleSaved = useSaved((s) => s.toggle);
@@ -236,6 +275,38 @@ export function MemorySheet() {
    * que fazia o título mentir.
    */
   const acervo = [...criadas, ...seed].filter((m) => m.id !== shown.id);
+  const textoDeCompartilhar =
+    `${shown.marker.toUpperCase()}: ${shown.title} — ${shown.place}, ${shown.period}.
+
+` +
+    `${shown.story.slice(0, 180)}${shown.story.length > 180 ? '…' : ''}
+
+` +
+    `Veja no FoiAqui: foiaqui://m/${shown.id}`;
+
+  const compartilhar = async () => {
+    if (gerando) return;
+    setGerando(true);
+    try {
+      const podeArquivo = await Sharing.isAvailableAsync();
+      if (podeArquivo && cartao.current) {
+        const uri = await captureRef(cartao, { format: 'png', quality: 0.96 });
+        await Sharing.shareAsync(uri, {
+          mimeType: 'image/png',
+          dialogTitle: 'Compartilhar esta memória',
+        });
+      } else {
+        // sem compartilhamento de arquivo, o texto ainda leva o link
+        await Share.share({ message: textoDeCompartilhar });
+      }
+    } catch {
+      // se a captura falhar, o texto é sempre melhor que nada acontecer
+      await Share.share({ message: textoDeCompartilhar }).catch(() => {});
+    } finally {
+      setGerando(false);
+    }
+  };
+
   /** o próximo capítulo desta história, quando existe */
   const continuacao = shown.continuaEm
     ? acervo.find((m) => m.id === shown.continuaEm)
@@ -266,6 +337,30 @@ export function MemorySheet() {
 
   return (
     <View style={StyleSheet.absoluteFill} pointerEvents={isOpen ? 'box-none' : 'none'}>
+      {/*
+        O cartão de compartilhar, renderizado fora da tela.
+        Proporção fixa e a assinatura no rodapé — é isto que vai para o
+        WhatsApp, não uma foto da folha de quem compartilhou.
+      */}
+      <View style={styles.forasDeCena} pointerEvents="none" collapsable={false}>
+        <View ref={cartao} collapsable={false} style={styles.cartao}>
+          <View style={styles.cartaoMoldura}>
+            <Body style={styles.cartaoMarker}>{shown.marker.toUpperCase()}</Body>
+            <Plaque style={styles.cartaoTitulo}>{shown.title}</Plaque>
+            <View style={styles.cartaoRegua} />
+            <Mono style={styles.cartaoPeriodo}>{shown.period}</Mono>
+            <Plaque weight="semibold" style={styles.cartaoLugar}>
+              {shown.place}
+            </Plaque>
+          </View>
+          <View style={styles.cartaoLasca} />
+          <View style={styles.cartaoPe}>
+            <Plaque style={styles.cartaoApp}>Foi Aqui</Plaque>
+            <Mono style={styles.cartaoAssinatura}>memória urbana · {shown.author.name}</Mono>
+          </View>
+        </View>
+      </View>
+
       {isOpen && snap !== 'peek' ? (
         <Animated.View style={[styles.scrim, scrimStyle]}>
           <Pressable
@@ -423,6 +518,38 @@ export function MemorySheet() {
 
             <StoryText story={shown.story} emphasis={shown.emphasis} />
 
+            <Pressable
+              style={styles.lerAlto}
+              onPress={() => {
+                if (lendo) {
+                  Speech.stop();
+                  setLendo(false);
+                  return;
+                }
+                setLendo(true);
+                Speech.speak(shown.story, {
+                  language: 'pt-BR',
+                  rate: 0.95,
+                  onDone: () => setLendo(false),
+                  onStopped: () => setLendo(false),
+                  onError: () => setLendo(false),
+                });
+              }}
+              accessibilityRole="button"
+              accessibilityLabel={
+                lendo ? 'Parar a leitura em voz alta' : 'Ouvir o app ler este relato em voz alta'
+              }>
+              <Icon
+                name={lendo ? 'pause' : 'play'}
+                size={14}
+                color={colors.esmalte}
+                filled
+              />
+              <Body style={styles.lerAltoText}>
+                {lendo ? 'Parar a leitura' : 'Ler para mim'}
+              </Body>
+            </Pressable>
+
             {/*
               O próximo capítulo, logo depois do relato — onde o "e aí?"
               nasce. Troca o conteúdo da folha sem navegar, como o feed.
@@ -507,19 +634,8 @@ export function MemorySheet() {
           <View style={styles.actions}>
             <Action
               icon="share"
-              label="Compartilhar"
-              onPress={() =>
-                Share.share({
-                  message:
-                    `${shown.marker.toUpperCase()}: ${shown.title} — ${shown.place}, ${shown.period}.
-
-` +
-                    `${shown.story.slice(0, 180)}${shown.story.length > 180 ? '…' : ''}
-
-` +
-                    `Veja no FoiAqui: foiaqui://m/${shown.id}`,
-                })
-              }
+              label={gerando ? 'Gerando…' : 'Compartilhar'}
+              onPress={compartilhar}
             />
             {/*
               "Linha do tempo" leva o mapa para a década desta memória e fecha
@@ -878,6 +994,33 @@ const styles = StyleSheet.create({
   fonteLinha: { flexDirection: 'row', gap: 7, alignItems: 'flex-start', minHeight: 22 },
   fonteText: { flex: 1, fontSize: 12.5, lineHeight: 17.5, color: colors.esmalte },
   credito: { fontSize: 11.5, lineHeight: 16, color: colors.grafiteDim },
+
+  // fora da tela, mas montado: view-shot precisa de layout real para capturar
+  forasDeCena: { position: 'absolute', left: -2000, top: 0 },
+  cartao: { width: 900, backgroundColor: colors.esmalte, padding: 56, position: 'relative' },
+  cartaoMoldura: { borderWidth: 5, borderColor: colors.sobreEsmalte, padding: 52 },
+  cartaoMarker: { fontSize: 22, letterSpacing: 6, color: colors.sobreEsmalteDim },
+  cartaoTitulo: { fontSize: 76, lineHeight: 80, color: colors.sobreEsmalte, marginTop: 18 },
+  cartaoRegua: { height: 2, backgroundColor: colors.esmalteClaro, marginTop: 34 },
+  cartaoPeriodo: { fontSize: 30, color: colors.sobreEsmalteDim, marginTop: 26 },
+  cartaoLugar: { fontSize: 26, color: colors.sobreEsmalteDim, marginTop: 10 },
+  cartaoLasca: { position: 'absolute', right: 0, top: '40%', width: 18, height: 150, backgroundColor: colors.ferrugem },
+  cartaoPe: { flexDirection: 'row', alignItems: 'baseline', gap: 18, marginTop: 34 },
+  cartaoApp: { fontSize: 34, color: colors.sobreEsmalte },
+  cartaoAssinatura: { fontSize: 20, color: colors.sobreEsmalteDim },
+
+  // discreto de propósito: é ferramenta de acessibilidade ao lado do texto,
+  // não concorrente do chip de áudio, que carrega a voz de quem viveu
+  lerAlto: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 7,
+    alignSelf: 'flex-start',
+    marginTop: space.md,
+    minHeight: HIT - 6,
+    paddingRight: space.md,
+  },
+  lerAltoText: { fontSize: 13.5, fontWeight: '600', color: colors.esmalte },
 
   chegar: {
     flexDirection: 'row',
