@@ -39,6 +39,7 @@ import { useImportada } from '@/store/importada';
 import { autorDe, usePerfil } from '@/store/perfil';
 import { useCurrentPosition } from '@/hooks/useCurrentPosition';
 import { useAcervo } from '@/store/acervo';
+import { tituloDoRascunho, useGaveta, type RascunhoGuardado } from '@/store/gaveta';
 import { temConteudo, useRascunho } from '@/store/rascunho';
 import { colors, fonts, HIT, radius, space } from '@/theme';
 import type { Memory } from '@/types';
@@ -200,6 +201,41 @@ export default function AdicionarScreen() {
   const [pergunta, setPergunta] = useState(0);
   /** de quem é a memória, quando quem digita é outra pessoa */
   const [contadaPor, setContadaPor] = useState('');
+
+  /** zera o formulário inteiro — usado pelo "começar de novo" e pela gaveta */
+  const zerar = () => {
+    useRascunho.getState().limpar();
+    setStep(0);
+    setMedia(null);
+    setHoje(null);
+    setAudio(null);
+    setStory('');
+    setEra(null);
+    setAno('');
+    setTags([]);
+    setLocal(null);
+    setContadaPor('');
+    setCreditoImportado(null);
+  };
+
+  /** traz um rascunho da gaveta de volta para o formulário */
+  const retomar = (r: RascunhoGuardado) => {
+    setStep(r.step);
+    setMedia(r.media);
+    setHoje(r.hoje);
+    setAudio(r.audio);
+    setStory(r.story);
+    setEra(r.era);
+    setAno(r.ano ?? '');
+    setTags(r.tags);
+    setLocal(r.local);
+    descartarDaGaveta(r.id);
+  };
+
+  // a gaveta: outras memórias começadas e ainda não enviadas
+  const naGaveta = useGaveta((s) => s.rascunhos);
+  const guardarNaGaveta = useGaveta((s) => s.guardar);
+  const descartarDaGaveta = useGaveta((s) => s.descartar);
 
   /**
    * A miniatura do vídeo escolhido.
@@ -466,17 +502,16 @@ export default function AdicionarScreen() {
             <Body style={styles.recuperadoText}>Continuando de onde você parou</Body>
             <Pressable
               onPress={() => {
-                useRascunho.getState().limpar();
-                setStep(0);
-                setMedia(null);
-                setHoje(null);
-                setAudio(null);
-                setStory('');
-                setEra(null);
-                setAno('');
-                setTags([]);
-                setLocal(null);
+                guardarNaGaveta(useRascunho.getState(), tituloDoRascunho(useRascunho.getState()));
+                zerar();
               }}
+              hitSlop={10}
+              accessibilityRole="button"
+              accessibilityLabel="Guardar este rascunho na gaveta e começar outra memória">
+              <Body style={styles.recuperadoLink}>Guardar e começar outra</Body>
+            </Pressable>
+            <Pressable
+              onPress={zerar}
               hitSlop={10}
               accessibilityRole="button"
               accessibilityLabel="Descartar o rascunho e começar de novo">
