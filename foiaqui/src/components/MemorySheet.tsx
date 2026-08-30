@@ -1,4 +1,5 @@
 import { useAudioPlayer, useAudioPlayerStatus } from 'expo-audio';
+import { useVideoPlayer, VideoView } from 'expo-video';
 import { Image } from 'expo-image';
 import { useEffect, useRef, useState } from 'react';
 import {
@@ -111,6 +112,22 @@ export function MemorySheet() {
   const tocavel = !!audioUri && /^(file|content|https?):/.test(audioUri);
   const player = useAudioPlayer(tocavel ? { uri: audioUri } : null);
   const playing = useAudioPlayerStatus(player).playing;
+
+  /**
+   * O vídeo que a pessoa gravou, finalmente tocável.
+   *
+   * Até aqui o formulário gravava o vídeo, a ficha dizia "Vídeo + relato" — e
+   * não havia player nenhum. A mídia ficava em `media`, inreproduzível: a
+   * ficha só olhava os campos de foto. Prometer vídeo e não tocar é a mesma
+   * mentira de interface do áudio que não tocava.
+   *
+   * Sem autoplay, de propósito: o contexto é a rua, com dados móveis, e os
+   * controles nativos exigem o toque — que também é o caminho acessível.
+   * O hook fica AQUI, junto dos outros: hook depois do retorno antecipado foi
+   * exatamente o bug que derrubava o APK.
+   */
+  const videoUri = shown?.media.find((m) => m.type === 'video')?.uri ?? null;
+  const videoPlayer = useVideoPlayer(videoUri);
   // Fora de cena de verdade: enquanto `hidden` for true a folha nem é montada.
   const [hidden, setHidden] = useState(true);
   const scroller = useRef<ScrollView>(null);
@@ -322,7 +339,15 @@ export function MemorySheet() {
           contentContainerStyle={{ paddingBottom: insets.bottom + space.xxl }}
           showsVerticalScrollIndicator={false}>
           <View style={styles.hero}>
-            {comparavel ? (
+            {videoUri ? (
+              /* o vídeo é a mídia que a pessoa escolheu: quando existe, é o herói */
+              <VideoView
+                player={videoPlayer}
+                style={{ height: 240 }}
+                contentFit="cover"
+                nativeControls
+              />
+            ) : comparavel ? (
               <RevealSlider
                 pastLabel={shown.year}
                 pastUri={shown.pastImageUri}

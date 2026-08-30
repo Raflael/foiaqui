@@ -70,7 +70,8 @@
           "cameraPermission": "O FoiAqui usa a câmera para você fotografar a memória no próprio lugar."
         }
       ],
-      "expo-image"
+      "expo-image",
+      "expo-video"
     ],
     "experiments": {
       "typedRoutes": true,
