@@ -25,8 +25,9 @@ import { MemoryCard } from '@/components/MemoryCard';
 import { Plaque as PlaquePlate } from '@/components/Plaque';
 import { RevealSlider } from '@/components/RevealSlider';
 import { Body, Mono, Plaque, Story } from '@/components/Type';
-import { memories, memoryById } from '@/data/memories';
+import { memories as seed } from '@/data/memories';
 import { useMotionEnabled } from '@/hooks/useMotion';
+import { useAcervo, useMemoria } from '@/store/acervo';
 import { useSaved } from '@/store/saved';
 import { useSheet, type Snap } from '@/store/sheet';
 import { colors, HIT, radius, space } from '@/theme';
@@ -67,14 +68,15 @@ export function MemorySheet() {
 
   const savedIds = useSaved((s) => s.ids);
   const toggleSaved = useSaved((s) => s.toggle);
+  const criadas = useAcervo((s) => s.criadas);
 
   // Segura a última memória durante a animação de saída, senão a folha
   // esvazia no meio do movimento.
+  const encontrada = useMemoria(openId);
   const [shown, setShown] = useState<Memory | null>(null);
   useEffect(() => {
-    const m = memoryById(openId ?? undefined);
-    if (m) setShown(m);
-  }, [openId]);
+    if (encontrada) setShown(encontrada);
+  }, [encontrada]);
 
   const [headerH, setHeaderH] = useState(200);
   const [playing, setPlaying] = useState(false);
@@ -178,7 +180,7 @@ export function MemorySheet() {
   if (!shown || hidden) return null;
 
   const saved = savedIds.includes(shown.id);
-  const others = memories.filter((m) => m.id !== shown.id);
+  const others = [...criadas, ...seed].filter((m) => m.id !== shown.id);
   const isOpen = openId !== null;
 
   return (
@@ -244,6 +246,14 @@ export function MemorySheet() {
                 <Plaque weight="semibold" style={styles.address}>
                   {shown.place}
                 </Plaque>
+                {shown.status === 'em_revisao' ? (
+                  <View style={styles.revisao}>
+                    <Icon name="clock" size={13} color={colors.esmalte} strokeWidth={2.2} />
+                    <Body style={styles.revisaoText}>
+                      Em revisão pela comunidade — só você vê por enquanto
+                    </Body>
+                  </View>
+                ) : null}
               </View>
             </PlaquePlate>
           </View>
@@ -255,7 +265,7 @@ export function MemorySheet() {
           contentContainerStyle={{ paddingBottom: insets.bottom + space.xxl }}
           showsVerticalScrollIndicator={false}>
           <View style={styles.hero}>
-            <RevealSlider pastLabel={shown.year} height={240} />
+            <RevealSlider pastLabel={shown.year} pastUri={shown.pastImageUri} height={240} />
           </View>
 
           <View style={styles.body}>
@@ -435,6 +445,16 @@ const styles = StyleSheet.create({
   period: { fontSize: 13, letterSpacing: 0.6, color: colors.sobreEsmalte },
   rule: { flexGrow: 1, height: 1, backgroundColor: 'rgba(244,243,238,0.34)' },
   address: { fontSize: 12.5, letterSpacing: 1.2, color: colors.sobreEsmalteDim, marginTop: space.sm },
+  revisao: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 7,
+    marginTop: space.md,
+    paddingHorizontal: space.sm,
+    paddingVertical: 6,
+    backgroundColor: colors.sobreEsmalte,
+  },
+  revisaoText: { flex: 1, fontSize: 11.5, fontWeight: '600', color: colors.esmalte },
   headActions: { flexDirection: 'row', gap: space.sm },
   roundBtn: {
     width: HIT,

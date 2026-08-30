@@ -1,3 +1,4 @@
+import { Image } from 'expo-image';
 import { useState } from 'react';
 import { StyleSheet, View, type LayoutChangeEvent } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -38,10 +39,13 @@ function clampPx(v: number, min: number, max: number) {
 export function RevealSlider({
   pastLabel,
   nowLabel = 'HOJE',
+  /** foto de verdade do lado do passado; sem ela, a cena desenhada */
+  pastUri,
   height = 270,
 }: {
   pastLabel: string;
   nowLabel?: string;
+  pastUri?: string;
   height?: number;
 }) {
   const motion = useMotionEnabled();
@@ -115,7 +119,11 @@ export function RevealSlider({
         <Animated.View style={[styles.pastClip, pastStyle]} pointerEvents="none">
           <View style={{ width: width || undefined, height }}>
             <PhotoPlaceholder variant="past" style={StyleSheet.absoluteFill}>
-              <StreetScene variant="past" />
+              {pastUri ? (
+                <Image source={{ uri: pastUri }} style={StyleSheet.absoluteFill} contentFit="cover" />
+              ) : (
+                <StreetScene variant="past" />
+              )}
               <View style={[styles.cap, styles.capPast]}>
                 <Mono style={styles.capText}>{pastLabel}</Mono>
               </View>

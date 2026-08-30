@@ -15,10 +15,11 @@ import { Body, Mono } from '@/components/Type';
 import { YouAreHere } from '@/components/YouAreHere';
 import { distanceTo, fallbackPosition, formatDistance } from '@/data/location';
 import { mapStyle } from '@/data/mapStyle';
-import { mapFilters, matchesQuery, memories } from '@/data/memories';
+import { mapFilters, matchesQuery } from '@/data/memories';
 import { useCurrentPosition } from '@/hooks/useCurrentPosition';
 import { useMotionEnabled } from '@/hooks/useMotion';
 import { useSettings } from '@/store/settings';
+import { useMemorias } from '@/store/acervo';
 import { useSheet } from '@/store/sheet';
 import { colors, HIT, radius, space, TABBAR_HEIGHT } from '@/theme';
 
@@ -73,6 +74,7 @@ export default function MapScreen() {
 
   const floorGap = TABBAR_HEIGHT + insets.bottom + space.xl;
 
+  const memories = useMemorias();
   const filter = mapFilters.find((f) => f.id === filterId) ?? null;
   // busca e chip se somam, não se substituem: "Anos 60" + "praça" é um recorte só
   const shown = memories
@@ -178,6 +180,7 @@ export default function MapScreen() {
                 icon={PIN_ICONS[memory.id] ?? 'pin'}
                 label={`${memory.shortName} · ${memory.year}`}
                 active={memory.id === openId}
+                pending={memory.status === 'em_revisao'}
               />
             </Marker>
           ))}

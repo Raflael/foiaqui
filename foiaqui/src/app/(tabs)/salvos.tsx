@@ -4,13 +4,15 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Icon } from '@/components/Icon';
 import { MemoryRow } from '@/components/MemoryCard';
 import { Body, Eyebrow, Plaque } from '@/components/Type';
-import { memories } from '@/data/memories';
+
+import { useMemorias } from '@/store/acervo';
 import { useSaved } from '@/store/saved';
 import { useSheet } from '@/store/sheet';
 import { colors, space, TABBAR_HEIGHT } from '@/theme';
 
 export default function SalvosScreen() {
   const insets = useSafeAreaInsets();
+  const memories = useMemorias();
   const savedIds = useSaved((s) => s.ids);
   const openSheet = useSheet((s) => s.open);
 

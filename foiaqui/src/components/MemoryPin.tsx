@@ -24,15 +24,21 @@ export function MemoryPin({
   label,
   /** memória aberta na ficha: cresce e ganha a lasca de ferrugem */
   active = false,
+  /** ainda em revisão pela comunidade: chapa com moldura tracejada */
+  pending = false,
 }: {
   icon: IconName;
   label: string;
   active?: boolean;
+  pending?: boolean;
 }) {
   return (
     <View style={styles.pin}>
       <View style={active && styles.lifted}>
-        <PlaquePlate chipped={active} style={styles.plate} frameStyle={styles.frame}>
+        <PlaquePlate
+          chipped={active}
+          style={styles.plate}
+          frameStyle={[styles.frame, pending && styles.frameProvisoria]}>
           <View style={styles.row}>
             <Icon name={icon} size={13} color={colors.sobreEsmalte} strokeWidth={2} />
             <Plaque weight="semibold" style={styles.label}>
@@ -57,6 +63,8 @@ const styles = StyleSheet.create({
   // sem sombra: dentro do bitmap de um marcador no Android ela sai cortada
   plate: { padding: 4 },
   frame: { borderWidth: 1.5 },
+  // tracejada: a placa ainda não foi fundida, está esperando conferência
+  frameProvisoria: { borderStyle: 'dashed' },
   row: {
     flexDirection: 'row',
     alignItems: 'center',

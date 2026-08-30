@@ -10,7 +10,7 @@ import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
 import { router } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -30,11 +30,35 @@ import type { Position } from '@/data/location';
 import { mapStyle } from '@/data/mapStyle';
 import { eras } from '@/data/memories';
 import { useCurrentPosition } from '@/hooks/useCurrentPosition';
+import { useAcervo } from '@/store/acervo';
 import { colors, HIT, radius, space } from '@/theme';
+import type { Memory } from '@/types';
 
 const TAGS = ['Cinema', 'Lazer', 'Centro', 'Demolido', 'Família', 'Arte urbana', 'Escola'];
 
 const STEPS = ['Mídia', 'História', 'Local', 'Época'] as const;
+
+/** A época escolhida vira um ano concreto, que é o que a placa mostra. */
+const ANO_DA_ERA: Record<string, string> = {
+  'Anos 40': '1940',
+  'Anos 50': '1950',
+  'Anos 60': '1960',
+  'Anos 70': '1970',
+};
+
+/**
+ * Título a partir do relato: a primeira frase, ou o começo dela.
+ * Sem regex de propósito — a escapagem de "
+" dentro de literal já quebrou
+ * este arquivo uma vez, e aqui ela não acrescenta nada.
+ */
+function tituloDoRelato(texto: string): string {
+  const limpo = texto.trim();
+  if (!limpo) return 'Memória sem título';
+  const frase = limpo.split('.')[0].trim();
+  const base = frase.length >= 8 ? frase : limpo;
+  return base.length <= 48 ? base : base.slice(0, 47).trimEnd() + '…';
+}
 
 /** `null` quando ainda não há gravação — o player aceita fonte vazia. */
 const audioSource = (uri?: string) => (uri ? { uri } : null);
@@ -61,7 +85,9 @@ export default function AdicionarScreen() {
   const [audio, setAudio] = useState<{ uri: string; seconds: number } | null>(null);
   const [mediaErro, setMediaErro] = useState<string | null>(null);
 
-  const { position } = useCurrentPosition();
+  const { position, source } = useCurrentPosition();
+  const adicionarAoAcervo = useAcervo((s) => s.adicionar);
+  const locMapRef = useRef<MapView>(null);
   const [local, setLocal] = useState<Position | null>(null);
   const [endereco, setEndereco] = useState<string | null>(null);
   // o local nasce onde a pessoa está; ela ajusta se a memória for logo ali adiante
@@ -143,6 +169,23 @@ export default function AdicionarScreen() {
   };
 
   /**
+   * O mapa do local lia a posição uma vez, na montagem. Se o GPS ainda não
+   * tinha respondido, congelava no fallback e a memória nascia no lugar errado.
+   * Agora ele vai até você quando a primeira leitura real chega — uma vez só,
+   * para não brigar com quem já arrastou o mapa.
+   */
+  const seguiuGps = useRef(false);
+  useEffect(() => {
+    if (step !== 2 || source !== 'gps' || seguiuGps.current) return;
+    seguiuGps.current = true;
+    setLocal({ lat: position.lat, lng: position.lng });
+    locMapRef.current?.animateCamera(
+      { center: { latitude: position.lat, longitude: position.lng } },
+      { duration: 300 },
+    );
+  }, [step, source, position.lat, position.lng]);
+
+  /**
    * Endereço a partir da coordenada. Roda quando o mapa para de se mexer,
    * não a cada quadro — geocodificação é chamada cara e com limite.
    */
@@ -168,13 +211,45 @@ export default function AdicionarScreen() {
     };
   }, [step, alvo.lat, alvo.lng]);
 
+  /**
+   * "Enviar" era um `setTimeout` que mostrava a mensagem de moderação e jogava
+   * tudo fora. Agora guarda de verdade no aparelho, com status `em_revisao`:
+   * quem enviou vê a própria memória no mapa, marcada, mas ela ainda não foi
+   * conferida pela comunidade (Decisão 5).
+   *
+   * O que continua simulado é a espera — não há backend para subir a mídia.
+   */
   const submit = () => {
     setSending(true);
-    // simula a subida da memória; sem rede nesta fase
+    const agora = new Date();
+    const nova: Memory = {
+      id: `local-${agora.getTime()}`,
+      title: tituloDoRelato(story),
+      shortName: (endereco?.split(',')[0] ?? 'Aqui').slice(0, 14),
+      marker: era === 'Atual' ? 'Aqui está' : 'Aqui foi',
+      period: era ?? String(agora.getFullYear()),
+      year: era === 'Atual' ? String(agora.getFullYear()) : (ANO_DA_ERA[era ?? ''] ?? '—'),
+      era: era ?? 'Atual',
+      place: endereco ?? 'Local marcado no mapa',
+      coords: { lat: alvo.lat, lng: alvo.lng },
+      story: story.trim(),
+      author: { name: 'Você', level: 1, role: 'Contribuição sua' },
+      kind: media?.type === 'video' ? 'Vídeo + relato' : 'Foto + relato',
+      verified: false,
+      status: 'em_revisao',
+      media: [
+        ...(media ? [{ type: media.type === 'video' ? 'video' : 'photo', uri: media.uri } as const] : []),
+        ...(audio ? [{ type: 'audio', uri: audio.uri } as const] : []),
+      ],
+      audioSeconds: audio?.seconds,
+      tags,
+      pastImageUri: media?.type === 'image' ? media.uri : undefined,
+    };
     setTimeout(() => {
+      adicionarAoAcervo(nova);
       setSending(false);
       setSent(true);
-    }, 1200);
+    }, 900);
   };
 
   if (sent) {
@@ -186,8 +261,8 @@ export default function AdicionarScreen() {
           </View>
           <Plaque style={styles.doneTitle}>Memória enviada</Plaque>
           <Body style={styles.doneText}>
-            Ela passa por uma checagem rápida da comunidade antes de aparecer no mapa. Você
-            recebe um aviso quando isso acontecer.
+            Ela já está no seu mapa, marcada como <Body style={styles.doneStrong}>em revisão</Body>.
+            Passa por uma checagem da comunidade antes de aparecer para as outras pessoas.
           </Body>
           <Pressable
             style={styles.primary}
@@ -372,6 +447,7 @@ export default function AdicionarScreen() {
               <Label text="Local" required />
               <View style={styles.locMap}>
                 <MapView
+                  ref={locMapRef}
                   provider={PROVIDER_GOOGLE}
                   style={StyleSheet.absoluteFill}
                   customMapStyle={mapStyle}
@@ -730,4 +806,5 @@ const styles = StyleSheet.create({
   },
   doneTitle: { fontSize: 26, color: colors.grafite, textAlign: 'center' },
   doneText: { fontSize: 14.5, lineHeight: 22, color: colors.grafiteDim, textAlign: 'center' },
+  doneStrong: { fontSize: 14.5, lineHeight: 22, color: colors.esmalte, fontWeight: '600' },
 });

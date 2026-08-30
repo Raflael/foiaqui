@@ -2,8 +2,15 @@ import { distanceTo, NEARBY_M, type Position } from '@/data/location';
 import type { Memory } from '@/types';
 
 /**
- * As 3 memórias do protótipo, em coordenadas reais de Santos-SP —
- * a cidade da Íris. É por elas que os marcadores se posicionam no mapa.
+ * As 3 memórias do protótipo, no centro de São José dos Campos.
+ *
+ * Antes ficavam em Santos, herdadas da persona da pesquisa. Mudaram porque
+ * o produto inteiro é sobre CAMINHAR até o lugar — e acervo em outra cidade
+ * torna isso impossível de testar. As personas continuam valendo; cidade-piloto
+ * é decisão de negócio e pode mudar de novo.
+ *
+ * As coordenadas são aproximadas, no raio de uma caminhada curta entre elas.
+ * Ajuste arrastando o mapa no fluxo de criar quando souber o ponto exato.
  */
 export const memories: Memory[] = [
   {
@@ -14,8 +21,8 @@ export const memories: Memory[] = [
     period: '1958 — 1974',
     year: '1958',
     era: 'Anos 50',
-    place: 'Rua do Comércio, 210',
-    coords: { lat: -23.9331, lng: -46.3286 },
+    place: 'Rua Sete de Setembro, 210',
+    coords: { lat: -23.1798, lng: -45.8859 },
     story:
       'Aqui funcionou o Cine Marrocos, o point da cidade nos fins de semana. Minha mãe contava das filas que dobravam a esquina em cada estreia. O cinema fechou em 1974 e o prédio virou uma loja de departamentos — mas o letreiro ainda vive na memória de quem passou por aqui.',
     emphasis: 'Cine Marrocos',
@@ -37,8 +44,8 @@ export const memories: Memory[] = [
     period: '1962 — 1998',
     year: '1962',
     era: 'Anos 60',
-    place: 'Praça do Rosário',
-    coords: { lat: -23.9348, lng: -46.3269 },
+    place: 'Praça Afonso Pena',
+    coords: { lat: -23.1791, lng: -45.8872 },
     story:
       'O coreto original da praça, onde havia retreta aos domingos. A banda tocava ao entardecer e a cidade descia pra ouvir. O coreto de hoje é uma réplica erguida em 1998, depois que o antigo foi demolido.',
     emphasis: 'coreto original',
@@ -57,7 +64,7 @@ export const memories: Memory[] = [
     year: '2019',
     era: 'Atual',
     place: 'Beco da Estação',
-    coords: { lat: -23.9362, lng: -46.3241 },
+    coords: { lat: -23.1826, lng: -45.8854 },
     story:
       'Mural coletivo pintado por artistas locais no festival de 2019. Cada painel conta um pedaço da história do bairro operário — das fábricas às pessoas que moveram esta parte da cidade.',
     emphasis: 'Mural coletivo',

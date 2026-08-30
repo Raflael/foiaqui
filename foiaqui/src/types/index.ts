@@ -25,6 +25,12 @@ export interface Memory {
   /** "Foto + relato", "Foto histórica", "Foto + microdoc" */
   kind: string;
   verified: boolean;
+  /**
+   * Onde a memória está no fluxo de moderação (Decisão 5).
+   * Recém-criada nasce 'em_revisao': quem enviou vê a própria no mapa,
+   * marcada, mas ela ainda não foi conferida pela comunidade.
+   */
+  status?: 'publicada' | 'em_revisao';
   media: { type: MediaType; uri: string }[];
   /** duração do áudio em segundos, quando há relato falado */
   audioSeconds?: number;

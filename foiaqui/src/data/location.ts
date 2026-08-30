@@ -9,11 +9,11 @@ export interface Position {
  * Posição usada quando o GPS não responde — permissão negada, sem sinal,
  * modo avião, emulador.
  *
- * Centro de Santos, perto das três memórias do acervo. Não é "posição falsa":
+ * Centro de São José dos Campos, perto das três memórias do acervo. Não é "posição falsa":
  * é o que permite o app abrir mostrando alguma coisa em vez de uma tela morta.
  * A interface diz claramente quando está usando isto (ver `useCurrentPosition`).
  */
-export const fallbackPosition: Position = { lat: -23.934, lng: -46.3275 };
+export const fallbackPosition: Position = { lat: -23.1801, lng: -45.8864 };
 
 const EARTH_M = 6_371_000;
 const rad = (deg: number) => (deg * Math.PI) / 180;
