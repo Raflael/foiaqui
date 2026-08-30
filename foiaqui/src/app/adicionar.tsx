@@ -28,7 +28,7 @@ import { Icon } from '@/components/Icon';
 import { Body, Mono, Plaque } from '@/components/Type';
 import type { Position } from '@/data/location';
 import { mapStyle } from '@/data/mapStyle';
-import { eras } from '@/data/memories';
+import { eras, nomeCurto } from '@/data/memories';
 import { nivelPor, perfil } from '@/data/profile';
 import { useCurrentPosition } from '@/hooks/useCurrentPosition';
 import { useAcervo } from '@/store/acervo';
@@ -253,7 +253,7 @@ export default function AdicionarScreen() {
     const nova: Memory = {
       id: `local-${agora.getTime()}`,
       title: tituloDoRelato(story),
-      shortName: (endereco?.split(',')[0] ?? 'Aqui').slice(0, 14),
+      shortName: nomeCurto(endereco),
       // o tempo verbal conta se a coisa sobreviveu: presente para o que ainda está lá
       marker: era === 'Atual' || (anoValido && +ano >= new Date().getFullYear() - 1)
         ? 'Aqui está'

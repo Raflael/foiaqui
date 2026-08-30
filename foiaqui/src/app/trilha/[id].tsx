@@ -12,6 +12,7 @@ import { distanceMeters, distanceTo, formatDistance } from '@/data/location';
 import { mapStyle } from '@/data/mapStyle';
 import { trails } from '@/data/trails';
 import { useCurrentPosition } from '@/hooks/useCurrentPosition';
+import { useMarkerTracking } from '@/hooks/useMarkerTracking';
 import { useMemorias } from '@/store/acervo';
 import { useSheet } from '@/store/sheet';
 import { alpha, colors, HIT, radius, space } from '@/theme';
@@ -55,6 +56,7 @@ export default function TrilhaScreen() {
   const faltando = Math.max(0, trail.stopCount - paradas.length);
 
   const rota = paradas.map((m) => ({ latitude: m.coords.lat, longitude: m.coords.lng }));
+  const { aoCarregarMapa, capturando } = useMarkerTracking(paradas.map((m) => m.id).join('|'));
   const centro = rota.length
     ? {
         latitude: rota.reduce((s, p) => s + p.latitude, 0) / rota.length,
@@ -140,7 +142,8 @@ export default function TrilhaScreen() {
               zoomEnabled={false}
               rotateEnabled={false}
               pitchEnabled={false}
-              toolbarEnabled={false}>
+              toolbarEnabled={false}
+              onMapReady={aoCarregarMapa}>
               {rota.length > 1 ? (
                 <Polyline
                   coordinates={rota}
@@ -154,7 +157,7 @@ export default function TrilhaScreen() {
                   key={m.id}
                   coordinate={{ latitude: m.coords.lat, longitude: m.coords.lng }}
                   anchor={{ x: 0.5, y: 0.5 }}
-                  tracksViewChanges={false}
+                  tracksViewChanges={capturando}
                   onPress={() => openSheet(m.id)}
                   accessibilityLabel={`Parada ${i + 1}: ${m.title}`}>
                   <PlaquePlate style={styles.numeroPin} frameStyle={styles.numeroPinFrame}>

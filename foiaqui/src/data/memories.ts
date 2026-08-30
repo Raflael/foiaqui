@@ -179,3 +179,40 @@ export function matchesQuery(memory: Memory, query: string): boolean {
   // cada palavra digitada precisa aparecer: "cine 1958" acha, "xyz 1958" não
   return q.split(/\s+/).every((termo) => alvo.includes(termo));
 }
+
+/** tipos de logradouro: sozinhos não identificam nada */
+const TIPOS_DE_VIA = [
+  'rua', 'avenida', 'av', 'praca', 'praça', 'alameda', 'travessa',
+  'estrada', 'rodovia', 'largo', 'beco', 'viela', 'via', 'ladeira',
+];
+
+/**
+ * Nome curto para caber na chapa do pin.
+ *
+ * O corte anterior era um `.slice(0, 14)` seco e cortava no meio da palavra:
+ * "Parque Industrial" virava "PARQUE INDUSTR", "Avenida Deputado" virava
+ * "AVENIDA DEPUTA". A placa é estreita de propósito — nome de rua precisa
+ * caber em chapa estreita —, então truncar é inevitável; truncar feio não é.
+ *
+ * Duas regras: palavras inteiras, e o tipo da via sai primeiro se o nome não
+ * couber com ele. "Rua José Cobra" vira "José Cobra", não "Rua José Cob".
+ */
+export function nomeCurto(endereco: string | null | undefined, limite = 18): string {
+  const bruto = (endereco ?? '').split(',')[0].trim();
+  if (!bruto) return 'Aqui';
+
+  let palavras = bruto.split(' ').filter(Boolean);
+  const primeira = palavras[0].toLowerCase().split('.').join('');
+  if (palavras.length > 1 && TIPOS_DE_VIA.includes(primeira) && bruto.length > limite) {
+    palavras = palavras.slice(1);
+  }
+
+  let saida = '';
+  for (const p of palavras) {
+    const tentativa = saida ? saida + ' ' + p : p;
+    if (tentativa.length > limite) break;
+    saida = tentativa;
+  }
+  // uma palavra só, e nem ela cabe
+  return saida || palavras[0].slice(0, limite - 1) + '…';
+}

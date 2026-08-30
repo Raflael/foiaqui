@@ -14,6 +14,7 @@ import { SearchBar } from '@/components/SearchBar';
 import { Body, Mono } from '@/components/Type';
 import { YouAreHere } from '@/components/YouAreHere';
 import { distanceTo, fallbackPosition, formatDistance } from '@/data/location';
+import { useMarkerTracking } from '@/hooks/useMarkerTracking';
 import { agrupar, type Regiao } from '@/data/cluster';
 import { mapStyle } from '@/data/mapStyle';
 import { mapFilters, matchesQuery } from '@/data/memories';
@@ -132,17 +133,9 @@ export default function MapScreen() {
   const grupos = agrupar(shown, regiao, W, H);
 
   const chaveDosPins = grupos.map((g) => g.itens.map((m) => m.id).join(',')).join('|');
-  const [mapReady, setMapReady] = useState(false);
-  const [tracking, setTracking] = useState(true);
-  useEffect(() => {
-    if (!mapReady) return;
-    setTracking(true);
-    const t = setTimeout(() => setTracking(false), 1200);
-    return () => clearTimeout(t);
-    // `chaveDosPins` entra aqui de propósito: criar uma memória muda o
-    // conjunto de marcadores, e sem reabrir a captura os antigos congelavam
-    // em branco no mapa — apareciam na lista e sumiam do mapa.
-  }, [mapReady, openId, filterId, query, chaveDosPins]);
+  const { aoCarregarMapa, capturando } = useMarkerTracking(
+    `${openId}|${filterId}|${query}|${chaveDosPins}`,
+  );
 
   return (
     <View style={styles.screen}>
@@ -152,7 +145,7 @@ export default function MapScreen() {
           style={StyleSheet.absoluteFill}
           initialRegion={INITIAL_REGION}
           customMapStyle={mapStyle}
-          onMapReady={() => setMapReady(true)}
+          onMapReady={aoCarregarMapa}
           onRegionChangeComplete={setRegiao}
           mapPadding={{ top: insets.top + TOP_CHROME, left: 0, right: 0, bottom: sheetOccupies }}
           showsCompass={false}
@@ -190,7 +183,7 @@ export default function MapScreen() {
                 key={sozinha ? memory.id : `grupo-${g.lat}-${g.lng}`}
                 coordinate={{ latitude: g.lat, longitude: g.lng }}
                 anchor={{ x: 0.5, y: 1 }}
-                tracksViewChanges={tracking}
+                tracksViewChanges={capturando}
                 onPress={() => {
                   if (sozinha) {
                     openSheet(memory.id);
