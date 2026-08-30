@@ -9,16 +9,19 @@
       "distribution": "internal",
       "android": {
         "buildType": "apk"
-      }
+      },
+      "node": "24.11.1"
     },
     "preview": {
       "distribution": "internal",
       "android": {
         "buildType": "apk"
-      }
+      },
+      "node": "24.11.1"
     },
     "production": {
-      "autoIncrement": true
+      "autoIncrement": true,
+      "node": "24.11.1"
     }
   },
   "submit": {
