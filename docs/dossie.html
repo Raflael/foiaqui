@@ -1,0 +1,990 @@
+<title>FoiAqui</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Archivo+Narrow:wght@600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=DM+Mono:wght@400;500&display=swap">
+
+<style>
+  /* ─────────────────────────────────────────────────────────────
+     Tokens: os mesmos de theme/colors.ts do app. O dossiê sobre a
+     Placa Esmaltada é composto na Placa Esmaltada.
+     ───────────────────────────────────────────────────────────── */
+  :root {
+    --cal:        #F4F3EE;
+    --cal2:       #EAE8E0;
+    --cal3:       #DFDCD1;
+    --linha:      #CFCABA;
+
+    --esmalte:      #14396E;
+    --esmalte-fundo:#0F2B54;
+    --sobre-esmalte:#F4F3EE;
+    --sobre-dim:    #A8C2E4;
+
+    --ferrugem:       #B4471F;
+    --conferido:      #2E6E68;
+
+    --tinta:      #1A1D23;
+    --tinta-dim:  #55524B;
+
+    --chapa:      var(--esmalte);
+    --chapa-texto:var(--sobre-esmalte);
+    --chapa-dim:  var(--sobre-dim);
+    --acento:     var(--ferrugem);
+
+    --medida: 34rem;
+    --gutter: clamp(1.25rem, 5vw, 3rem);
+
+    color-scheme: light;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --cal: #10161F; --cal2: #171F2B; --cal3: #1E2733; --linha: #2C3849;
+      --tinta: #ECEAE3; --tinta-dim: #A3AEBE;
+      --chapa: #0F2B54; --chapa-texto: #F4F3EE; --chapa-dim: #A8C2E4;
+      --acento: #EC9A72; --conferido: #6FBDB2;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --cal: #10161F; --cal2: #171F2B; --cal3: #1E2733; --linha: #2C3849;
+    --tinta: #ECEAE3; --tinta-dim: #A3AEBE;
+    --chapa: #0F2B54; --chapa-texto: #F4F3EE; --chapa-dim: #A8C2E4;
+    --acento: #EC9A72; --conferido: #6FBDB2;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--cal);
+    color: var(--tinta);
+    font-family: Archivo, "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── as quatro vozes ─────────────────────────────────────────── */
+  .placa {
+    font-family: "Archivo Narrow", "Arial Narrow", Archivo, sans-serif;
+    font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.02em; line-height: 1.05; text-wrap: balance;
+  }
+  .relato { font-family: Newsreader, Georgia, serif; font-size: 1.24rem; line-height: 1.55; }
+  .mono { font-family: "DM Mono", ui-monospace, SFMono-Regular, Consolas, monospace; font-variant-numeric: tabular-nums; }
+
+  .envolt { max-width: 62rem; margin: 0 auto; padding: 0 var(--gutter); }
+  .prosa { max-width: var(--medida); }
+  .prosa p { margin: 0 0 1.15em; }
+  .prosa p:last-child { margin-bottom: 0; }
+
+  a { color: var(--acento); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  a:focus-visible { outline: 2px solid var(--acento); outline-offset: 3px; }
+
+  /* ── A CHAPA: o dispositivo estrutural ───────────────────────── */
+  .chapa {
+    background: var(--chapa); color: var(--chapa-texto);
+    padding: clamp(1.5rem, 4vw, 2.5rem); position: relative;
+  }
+  .chapa .moldura { border: 2px solid var(--chapa-texto); padding: clamp(1.25rem, 3.5vw, 2.25rem); }
+  .chapa.lascada::after {
+    content: ""; position: absolute; right: 0; top: 38%;
+    width: 8px; height: 78px; background: var(--ferrugem);
+  }
+  .chapa .marcador {
+    font-family: "DM Mono", monospace; font-size: 0.72rem; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--chapa-dim); display: block; margin-bottom: 0.7rem;
+  }
+  .chapa h1, .chapa h2 { margin: 0; }
+
+  /* ── capa e sumário ──────────────────────────────────────────── */
+  header.capa { padding: clamp(2rem, 7vw, 5rem) 0 clamp(1.5rem, 4vw, 3rem); }
+  header.capa h1 { font-size: clamp(3rem, 12vw, 6.5rem); }
+  header.capa .fala {
+    font-family: Newsreader, Georgia, serif; font-style: italic;
+    font-size: clamp(1.1rem, 3.2vw, 1.5rem); color: var(--chapa-dim);
+    margin: 1.25rem 0 0; line-height: 1.4;
+  }
+  .creditos { display: flex; flex-wrap: wrap; gap: 0.4rem 2.2rem; margin-top: 1.75rem; font-size: 0.8rem; }
+  .creditos div { display: flex; flex-direction: column; gap: 0.15rem; }
+  .creditos dt { color: var(--tinta-dim); font-size: 0.68rem; letter-spacing: 0.16em; text-transform: uppercase; font-family: "DM Mono", monospace; }
+  .creditos dd { margin: 0; font-weight: 600; }
+
+  nav.sumario { margin-top: clamp(2rem, 5vw, 3.5rem); border-top: 2px solid var(--tinta); padding-top: 1.25rem; }
+  nav.sumario h2 { font-family: "DM Mono", monospace; font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--tinta-dim); margin: 0 0 1rem; font-weight: 400; }
+  nav.sumario ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+  nav.sumario li { border-bottom: 1px solid var(--linha); }
+  nav.sumario a {
+    display: flex; gap: 1rem; align-items: baseline;
+    padding: 0.55rem 0; color: var(--tinta); text-decoration: none;
+  }
+  nav.sumario a:hover, nav.sumario a:focus-visible { color: var(--acento); }
+  nav.sumario .n { font-family: "DM Mono", monospace; font-size: 0.8rem; color: var(--acento); min-width: 1.8rem; }
+  nav.sumario .t { font-weight: 500; }
+  nav.sumario .d { margin-left: auto; font-size: 0.8rem; color: var(--tinta-dim); text-align: right; }
+
+  /* ── seções ───────────────────────────────────────────────────── */
+  section { padding: clamp(2.75rem, 8vw, 5.5rem) 0; border-top: 1px solid var(--linha); }
+  section h2 { font-size: clamp(1.6rem, 5vw, 2.5rem); }
+  h3 {
+    font-family: "Archivo Narrow", "Arial Narrow", sans-serif;
+    text-transform: uppercase; letter-spacing: 0.03em;
+    font-size: 1.12rem; margin: 2.5rem 0 0.6rem;
+  }
+  h4 { font-size: 0.95rem; margin: 1.5rem 0 0.4rem; letter-spacing: 0.01em; }
+  section > .envolt > .chapa { margin-bottom: clamp(1.75rem, 4vw, 2.75rem); }
+
+  /* ── blocos ───────────────────────────────────────────────────── */
+  .caixa { background: var(--cal2); border-left: 3px solid var(--esmalte); padding: 1.25rem 1.4rem; margin: 1.75rem 0; }
+  .caixa.acento { border-left-color: var(--acento); }
+  .caixa.ok { border-left-color: var(--conferido); }
+  .caixa p:last-child { margin-bottom: 0; }
+  .caixa h4:first-child { margin-top: 0; }
+
+  blockquote {
+    margin: 2rem 0; padding-left: 1.4rem; border-left: 3px solid var(--acento);
+    font-family: Newsreader, Georgia, serif; font-size: 1.28rem; line-height: 1.5;
+  }
+  blockquote footer { font-family: Archivo, sans-serif; font-size: 0.85rem; color: var(--tinta-dim); margin-top: 0.7rem; font-style: normal; }
+
+  .rolagem { overflow-x: auto; margin: 1.75rem 0; }
+  table { border-collapse: collapse; width: 100%; font-size: 0.9rem; min-width: 32rem; }
+  th, td { text-align: left; padding: 0.7rem 0.9rem; border-bottom: 1px solid var(--linha); vertical-align: top; }
+  thead th { font-family: "DM Mono", monospace; font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--tinta-dim); border-bottom-width: 2px; }
+  td.num { font-family: "DM Mono", monospace; color: var(--acento); font-weight: 500; white-space: nowrap; }
+  tbody tr:last-child td { border-bottom: 0; }
+
+  /* ── anatomia de tela ────────────────────────────────────────── */
+  .tela { border: 1px solid var(--linha); margin: 2rem 0; background: var(--cal2); }
+  .tela > .cabeca {
+    display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; align-items: baseline;
+    padding: 0.9rem 1.25rem; background: var(--esmalte); color: var(--sobre-esmalte);
+  }
+  .tela > .cabeca .nome { font-family: "Archivo Narrow", sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; font-size: 1.15rem; }
+  .tela > .cabeca .arquivo { font-family: "DM Mono", monospace; font-size: 0.72rem; color: var(--sobre-dim); margin-left: auto; }
+  .tela .corpo { padding: 1.25rem; display: grid; gap: 1.1rem; }
+  .tela dl { margin: 0; display: grid; gap: 0.3rem; }
+  .tela dt {
+    font-family: "DM Mono", monospace; font-size: 0.68rem; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--tinta-dim);
+  }
+  .tela dd { margin: 0; }
+  .tela dd ul { margin: 0.3rem 0 0; padding-left: 1.1rem; }
+  .tela dd li { margin-bottom: 0.35rem; }
+  .tela .recusado { border-top: 1px dashed var(--linha); padding-top: 1rem; }
+  .tela .recusado dt { color: var(--acento); }
+
+  /* ── amostras ─────────────────────────────────────────────────── */
+  .paleta { display: grid; grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr)); gap: 1px; background: var(--linha); border: 1px solid var(--linha); margin: 1.75rem 0; }
+  .tinta-amostra { background: var(--cal); padding: 0.85rem; display: flex; flex-direction: column; gap: 0.5rem; }
+  .swatch { height: 42px; border: 1px solid rgba(0,0,0,0.14); }
+  .tinta-amostra b { font-size: 0.82rem; }
+  .tinta-amostra span { font-family: "DM Mono", monospace; font-size: 0.72rem; color: var(--tinta-dim); }
+
+  .papeis { display: grid; gap: 1px; background: var(--linha); border: 1px solid var(--linha); margin: 1.75rem 0; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); }
+  .papel { background: var(--cal); padding: 1.2rem; }
+  .papel .amostra { font-size: 1.5rem; margin-bottom: 0.5rem; line-height: 1.2; }
+  .papel dt { font-weight: 600; font-size: 0.9rem; }
+  .papel dd { margin: 0.2rem 0 0; font-size: 0.84rem; color: var(--tinta-dim); line-height: 1.5; }
+
+  .metricas { display: grid; grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr)); gap: 1px; background: var(--linha); border: 1px solid var(--linha); margin: 1.75rem 0; }
+  .metrica { background: var(--cal); padding: 1.1rem; }
+  .metrica b { font-family: "DM Mono", monospace; font-size: 1.8rem; color: var(--esmalte); display: block; line-height: 1.1; }
+  :root[data-theme="dark"] .metrica b { color: var(--sobre-dim); }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .metrica b { color: var(--sobre-dim); } }
+  .metrica span { font-size: 0.78rem; color: var(--tinta-dim); }
+
+  .selo { display: inline-block; font-family: "DM Mono", monospace; font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.2rem 0.5rem; border: 1px solid currentColor; white-space: nowrap; }
+  .selo.ok { color: var(--conferido); }
+  .selo.falta { color: var(--acento); }
+
+  ul.limpa { list-style: none; padding: 0; margin: 1.5rem 0; display: grid; gap: 0.9rem; }
+  ul.limpa li { padding-left: 1.5rem; position: relative; }
+  ul.limpa li::before { content: ""; position: absolute; left: 0; top: 0.62em; width: 9px; height: 9px; background: var(--acento); }
+
+  footer.pe { padding: clamp(2.5rem, 7vw, 4rem) 0 5rem; border-top: 1px solid var(--linha); color: var(--tinta-dim); font-size: 0.86rem; }
+
+  @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+
+  /* ─────────────────────────────────────────────────────────────
+     Impressão / PDF. Papel não tem tema do sistema: força a paleta
+     clara e manda imprimir os fundos, senão a chapa sai branca e o
+     documento perde justamente a coisa que ele descreve.
+     ───────────────────────────────────────────────────────────── */
+  @page { size: A4; margin: 15mm 13mm 17mm; }
+
+  @media print {
+    :root {
+      --cal: #FFFFFF; --cal2: #F2F0E9; --cal3: #E6E3DA; --linha: #C8C3B4;
+      --tinta: #14171C; --tinta-dim: #4A4842;
+      --chapa: #14396E; --chapa-texto: #FFFFFF; --chapa-dim: #BBD1EC;
+      --acento: #A13F1B; --conferido: #245C57;
+      color-scheme: light;
+    }
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    body { font-size: 10pt; line-height: 1.5; background: #FFFFFF; }
+    .envolt { max-width: none; padding: 0; }
+    .prosa { max-width: none; }
+
+    /* a placa é a unidade do documento: nunca parte no meio, e nunca fica
+       órfã no pé da página sem o texto que ela abre */
+    .chapa, .tela, tr, .caixa, blockquote, .metrica, .papel, .tinta-amostra { break-inside: avoid; page-break-inside: avoid; }
+    section > .envolt > .chapa { break-after: avoid; page-break-after: avoid; }
+    section { break-before: page; page-break-before: always; padding: 0 0 1.2rem; border-top: 0; }
+    h3, h4 { break-after: avoid; page-break-after: avoid; }
+    thead { display: table-header-group; }
+
+    header.capa { padding: 0 0 1.2rem; }
+    header.capa h1 { font-size: 54pt; }
+    nav.sumario { break-before: page; page-break-before: always; }
+
+    .rolagem { overflow: visible; }
+    table { min-width: 0; font-size: 8.4pt; }
+    th, td { padding: 0.35rem 0.5rem; }
+
+    /* o endereço dos links some no papel, então ele vai impresso */
+    .prosa a::after, td a::after, .caixa a::after { content: " (" attr(href) ")"; font-size: 7pt; color: var(--tinta-dim); word-break: break-all; }
+    nav.sumario a::after { content: none; }
+
+    footer.pe { break-before: avoid; page-break-before: avoid; padding: 1.2rem 0 0; }
+  }
+</style>
+
+<div class="envolt">
+  <header class="capa">
+    <div class="chapa lascada">
+      <div class="moldura">
+        <span class="marcador">Museu vivo · São José dos Campos</span>
+        <h1 class="placa">Foi<br>Aqui</h1>
+        <p class="fala">Aponte a câmera e veja o que foi aqui.</p>
+      </div>
+    </div>
+
+    <dl class="creditos">
+      <div><dt>Documento</dt><dd>Dossiê de projeto</dd></div>
+      <div><dt>Método</dt><dd>Duplo Diamante</dd></div>
+      <div><dt>Protótipo</dt><dd>React Native · Expo SDK 57</dd></div>
+      <div><dt>Cidade-piloto</dt><dd>São José dos Campos–SP</dd></div>
+      <div><dt>Identidade</dt><dd>Placa Esmaltada</dd></div>
+    </dl>
+
+    <nav class="sumario">
+      <h2>Sumário</h2>
+      <ol>
+        <li><a href="#s1"><span class="n">01</span><span class="t">O problema</span><span class="d">Por que este produto existe</span></a></li>
+        <li><a href="#s2"><span class="n">02</span><span class="t">Objetivo e escopo</span><span class="d">O que é e o que não é</span></a></li>
+        <li><a href="#s3"><span class="n">03</span><span class="t">Método</span><span class="d">Duplo Diamante, fase a fase</span></a></li>
+        <li><a href="#s4"><span class="n">04</span><span class="t">Benchmarking</span><span class="d">Três referências, o que copiar e o que evitar</span></a></li>
+        <li><a href="#s5"><span class="n">05</span><span class="t">As doze decisões</span><span class="d">Evidência, justificativa e consequência</span></a></li>
+        <li><a href="#s6"><span class="n">06</span><span class="t">Identidade visual</span><span class="d">Placa Esmaltada</span></a></li>
+        <li><a href="#s7"><span class="n">07</span><span class="t">Anatomia das telas</span><span class="d">Cada uma, ponto a ponto</span></a></li>
+        <li><a href="#s8"><span class="n">08</span><span class="t">Moderação</span><span class="d">Os critérios e o fluxo</span></a></li>
+        <li><a href="#s9"><span class="n">09</span><span class="t">Acessibilidade</span><span class="d">Medida, não estimada</span></a></li>
+        <li><a href="#s10"><span class="n">10</span><span class="t">Arquitetura</span><span class="d">As escolhas técnicas e seus porquês</span></a></li>
+        <li><a href="#s11"><span class="n">11</span><span class="t">O acervo</span><span class="d">Oito lugares reais</span></a></li>
+        <li><a href="#s12"><span class="n">12</span><span class="t">Estado e dívidas</span><span class="d">O que falta, sem maquiagem</span></a></li>
+      </ol>
+    </nav>
+  </header>
+</div>
+
+<!-- ═══ 01 ═══════════════════════════════════════════════════════ -->
+<section id="s1">
+  <div class="envolt">
+    <div class="chapa">
+      <div class="moldura">
+        <span class="marcador">01 · O problema</span>
+        <h2 class="placa">A memória some junto com quem viveu</h2>
+      </div>
+    </div>
+
+    <div class="prosa">
+      <p>A memória urbana está espalhada e desaparecendo: em gavetas, na cabeça dos mais velhos, em arquivos que ninguém abre. E falta uma ponte entre o lugar físico e a sua história — você passa por um prédio todo dia sem saber o que aconteceu ali.</p>
+
+      <blockquote class="relato">
+        A ideia nasceu quando minha avó faleceu e achei caixas de fotos de uma cidade que não existe mais — lugares e histórias que ninguém mais ia conhecer. Percebi que a memória das cidades some junto com quem viveu nelas.
+        <footer>Helena Braga, fundadora · entrevista com a PO</footer>
+      </blockquote>
+
+      <p>O FoiAqui liga o lugar à memória no ponto exato onde ela aconteceu. Qualquer pessoa contribui com foto, relato, áudio ou vídeo; a comunidade modera. A cidade vira um museu vivo.</p>
+    </div>
+
+    <h3>Dois lados que se alimentam</h3>
+    <div class="prosa">
+      <p>Este não é um produto com um público. São dois, e o desenho precisa servir aos dois de formas diferentes — porque o que é fácil para um é barreira para o outro.</p>
+    </div>
+
+    <div class="rolagem">
+      <table>
+        <thead><tr><th>Lado</th><th>Quem é</th><th>O que precisa</th><th>Risco de perder</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>Quem cria</strong></td>
+            <td>Moradores, muitas vezes mais velhos, com o acervo na gaveta. Pesquisadores, artistas, instituições.</td>
+            <td>Que contribuir seja fácil de verdade: alvo grande, áudio em vez de texto, rascunho que não se perde.</td>
+            <td>É o lado <strong>mais difícil</strong> dos dois. Sem ele o mapa fica vazio e o produto não existe.</td>
+          </tr>
+          <tr>
+            <td><strong>Quem consome</strong></td>
+            <td>Turistas, estudantes, curiosos urbanos, moradores.</td>
+            <td>Encontrar algo interessante nos primeiros trinta segundos, sem cadastro nem tutorial.</td>
+            <td>Sem densidade de conteúdo, vai embora e não volta.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="caixa acento">
+      <h4>A preocupação que organiza tudo</h4>
+      <p>A PO nomeou três medos: o <strong>banco vazio</strong> no começo (ninguém usa um mapa sem histórias), a <strong>qualidade e veracidade</strong> do conteúdo, e a <strong>AR ser pesada ou frustrante</strong>. Os três aparecem convertidos em decisão de produto mais adiante — a moderação existe por causa do segundo, e a AR é opcional por causa do terceiro.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 02 ═══════════════════════════════════════════════════════ -->
+<section id="s2">
+  <div class="envolt">
+    <div class="chapa">
+      <div class="moldura">
+        <span class="marcador">02 · Objetivo e escopo</span>
+        <h2 class="placa">O que é, e o que deliberadamente não é</h2>
+      </div>
+    </div>
+
+    <blockquote class="relato">
+      Um protótipo do FoiAqui testado, que atenda aos requisitos funcionais e de conteúdo, com recomendações de UX. Não quero o app pronto — quero validar que a experiência funciona e que as pessoas entendem e se emocionam com ela.
+      <footer>Helena Braga, sobre o objetivo dos dois meses</footer>
+    </blockquote>
+
+    <div class="prosa">
+      <p>Isso define o escopo com precisão incomum: o entregável é <em>experiência validada</em>, não software terminado. Toda decisão de recorte abaixo sai daí.</p>
+    </div>
+
+    <div class="rolagem">
+      <table>
+        <thead><tr><th>Está no escopo</th><th>Está fora, e por quê</th></tr></thead>
+        <tbody>
+          <tr><td>As telas navegáveis, com a identidade visual aplicada e interações reais.</td><td><strong>Backend.</strong> Sem servidor não há conta, sincronização nem revisão por pessoas distintas — mas nada disso é necessário para validar se a experiência funciona.</td></tr>
+          <tr><td>Câmera, microfone, GPS e bússola de verdade, porque o produto é sobre estar no lugar.</td><td><strong>AR real (ARKit/ARCore).</strong> Decisão 08: caro de manter, e o Historypin quebrou apostando nisso.</td></tr>
+          <tr><td>Acervo semeado com lugares reais e fonte declarada.</td><td><strong>Digitalização de acervo institucional.</strong> É trabalho de parceria (Decisão 06), não de protótipo.</td></tr>
+          <tr><td>Persistência local, para que o que a pessoa cria sobreviva ao fechar o app.</td><td><strong>Perfil público e social.</strong> Depende de contas reais.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="caixa">
+      <h4>Um princípio que atravessa o projeto inteiro</h4>
+      <p><strong>Interface não mente.</strong> Se um botão existe, ele funciona; se um número aparece, ele é contado de verdade; se algo não existe, a tela diz que não existe em vez de simular. Isso custou trabalho — contadores falsos viraram contagem real, filtros decorativos viraram predicados, o “enviar” que descartava tudo virou gravação — mas é o que permite testar com uma pessoa sem precisar explicar “isso aqui é de mentirinha”.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 03 ═══════════════════════════════════════════════════════ -->
+<section id="s3">
+  <div class="envolt">
+    <div class="chapa">
+      <div class="moldura">
+        <span class="marcador">03 · Método</span>
+        <h2 class="placa">Duplo Diamante, fase a fase</h2>
+      </div>
+    </div>
+
+    <div class="rolagem">
+      <table>
+        <thead><tr><th>Fase</th><th>O que foi feito</th><th>Saída</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Descobrir</strong><br><span class="mono" style="font-size:.78rem;color:var(--tinta-dim)">divergir</span></td><td>Entrevista com a PO; levantamento do território de memória geolocalizada; análise de três produtos que resolvem partes do problema.</td><td>Entendimento do problema e dos dois públicos.</td></tr>
+          <tr><td><strong>Definir</strong><br><span class="mono" style="font-size:.78rem;color:var(--tinta-dim)">convergir</span></td><td>Benchmarking estruturado por critério; extração de padrões repetíveis e de erros a evitar; priorização em MVP / v2 / v3.</td><td><strong>12 decisões de design</strong>, cada uma com evidência e fase.</td></tr>
+          <tr><td><strong>Desenvolver</strong><br><span class="mono" style="font-size:.78rem;color:var(--tinta-dim)">divergir</span></td><td>Três direções de identidade estudadas; sitemap; protótipo navegável; implementação em React Native.</td><td>Identidade <strong>Placa Esmaltada</strong> e o app funcionando.</td></tr>
+          <tr><td><strong>Entregar</strong><br><span class="mono" style="font-size:.78rem;color:var(--tinta-dim)">convergir</span></td><td><span class="selo falta">Pendente</span> Teste de usabilidade com 3 a 5 pessoas, incluindo o perfil de quem cria.</td><td>Recomendações de UX — o entregável que a PO pediu.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="caixa acento">
+      <p><strong>O projeto está no fim da terceira fase.</strong> Isso é uma afirmação sobre o que ainda não se sabe: nenhuma decisão aqui foi confrontada com uma pessoa de fora. Todas são defensáveis — nenhuma é validada.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 04 ═══════════════════════════════════════════════════════ -->
+<section id="s4">
+  <div class="envolt">
+    <div class="chapa">
+      <div class="moldura">
+        <span class="marcador">04 · Benchmarking</span>
+        <h2 class="placa">Três referências, escolhidas pelo que erram</h2>
+      </div>
+    </div>
+
+    <div class="prosa">
+      <p>Nenhuma das três é concorrente direta. Cada uma domina um pedaço do território do FoiAqui e falha em outro — e é a falha que ensina mais rápido.</p>
+    </div>
+
+    <div class="rolagem">
+      <table>
+        <thead><tr><th>Critério</th><th>Pokémon GO</th><th>Google Maps</th><th>Historypin</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Primeira tela</strong></td><td>Mapa estilizado centrado no avatar. Não existe boas-vindas: a exploração é a abertura.</td><td>Mapa centrado na sua localização, busca no topo. Fricção zero.</td><td>Home editorial de site, que convida a “explorar coleções”.</td></tr>
+          <tr><td><strong>Navegação</strong></td><td>Mapa vivo como tela única; a AR entra só em momentos específicos.</td><td>Mapa + busca + abas; tocar num local abre um <em>bottom sheet</em> que cobre parte do mapa sem tirar você dele.</td><td>Explorável por local, tema, palavra-chave ou data.</td></tr>
+          <tr><td><strong>Como o conteúdo entra</strong></td><td>Sugestão pelo Wayfarer, com revisão de outros jogadores antes de virar ponto oficial.</td><td>Qualquer pessoa logada contribui; Local Guides dá pontos e níveis.</td><td>Upload pela web, com curadoria leve da equipe e de parceiros.</td></tr>
+          <tr><td><strong>Moderação</strong></td><td>Revisão por pares, critérios públicos, reputação do revisor, recusa justificada. O modelo mais bem documentado em escala.</td><td>Detecção automática + denúncia + reputação. Rápido, mas <strong>opaco</strong>.</td><td>Curadoria leve, feita pela equipe e por instituições.</td></tr>
+          <tr><td><strong>Uso de AR</strong></td><td>Maduro e intencional: momentos de recompensa, nunca estado permanente.</td><td>Assistente pontual (Live View), sempre com o mapa comum como alternativa.</td><td>Era a promessa original; os apps saíram das lojas em 2015.</td></tr>
+          <tr><td><strong>Ponto fraco</strong></td><td>O lugar real é só cenário — não há espaço para história pessoal.</td><td>É genérico: cabe tudo, então nada é memória. Premia o presente e o comércio.</td><td>Descontinuou o mobile e nunca recuperou o público.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>O que copiar, e o que recusar</h3>
+    <div class="papeis">
+      <dl class="papel">
+        <dt>Copiar do Pokémon GO</dt>
+        <dd>A regra de ouro do “seja o cursor”: abrir direto no mapa, com o conteúdo ao redor de onde a pessoa está. E o Wayfarer inteiro como manual de moderação comunitária.</dd>
+      </dl>
+      <dl class="papel">
+        <dt>Copiar do Google Maps</dt>
+        <dd>O <em>bottom sheet</em> como molde exato da ficha de memória, e o controle de linha do tempo do Street View histórico.</dd>
+      </dl>
+      <dl class="papel">
+        <dt>Recusar do Pokémon GO</dt>
+        <dd>Transformar memória em pontuação. Gamificação aqui reconhece o autor; nunca cria corrida por volume.</dd>
+      </dl>
+      <dl class="papel">
+        <dt>Recusar do Historypin</dt>
+        <dd>Apostar o produto em AR. O caso mostra o custo de manutenção para equipe pequena.</dd>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 05 ═══════════════════════════════════════════════════════ -->
+<section id="s5">
+  <div class="envolt">
+    <div class="chapa lascada">
+      <div class="moldura">
+        <span class="marcador">05 · As doze decisões</span>
+        <h2 class="placa">Cada escolha, e o que ela obrigou</h2>
+      </div>
+    </div>
+
+    <div class="prosa">
+      <p>Documento de pesquisa que não muda o produto é enfeite. A última coluna existe para provar o contrário: mostra a consequência concreta que cada decisão impôs ao código.</p>
+    </div>
+
+    <div class="rolagem">
+      <table>
+        <thead><tr><th style="width:2.5rem">#</th><th>Decisão</th><th>Evidência</th><th>Por quê</th><th>O que obrigou</th><th>Fase</th></tr></thead>
+        <tbody>
+          <tr><td class="num">01</td><td>Abrir direto no mapa, sem splash nem onboarding obrigatório.</td><td>Pokémon GO + Google Maps</td><td>Os dois produtos de maior escala fazem isso. Onboarding, se existir, é dica contextual — não tela que atrasa o primeiro valor.</td><td>Identificar-se só é exigido ao publicar. Nunca na porta.</td><td>MVP</td></tr>
+          <tr><td class="num">02</td><td>Ficha de memória como <em>bottom sheet</em>.</td><td>Google Maps</td><td>Mantém o contexto geográfico e permite pular de memória em memória sem recarregar telas.</td><td>A ficha não é rota: é estado global montado na raiz da árvore.</td><td>MVP</td></tr>
+          <tr><td class="num">03</td><td>Data e local obrigatórios em todo envio.</td><td>Historypin</td><td>Data é o que viabiliza linha do tempo, sobreposição e coleções. Sem ela no MVP, essas features ficam impossíveis depois.</td><td>Campo de ano exato ao lado da década; o ano rege o verbo da placa.</td><td>MVP</td></tr>
+          <tr><td class="num">04</td><td>Áudio como mídia de primeira classe.</td><td>Historypin</td><td>Gravar trinta segundos é mais fácil que escrever, e a voz carrega o afeto que é a proposta do produto.</td><td>Gravação no primeiro passo, ao lado da foto — não atrás de “anexar”.</td><td>MVP</td></tr>
+          <tr><td class="num">05</td><td>Moderação comunitária com critérios públicos e recusa justificada.</td><td>Pokémon GO <em>(Wayfarer)</em></td><td>Conteúdo aberto sobre lugares reais atrai spam, ofensa e disputa de narrativa. Precisa existir desde o lançamento.</td><td>Recusar exige apontar o critério ferido; os critérios aparecem também para quem envia.</td><td>MVP</td></tr>
+          <tr><td class="num">06</td><td>Parcerias locais antes do lançamento público.</td><td>Historypin</td><td>Resolve o mapa vazio. O Historypin só tem densidade onde existe parceiro ativo.</td><td>Ação de negócio, não de código.</td><td>MVP</td></tr>
+          <tr><td class="num">07</td><td>Projetar para uso na rua.</td><td>Pokémon GO + Google Maps</td><td>O contexto real é sol na tela, mão ocupada e sinal instável. Isso muda tipografia, alvo de toque e mensagem de erro.</td><td>Paleta clara, alvos ≥ 44 px, contraste medido por script que reprova o commit.</td><td>MVP</td></tr>
+          <tr><td class="num">08</td><td>AR como camada opcional, com <em>fallback</em>.</td><td>Historypin <em>(caso negativo)</em></td><td>O Historypin apostou em AR mobile e retirou os apps em 2015. Custo alto demais para equipe pequena.</td><td>AR nunca é requisito para usar o produto.</td><td>v3</td></tr>
+          <tr><td class="num">09</td><td>Nunca deixar a AR ligada continuamente.</td><td>Pokémon GO</td><td>Uso contínuo causa cansaço físico, enjoo e queima bateria. O padrão é entrar, entregar o momento, sair.</td><td>A tela de AR se fecha sozinha após 45 s sem interação.</td><td>v3</td></tr>
+          <tr><td class="num">10</td><td>Hierarquia pino → coleção → roteiro.</td><td>Historypin</td><td>Roteiro só faz sentido depois que houver densidade de pinos.</td><td>Trilhas existem; curadoria de coleções ainda não.</td><td>v2</td></tr>
+          <tr><td class="num">11</td><td>Linha do tempo sobre o mapa.</td><td>Google Maps <em>(Street View histórico)</em></td><td>É a UX já validada para navegar entre épocas do mesmo lugar; evita inventar um padrão que o usuário teria de aprender.</td><td>Régua de décadas no rodapé, incluindo as vazias.</td><td>v2</td></tr>
+          <tr><td class="num">12</td><td>Gamificar reconhecimento, não volume.</td><td>Local Guides + ausência no Historypin</td><td>Sem incentivo a contribuição despenca; com incentivo por volume, o acervo enche de conteúdo raso.</td><td>Níveis poucos e largos que nomeiam o papel. Não existe ranking.</td><td>v2</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 06 ═══════════════════════════════════════════════════════ -->
+<section id="s6">
+  <div class="envolt">
+    <div class="chapa lascada">
+      <div class="moldura">
+        <span class="marcador">06 · Identidade visual</span>
+        <h2 class="placa">Placa Esmaltada</h2>
+      </div>
+    </div>
+
+    <h3>A direção que foi abandonada</h3>
+    <div class="prosa">
+      <p>A primeira identidade era “a cidade como arquivo vivo à noite”: fundo escuro, acento âmbar, textura de papel, display em Fraunces. Foi descartada por duas razões, e vale registrar as duas porque elas são o critério que sobrou.</p>
+    </div>
+    <ul class="limpa">
+      <li><strong>Era genérica.</strong> Escuro com acento âmbar e serifado display é uma das combinações mais repetidas em design gerado por IA. Tirando a escolha da fonte, nada era específico deste produto — dava para trocar o logotipo e virar outra coisa.</li>
+      <li><strong>Contradizia o uso real.</strong> A Decisão 07 define o contexto como <em>“sol na tela, mão ocupada, sinal instável”</em>. Interface escura sob sol direto é pior de ler, e a persona principal tem 70 anos. O escuro era poético, não funcional.</li>
+    </ul>
+
+    <h3>A referência</h3>
+    <div class="prosa">
+      <p>A <strong>placa de rua brasileira de chapa esmaltada</strong> dos anos 1930–80: chapa de ferro com esmalte vitrificado, fundo azul-marinho, letra <em>e moldura</em> em branco.</p>
+      <p>Ela sumiu das cidades a partir dos anos 80, trocada por alumínio e PVC. Isso faz dela, ela mesma, uma memória urbana desaparecendo — o meio diz a mesma coisa que a mensagem. E placas comemorativas escrevem literalmente <strong>“AQUI FUNCIONOU”</strong>, “AQUI VIVEU”: o nome do app é a fala da placa.</p>
+    </div>
+
+    <div class="caixa acento">
+      <h4>Consequência direta: cada memória abre com o seu verbo</h4>
+      <p>O tempo verbal conta se a coisa sobreviveu antes de você ler uma linha. <span class="mono">AQUI FUNCIONOU</span> — acabou. <span class="mono">AQUI FICAVA</span> — foi demolido. <span class="mono">AQUI ESTÁ</span> — continua lá. Não é rótulo decorativo: é o campo <span class="mono">marker</span> de cada registro, e o formulário o escolhe a partir do ano informado.</p>
+    </div>
+
+    <h3>A regra estrutural</h3>
+    <div class="prosa"><p>Três papéis que não se misturam. Azul é memória; ferrugem é ação; cal é chão. Quando a regra é violada, a tela deixa de comunicar hierarquia — e a violação vira bug de design, não questão de gosto.</p></div>
+
+    <div class="rolagem">
+      <table>
+        <thead><tr><th>Papel</th><th>Token</th><th>Onde vive</th><th>O que nunca faz</th></tr></thead>
+        <tbody>
+          <tr><td>A cidade, de dia — onde a pessoa anda</td><td class="mono">cal</td><td>mapa, listas, perfil, formulários</td><td>Não marca memória nem ação.</td></tr>
+          <tr><td>A memória marcada no lugar</td><td class="mono">esmalte</td><td>pin do mapa, cabeçalho da ficha, chapa</td><td>Não vira botão de ação.</td></tr>
+          <tr><td>O tempo agindo</td><td class="mono">ferrugem</td><td>ações, seleção, o que é humano e imperfeito</td><td>Não marca conteúdo, só intenção.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="paleta">
+      <div class="tinta-amostra"><div class="swatch" style="background:#F4F3EE"></div><b>cal</b><span>#F4F3EE</span></div>
+      <div class="tinta-amostra"><div class="swatch" style="background:#EAE8E0"></div><b>cal2</b><span>#EAE8E0</span></div>
+      <div class="tinta-amostra"><div class="swatch" style="background:#DFDCD1"></div><b>cal3</b><span>#DFDCD1</span></div>
+      <div class="tinta-amostra"><div class="swatch" style="background:#14396E"></div><b>esmalte</b><span>#14396E</span></div>
+      <div class="tinta-amostra"><div class="swatch" style="background:#0F2B54"></div><b>esmalteFundo</b><span>#0F2B54</span></div>
+      <div class="tinta-amostra"><div class="swatch" style="background:#A8C2E4"></div><b>sobreEsmalteDim</b><span>#A8C2E4</span></div>
+      <div class="tinta-amostra"><div class="swatch" style="background:#B4471F"></div><b>ferrugem</b><span>#B4471F</span></div>
+      <div class="tinta-amostra"><div class="swatch" style="background:#EC9A72"></div><b>ferrugemSobreEscuro</b><span>#EC9A72</span></div>
+      <div class="tinta-amostra"><div class="swatch" style="background:#2E6E68"></div><b>conferido</b><span>#2E6E68</span></div>
+      <div class="tinta-amostra"><div class="swatch" style="background:#1A1D23"></div><b>grafite</b><span>#1A1D23</span></div>
+      <div class="tinta-amostra"><div class="swatch" style="background:#55524B"></div><b>grafiteDim</b><span>#55524B</span></div>
+      <div class="tinta-amostra"><div class="swatch" style="background:#B3CBC5"></div><b>mapaAgua</b><span>#B3CBC5</span></div>
+    </div>
+
+    <div class="caixa">
+      <h4>Por que existe um token só para ferrugem sobre escuro</h4>
+      <p>A ferrugem clara funciona como massa — no gradiente do botão de criar, num ícone grande. Mas a 10 px sobre o azul ela dá <span class="mono">4,14:1</span> e reprova em AA. <strong>Cor que funciona como preenchimento não funciona automaticamente como letra miúda</strong>, e a solução foi um token específico em vez de clarear a ferrugem até ela deixar de ser ferrugem.</p>
+    </div>
+
+    <h3>Quatro vozes, uma por papel</h3>
+    <div class="prosa"><p>Cada família tem um trabalho e não faz o dos outros. Texto no app só entra por componentes tipados — é o que garante que a regra não se dissolva com o tempo, e é também o que faz o ajuste de “fonte grande” alcançar cada palavra.</p></div>
+
+    <div class="papeis">
+      <dl class="papel">
+        <div class="amostra placa">Cine Marrocos</div>
+        <dt>placa · Archivo Narrow</dt>
+        <dd>Título de memória, nome de tela, rótulo de pin. Condensada porque nome de rua precisa caber em chapa estreita — a restrição do objeto real vira restrição tipográfica.</dd>
+      </dl>
+      <dl class="papel">
+        <div class="amostra relato">A padaria abria às quatro</div>
+        <dt>relato · Newsreader</dt>
+        <dd>Só relato e citação. É a voz de quem viveu, e por isso não aparece em botão, rótulo ou menu: se ela vazar para a interface, deixa de significar “alguém está falando”.</dd>
+      </dl>
+      <dl class="papel">
+        <div class="amostra">Contar a minha aqui</div>
+        <dt>interface · Archivo</dt>
+        <dd>Rótulos, botões, listas. Neutra de propósito: não disputa atenção com o acervo, que é o conteúdo que importa.</dd>
+      </dl>
+      <dl class="papel">
+        <div class="amostra mono">1924 — 1952</div>
+        <dt>dados · DM Mono</dt>
+        <dd>Datas, períodos, coordenadas, contagens. Número precisa alinhar em coluna, e monoespaçada é a única que garante isso.</dd>
+      </dl>
+    </div>
+
+    <h3>Linguagem de forma</h3>
+    <div class="prosa">
+      <p><strong>Canto reto é o padrão.</strong> Chapa esmaltada é cortada reta. A curva é exceção reservada ao que é corpo: avatar, botão de tocar áudio, o botão de criar, e a folha que sobe do rodapé. Assim o arredondamento vira informação — quando algo é redondo, é porque tem a ver com gente.</p>
+      <p>A assinatura é a <strong>moldura branca embutida</strong>, que substitui o retângulo arredondado genérico como linguagem de container. É a forma do ícone do app, é a moldura das seções deste documento, e é o que faz uma memória parecer uma placa em vez de um cartão.</p>
+      <p>A <strong>lasca de ferrugem</strong> na borda é a marca do tempo que toda placa velha tem. Usada só na memória aberta, para não virar enfeite.</p>
+    </div>
+
+    <div class="caixa acento">
+      <h4>O que não fazer</h4>
+      <p>Não pulsar, brilhar ou animar os pins: a placa está parada no muro há sessenta anos, e halo piscando é vocabulário de app de corrida. Não usar gradiente como decoração — só onde há volume real. Não voltar com a Fraunces nem com o âmbar.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 07 ═══════════════════════════════════════════════════════ -->
+<section id="s7">
+  <div class="envolt">
+    <div class="chapa">
+      <div class="moldura">
+        <span class="marcador">07 · Anatomia das telas</span>
+        <h2 class="placa">Cada tela, ponto a ponto</h2>
+      </div>
+    </div>
+
+    <div class="prosa">
+      <p>Para cada tela: qual pergunta ela responde, o que faz de fato, por que foi desenhada assim, e — o mais informativo — o que foi <strong>recusado</strong> no caminho. Alternativa descartada com o motivo registrado vale mais que decisão apresentada como óbvia.</p>
+    </div>
+
+    <!-- MAPA -->
+    <article class="tela">
+      <div class="cabeca"><span class="nome">Mapa</span><span class="arquivo mono">app/(tabs)/index.tsx</span></div>
+      <div class="corpo">
+        <dl><dt>Pergunta que responde</dt><dd>O que aconteceu perto de onde eu estou?</dd></dl>
+        <dl><dt>O que faz</dt><dd>
+          <ul>
+            <li>Mapa real com estilo próprio, na paleta da identidade — a água em <span class="mono">mapaAgua</span>, as vias em cal, para o pin azul ser a única coisa saturada na tela.</li>
+            <li>Busca que cobre lugar, título, relato, tags, época, ano e período, com normalização de acento: quem digita “praca” encontra “Praça”.</li>
+            <li>Filtros por tema que são predicados de verdade, e um deles vazio de propósito para exercitar o estado vazio.</li>
+            <li>Régua de décadas no rodapé, ao alcance do polegar.</li>
+            <li>Pins que se agrupam: primeiro por lugar, depois por sobreposição de tela.</li>
+            <li>Alternância mapa ↔ lista, para quem prefere ler a explorar.</li>
+          </ul>
+        </dd></dl>
+        <dl><dt>Por quê</dt><dd>Decisão 01: é a tela de abertura, sem nada antes dela. O mapa é a interface única do produto, e todo o resto é sobreposição — nunca substituição.</dd></dl>
+        <dl class="recusado"><dt>O que foi recusado</dt><dd>
+          <ul>
+            <li><strong>Trocar o mapa pela lista.</strong> A primeira versão desmontava o mapa ao abrir a lista, e a câmera se perdia a cada volta. A lista passou a se sobrepor.</li>
+            <li><strong>Agrupar pins por metros.</strong> A sobreposição depende do zoom, não do terreno: duas memórias a 30 m brigam com o mapa afastado e ficam soltas com ele perto. O critério virou pixel.</li>
+            <li><strong>Um chip fixo de “Anos 60”.</strong> Ele e a régua de décadas eram dois controles para a mesma pergunta, e o chip cobria uma década só.</li>
+          </ul>
+        </dd></dl>
+      </div>
+    </article>
+
+    <!-- FICHA -->
+    <article class="tela">
+      <div class="cabeca"><span class="nome">Ficha da memória</span><span class="arquivo mono">components/MemorySheet.tsx</span></div>
+      <div class="corpo">
+        <dl><dt>Pergunta que responde</dt><dd>O que foi isto aqui, e quem contou?</dd></dl>
+        <dl><dt>O que faz</dt><dd>
+          <ul>
+            <li>Folha de três alturas sobre o mapa, arrastável, que nunca esconde o contexto por completo.</li>
+            <li>Cabeçalho em chapa esmaltada com o verbo, o título, o período e o endereço.</li>
+            <li>Comparação passado ↔ presente arrastável quando existem as duas fotos — e uma foto só quando só há uma, porque divisor sobre imagem única promete algo que não vai acontecer.</li>
+            <li>Áudio que toca, procedência com fonte e crédito de imagem, e o feed das outras histórias do mesmo lugar em ordem de tempo.</li>
+            <li>“Contar a minha aqui”, que abre o formulário com o lugar já escolhido.</li>
+          </ul>
+        </dd></dl>
+        <dl><dt>Por quê</dt><dd>Decisão 02, tirada do Google Maps: manter o usuário no contexto geográfico e permitir pular de memória em memória sem recarregar telas.</dd></dl>
+        <dl class="recusado"><dt>O que foi recusado</dt><dd>
+          <ul>
+            <li><strong>Ficha como tela cheia.</strong> Foi construída assim primeiro, e contrariava a Decisão 02: empilhava navegação e escondia o mapa. Refeita como folha na raiz.</li>
+            <li><strong>“Mais memórias deste local” por proximidade.</strong> Duas memórias a 40 m são de lugares diferentes. Com o conceito de <em>ponto</em>, a pergunta passou a ter resposta exata.</li>
+          </ul>
+        </dd></dl>
+      </div>
+    </article>
+
+    <!-- ADICIONAR -->
+    <article class="tela">
+      <div class="cabeca"><span class="nome">Adicionar memória</span><span class="arquivo mono">app/adicionar.tsx</span></div>
+      <div class="corpo">
+        <dl><dt>Pergunta que responde</dt><dd>Como eu conto o que sei sem desistir no meio?</dd></dl>
+        <dl><dt>O que faz</dt><dd>
+          <ul>
+            <li>Quatro passos curtos, com barra de progresso: mídia → relato → local → época e tags.</li>
+            <li>Foto e vídeo pela câmera ou galeria; gravação de áudio no mesmo passo da foto, não escondida.</li>
+            <li>Local por GPS com ajuste manual no mapa e endereço por geocodificação reversa.</li>
+            <li>Década <em>e</em> ano exato, com validação entre 1830 e o ano corrente.</li>
+            <li>Rascunho salvo sozinho, com aviso de “continuando de onde você parou”.</li>
+            <li>Os quatro critérios da comunidade à vista antes de enviar.</li>
+          </ul>
+        </dd></dl>
+        <dl><dt>Por quê</dt><dd>O lado que cria é o mais difícil de conquistar. Decisão 04 põe o áudio no primeiro plano porque falar é mais fácil que escrever; o rascunho existe porque o contexto de uso é a calçada, e qualquer ligação fecha o app.</dd></dl>
+        <dl class="recusado"><dt>O que foi recusado</dt><dd>
+          <ul>
+            <li><strong>Só a década.</strong> “Por volta de 1958” é o que a pessoa lembra; forçar “Anos 50” jogava fora informação que ela tinha.</li>
+            <li><strong>Aviso genérico de moderação.</strong> Dizer “passa por checagem” sem dizer o que será checado é armadilha: a pessoa gasta o trabalho de escrever para descobrir a regra na recusa.</li>
+            <li><strong>Pedir identificação na abertura.</strong> Ela é exigida ao publicar, quando a autoria passa a importar (Decisão 01).</li>
+          </ul>
+        </dd></dl>
+      </div>
+    </article>
+
+    <!-- MODERAÇÃO -->
+    <article class="tela">
+      <div class="cabeca"><span class="nome">Moderação</span><span class="arquivo mono">app/moderacao.tsx</span></div>
+      <div class="corpo">
+        <dl><dt>Pergunta que responde</dt><dd>Isto merece entrar no acervo da cidade?</dd></dl>
+        <dl><dt>O que faz</dt><dd>
+          <ul>
+            <li>Uma memória por vez, com a régua dos quatro critérios visível acima dela.</li>
+            <li><strong>Aprovar</strong> é um toque e publica no mapa. <strong>Recusar</strong> exige escolher qual critério falhou e permite um recado.</li>
+            <li><strong>“Não sei julgar”</strong> tira da fila sem virar decisão.</li>
+          </ul>
+        </dd></dl>
+        <dl><dt>Por quê</dt><dd>Decisão 05, do Wayfarer. O custo assimétrico é proposital: recusar o trabalho de alguém deve custar mais do que aceitar. E os critérios ficam abertos porque régua que só o moderador conhece é armadilha.</dd></dl>
+        <dl class="recusado"><dt>O que foi recusado</dt><dd>
+          <ul>
+            <li><strong>Recusa com um toque.</strong> Seria a moderação opaca do Google Maps, onde o autor não descobre por quê.</li>
+            <li><strong>Régua sempre expandida.</strong> A primeira versão abria os quatro parágrafos e comia meia tela; na terceira revisão a pessoa rolaria por cima sem ler. Virou quatro perguntas de uma linha, com a explicação a um toque.</li>
+            <li><strong>Fila só de casos bons.</strong> Treinaria o revisor a apertar “aprovar” sem ler. Dos cinco casos semeados, três reprovam — cada um em um critério diferente.</li>
+          </ul>
+        </dd></dl>
+      </div>
+    </article>
+
+    <!-- AR -->
+    <article class="tela">
+      <div class="cabeca"><span class="nome">Câmera AR</span><span class="arquivo mono">app/ar.tsx</span></div>
+      <div class="corpo">
+        <dl><dt>Pergunta que responde</dt><dd>O que tem naquela direção?</dd></dl>
+        <dl><dt>O que faz</dt><dd>Câmera real com bússola: os cards se posicionam pela direção em que o aparelho aponta, somem fora do campo de visão, e a tela sugere para que lado girar. Sai sozinha após 45 s de inatividade.</dd></dl>
+        <dl><dt>Por quê</dt><dd>Decisão 09: uso contínuo cansa o braço, enjoa e queima bateria. O padrão é entrar, entregar o momento, sair.</dd></dl>
+        <dl class="recusado"><dt>O que foi recusado</dt><dd><strong>Cards em posição fixa na tela.</strong> A primeira versão os distribuía sem relação com o mundo, o que fazia a AR mentir: a memória aparecia à esquerda estivesse ela onde estivesse. Passou a usar rumo geográfico e campo de visão.</dd></dl>
+      </div>
+    </article>
+
+    <!-- ENTRADA -->
+    <article class="tela">
+      <div class="cabeca"><span class="nome">Identificação</span><span class="arquivo mono">app/entrar.tsx</span></div>
+      <div class="corpo">
+        <dl><dt>Pergunta que responde</dt><dd>Como eu quero assinar o que eu contar?</dd></dl>
+        <dl><dt>O que faz</dt><dd>A chapa ocupa a tela e recebe a assinatura ao vivo, letra por letra. Vazia, mostra a linha esperando o nome. O nome fica no aparelho e assina cada memória criada.</dd></dl>
+        <dl><dt>Por quê</dt><dd>Identificar-se aqui é assinar uma placa, então a placa é a tela: o contrato do produto chega pela forma antes de chegar por qualquer frase.</dd></dl>
+        <dl class="recusado"><dt>O que foi recusado</dt><dd>
+          <ul>
+            <li><strong>Login como porta de entrada.</strong> Contraria a Decisão 01. Vale o contrato do Google Maps: explorar é livre, publicar tem nome.</li>
+            <li><strong>Botões de Google e Apple.</strong> Sem backend eles não abririam nada — botão inerte é a pior mentira de interface.</li>
+            <li><strong>Formulário com tarja e aviso legal.</strong> A primeira versão era isso, e daria para trocar o logotipo e virar o cadastro de qualquer app.</li>
+          </ul>
+        </dd></dl>
+      </div>
+    </article>
+
+    <!-- TRILHAS -->
+    <article class="tela">
+      <div class="cabeca"><span class="nome">Trilhas</span><span class="arquivo mono">app/trilha/[id].tsx</span></div>
+      <div class="corpo">
+        <dl><dt>Pergunta que responde</dt><dd>Que caminho eu faço a pé para ver isto tudo?</dd></dl>
+        <dl><dt>O que faz</dt><dd>Percurso com capa, tempo estimado, mini-mapa com paradas numeradas e traçado, e a lista ordenada com a distância de cada parada até você.</dd></dl>
+        <dl><dt>Por quê</dt><dd>Decisão 10: roteiro é o topo da hierarquia e só faz sentido depois que houver densidade de pinos.</dd></dl>
+        <dl class="recusado"><dt>O que foi recusado</dt><dd><strong>Esconder que o roteiro está incompleto.</strong> As trilhas têm mais paradas do que o acervo cobre, e a tela diz isso em voz alta: “N paradas ainda não têm memória. Você pode ser quem conta.” O buraco vira convite.</dd></dl>
+      </div>
+    </article>
+
+    <!-- PERFIL -->
+    <article class="tela">
+      <div class="cabeca"><span class="nome">Perfil e contribuições</span><span class="arquivo mono">app/(tabs)/perfil.tsx</span></div>
+      <div class="corpo">
+        <dl><dt>Pergunta que responde</dt><dd>O que eu já fiz aqui, e como eu ajusto o app para mim?</dd></dl>
+        <dl><dt>O que faz</dt><dd>Identidade, nível e conquistas derivados do uso real, contagem de memórias criadas, salvas e em revisão, acesso à fila de moderação, à lista de contribuições, e aos ajustes de acessibilidade.</dd></dl>
+        <dl><dt>Por quê</dt><dd>Decisão 12: os níveis são poucos, largos e nomeiam o papel — “Contador de histórias” — em vez de pontuar. Não existe ranking, e não vai existir.</dd></dl>
+        <dl class="recusado"><dt>O que foi recusado</dt><dd>
+          <ul>
+            <li><strong>Estatísticas fixas.</strong> A primeira versão exibia números inventados. Estatística que não se mexe é enfeite, e ensina a ignorar a tela inteira.</li>
+            <li><strong>Conquista de “convidou amigos”.</strong> Sem backend nunca acenderia — e badge que nunca acende ensina que as outras também são enfeite.</li>
+          </ul>
+        </dd></dl>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- ═══ 08 ═══════════════════════════════════════════════════════ -->
+<section id="s8">
+  <div class="envolt">
+    <div class="chapa">
+      <div class="moldura">
+        <span class="marcador">08 · Moderação</span>
+        <h2 class="placa">Quatro critérios, públicos</h2>
+      </div>
+    </div>
+
+    <div class="prosa">
+      <p>São quatro, e são poucos de propósito: critério que ninguém lembra não é aplicado, é inventado na hora. Cada um aparece em dois lugares — para quem revisa, como régua; para quem envia, como aviso do que será cobrado.</p>
+    </div>
+
+    <div class="rolagem">
+      <table>
+        <thead><tr><th>O revisor pergunta</th><th>O que conta como sim</th><th>Como a recusa chega a quem enviou</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Aconteceu neste lugar?</strong></td><td>A memória é do ponto marcado, não do bairro em geral.</td><td>“A história parece ser de outro lugar — o pin não bate com o relato.”</td></tr>
+          <tr><td><strong>Dá para saber quando foi?</strong></td><td>Data ou época, e uma âncora: foto, documento, ou alguém que viveu aquilo.</td><td>“Falta como checar: sem data ou sem quem viu, não dá para confirmar.”</td></tr>
+          <tr><td><strong>Respeita quem aparece?</strong></td><td>Sem expor pessoa privada, sem ofensa, sem acusação.</td><td>“Expõe ou ofende alguém — memória de lugar não é denúncia sobre pessoas.”</td></tr>
+          <tr><td><strong>É memória, e não anúncio?</strong></td><td>Conta o que aconteceu; não recomenda o que existe hoje.</td><td>“Isto é divulgação de um negócio de hoje, não memória do lugar.”</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>O fluxo, e as três regras que viraram código</h3>
+    <ul class="limpa">
+      <li><strong>Você não revisa a si mesmo.</strong> Óbvio de dizer, fácil de esquecer, e sem isso a moderação vira carimbo.</li>
+      <li><strong>Pular não é decidir.</strong> Quem não conhece o lugar precisa poder passar sem inventar um parecer; forçar decisão produz decisão ruim.</li>
+      <li><strong>Aprovar tem consequência visível.</strong> A memória aprovada aparece no mapa na hora. Revisão que não muda nada na tela é formulário, não revisão.</li>
+    </ul>
+
+    <div class="prosa">
+      <p>A <strong>denúncia</strong> fecha o outro lado: a revisão pega o que entra, a denúncia pega o que passou. Reportar exige apontar o critério ferido, pela mesma razão que recusar exige — e devolve a memória à fila com o apontamento junto. A tela diz, e é verdade, que denunciar não apaga nada sozinho: uma pessoa não derruba a memória de outra.</p>
+    </div>
+
+    <div class="caixa acento">
+      <h4>O que este protótipo não faz, e a tela admite</h4>
+      <p>Uma revisão só já publica. Em produção seriam vários pareceres concordantes de pessoas distintas, com reputação de quem revisa — impossível de simular num aparelho só sem mentir. Está escrito na própria tela de moderação, não apenas neste documento.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 09 ═══════════════════════════════════════════════════════ -->
+<section id="s9">
+  <div class="envolt">
+    <div class="chapa">
+      <div class="moldura">
+        <span class="marcador">09 · Acessibilidade</span>
+        <h2 class="placa">Medida, não estimada</h2>
+      </div>
+    </div>
+
+    <div class="prosa">
+      <p>A persona principal da pesquisa tem 70 anos e vai usar isto em pé, na rua, no sol. Isso não é um requisito adicional: é o que definiu a paleta inteira ser clara, contra a primeira direção visual, que era escura e mais bonita em captura de tela.</p>
+    </div>
+
+    <div class="metricas">
+      <div class="metrica"><b>29</b><span>pares auditados</span></div>
+      <div class="metrica"><b>29</b><span>aprovados em AA</span></div>
+      <div class="metrica"><b>44px</b><span>alvo mínimo de toque</span></div>
+      <div class="metrica"><b>1.25×</b><span>fonte grande</span></div>
+    </div>
+
+    <ul class="limpa">
+      <li><strong>Fonte grande</strong> atravessa todo texto do app por construção: nenhum componente escreve texto fora dos componentes tipados, e é ali que o multiplicador é aplicado.</li>
+      <li><strong>Modo simples</strong> desliga animação, troca desfoque por fundo opaco e reforça o contraste do chrome — menos GPU e mais legibilidade na rua.</li>
+      <li>Toda animação decorativa respeita <span class="mono">prefers-reduced-motion</span> do sistema.</li>
+      <li>Contraste é <strong>medido por script</strong>, que reprova o processo se algum par falhar.</li>
+    </ul>
+
+    <h3>O caso que justifica medir o fundo composto</h3>
+    <div class="prosa">
+      <p>Auditar cor contra cor deixava passar a pior falha do app. Texto sobre vidro não está sobre a cor do vidro — está sobre a <strong>mistura</strong> dele com o que passa por baixo. E o que passa por baixo da tela de AR é a câmera, que na rua aponta para o céu.</p>
+    </div>
+
+    <div class="rolagem">
+      <table>
+        <thead><tr><th>Par</th><th>Antes</th><th>Agora</th><th>Correção</th></tr></thead>
+        <tbody>
+          <tr><td>Texto <strong>branco</strong> no vidro da AR contra céu claro</td><td class="mono" style="color:var(--acento)">3,83:1</td><td class="mono" style="color:var(--conferido)">9,42:1</td><td>Opacidade do vidro escuro de 0,62 para 0,90.</td></tr>
+          <tr><td>Contagem em ferrugem sobre a água do mapa</td><td class="mono" style="color:var(--acento)">4,24:1</td><td class="mono" style="color:var(--conferido)">4,61:1</td><td>Vidro claro de 0,66 para 0,86.</td></tr>
+          <tr><td>Tema da trilha sobre capa clara</td><td class="mono" style="color:var(--acento)">2,89:1</td><td class="mono" style="color:var(--conferido)">5,30:1</td><td>Véu para 0,94 e token de ferrugem para escuro.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="caixa ok">
+      <p>Texto branco reprovando em AA — exatamente na tela feita para usar no sol, que é o contexto que a Decisão 07 define como o real. A falha era invisível para o método anterior, e é por isso que o script passou a compor os fundos translúcidos antes de medir.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 10 ═══════════════════════════════════════════════════════ -->
+<section id="s10">
+  <div class="envolt">
+    <div class="chapa">
+      <div class="moldura">
+        <span class="marcador">10 · Arquitetura</span>
+        <h2 class="placa">As escolhas técnicas e seus porquês</h2>
+      </div>
+    </div>
+
+    <h3>O modelo: ponto e memória são coisas diferentes</h3>
+    <div class="prosa">
+      <p>Um <strong>ponto</strong> é o lugar; uma <strong>memória</strong> é o que alguém conta sobre ele. Essa separação é o que permite várias pessoas contribuírem no mesmo lugar em vez de cada uma plantar um alfinete solto ao lado do outro. O Mercado Municipal é um lugar com muitas histórias — não três registros que por acaso caíram no mesmo endereço.</p>
+      <p>Sem isso, o mapa vira uma nuvem de pins concorrentes e o produto perde a premissa: a cidade como acervo por lugar.</p>
+    </div>
+
+    <div class="rolagem">
+      <table>
+        <thead><tr><th>Escolha</th><th>Alternativa óbvia</th><th>Por que não</th></tr></thead>
+        <tbody>
+          <tr><td><strong>A ficha vive na raiz da árvore, não numa rota.</strong></td><td>Uma rota de navegação para cada memória.</td><td>Rota empilha histórico e desmonta o mapa. Como folha na raiz, ela cobre sem destruir, e sobrevive à troca de aba.</td></tr>
+          <tr><td><strong>Pins agrupam por lugar primeiro, por pixel depois.</strong></td><td>Agrupar tudo por distância em metros.</td><td>São perguntas diferentes: “é o mesmo lugar?” não depende do zoom; “estão empilhados na tela?” depende só dele.</td></tr>
+          <tr><td><strong>O mapa nunca desmonta.</strong></td><td>Trocar o mapa pela lista quando a lista abre.</td><td>Desmontar perde a câmera; a pessoa volta e o mapa está em outro lugar.</td></tr>
+          <tr><td><strong>Estado global mínimo, persistido no aparelho.</strong></td><td>Guardar tudo em estado de tela.</td><td>O que a pessoa cria precisa sobreviver a fechar o app — e o rascunho, a uma ligação no meio do formulário.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Armadilhas de plataforma que custaram tempo</h3>
+    <ul class="limpa">
+      <li><strong>Marcador customizado no Android é uma foto.</strong> O mapa captura a <em>view</em> uma vez e passa a exibir o bitmap. Desligar a captura cedo demais congela uma view vazia — o pin vira um retângulo em branco. E a captura precisa reabrir quando o conjunto de marcadores muda, senão criar uma memória faz as outras sumirem.</li>
+      <li><strong>Fonte tem que ser importada por peso.</strong> Importar o índice do pacote empacota todas as variantes.</li>
+      <li><strong>Imagem empacotada e imagem de arquivo têm formatos diferentes.</strong> Envolver o resultado do empacotador em objeto de URI não dá erro: a imagem simplesmente não aparece.</li>
+    </ul>
+
+    <div class="caixa">
+      <h4>Verificação antes de cada commit</h4>
+      <p>Três portões: tipos, contraste (29 pares, reprova o processo) e fechamento do pacote de produção. Nenhum deles é opcional, e os três já pegaram regressões reais — inclusive filtros que passaram a devolver zero quando o acervo trocou de conteúdo.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 11 ═══════════════════════════════════════════════════════ -->
+<section id="s11">
+  <div class="envolt">
+    <div class="chapa">
+      <div class="moldura">
+        <span class="marcador">11 · O acervo</span>
+        <h2 class="placa">Oito lugares que existem</h2>
+      </div>
+    </div>
+
+    <div class="prosa">
+      <p>O acervo semeado era invenção colada num mapa de verdade. Num app cuja moderação pergunta <em>“dá para saber quando foi?”</em>, semear ficção sobre uma cidade real reprova no próprio critério — e ensina que o acervo pode ser inventado.</p>
+      <p>Hoje são oito lugares e doze memórias, de 1865 a 2021, todos com coordenada do OpenStreetMap e fonte pública declarada dentro do app, não só aqui.</p>
+    </div>
+
+    <div class="rolagem">
+      <table>
+        <thead><tr><th>Lugar</th><th>Marco</th><th>O que o acervo conta</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Mercado Municipal</strong></td><td class="mono">1865 · 1923</td><td>Terreno doado com a condição escrita de virar mercado, na então Rua do Fogo. Inaugurado em 1923 com noventa comerciantes.</td></tr>
+          <tr><td><strong>Sanatório Vicentina Aranha</strong></td><td class="mono">1924 — 1952</td><td>Obras em 1918, inaugurado em 27/04/1924 pela Santa Casa. Um dos maiores centros de tratamento de tuberculose da América Latina.</td></tr>
+          <tr><td><strong>Igreja Matriz</strong></td><td class="mono">1816 — 1934</td><td>A igreja que Saint-Hilaire descreveu desabou; restou a capela-mor. A atual é de 1934.</td></tr>
+          <tr><td><strong>Igreja de São Benedito</strong></td><td class="mono">1876</td><td>O bem tombado mais antigo da cidade. Foi matriz provisória em 1933.</td></tr>
+          <tr><td><strong>Tecelagem Parahyba</strong></td><td class="mono">1925 · 2021</td><td>Primeira indústria do município, com vila operária de 26 casas. Rino Levi e Burle Marx no conjunto; tombado pelo IPHAN em 2021. Hoje é o Parque da Cidade.</td></tr>
+          <tr><td><strong>Estação Ferroviária</strong></td><td class="mono">1925</td><td>Trilho e fábrica chegaram juntos — e era por ali que desembarcava quem vinha tratar tuberculose.</td></tr>
+          <tr><td><strong>Paço Municipal</strong></td><td class="mono">1926</td><td>Projeto do argentino Mauricio Erro, tombado pela mesma lei que protegeu o Mercado.</td></tr>
+          <tr><td><strong>Museu de Arte Sacra</strong></td><td class="mono">1908</td><td>A Capela de Nossa Senhora Aparecida — pequena, no centro, sobreviveu a tudo que foi derrubado em volta.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="caixa ok">
+      <p><strong>Os pontos conversam entre si.</strong> A estação explica a Parahyba; a Parahyba explica a vila operária; o sanatório explica quem desembarcava na estação. Um acervo de lugares soltos seria uma lista; um acervo em que os lugares se citam é uma cidade.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 12 ═══════════════════════════════════════════════════════ -->
+<section id="s12">
+  <div class="envolt">
+    <div class="chapa lascada">
+      <div class="moldura">
+        <span class="marcador">12 · Estado e dívidas</span>
+        <h2 class="placa">O que é verdade hoje</h2>
+      </div>
+    </div>
+
+    <div class="prosa">
+      <p>A PO nomeou cinco funcionalidades sem as quais “não é o FoiAqui”. Todas estão de pé — duas com ressalva declarada na própria tela do app, e não apenas neste documento.</p>
+    </div>
+
+    <div class="rolagem">
+      <table>
+        <thead><tr><th>Essencial</th><th>Estado</th><th>Ressalva</th></tr></thead>
+        <tbody>
+          <tr><td>Geolocalização</td><td><span class="selo ok">Pronto</span></td><td>Mapa real, GPS, bússola, distância até você.</td></tr>
+          <tr><td>Adicionar memória</td><td><span class="selo ok">Pronto</span></td><td>Foto, vídeo, áudio, local e data, com rascunho automático.</td></tr>
+          <tr><td>Moderação da comunidade</td><td><span class="selo ok">Pronto</span></td><td>Uma revisão já publica; faltam pares de verdade.</td></tr>
+          <tr><td>Banco colaborativo</td><td><span class="selo falta">Parcial</span></td><td>Existe e persiste, mas é local ao aparelho.</td></tr>
+          <tr><td>Realidade aumentada</td><td><span class="selo falta">Parcial</span></td><td>Câmera com bússola; AR real é a última fase, por decisão documentada.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>O que falta, sem maquiagem</h3>
+    <ul class="limpa">
+      <li><strong>Nenhum teste de usabilidade foi feito.</strong> É o elo mais fraco do projeto e o próximo passo real — o objetivo declarado pela PO era “um protótipo testado”, e essa é a única linha do escopo ainda em aberto.</li>
+      <li><strong>Não há backend.</strong> Sem servidor não há conta, sincronização entre aparelhos, nem revisão por pessoas distintas.</li>
+      <li><strong>Vídeo grava mas não toca</strong> — falta o reprodutor.</li>
+      <li><strong>Não há suíte de testes automatizados.</strong> As funções puras — nome curto, agrupamento, décadas, busca — são todas testáveis, e todas já quebraram pelo menos uma vez.</li>
+      <li><strong>Coleções (Decisão 10) e funcionamento com sinal ruim (Decisão 07)</strong> continuam esperando implementação.</li>
+    </ul>
+
+    <div class="caixa acento">
+      <h4>A recomendação que este documento faz a si mesmo</h4>
+      <p>Não construir mais features antes do teste. Tudo listado acima é defensável, nada é validado, e cada tela nova sem confronto com uma pessoa real aumenta a dívida de suposição — o mesmo motivo pelo qual este dossiê só foi escrito depois do produto funcionar, e não antes.</p>
+    </div>
+  </div>
+</section>
+
+<footer class="pe">
+  <div class="envolt">
+    <p><strong>FoiAqui</strong> — protótipo de exercício de UX pela metodologia Duplo Diamante, sem fins comerciais. A pesquisa completa, o Business Model Canvas e as personas estão na planilha do projeto; o código, a identidade e o histórico de decisões, no repositório.</p>
+    <p class="mono" style="font-size:.78rem">Fatos históricos: Pró-Memória da Câmara Municipal de São José dos Campos, ipatrimônio, Prefeitura de São José dos Campos e Wikipédia, com fonte declarada em cada memória do acervo. Fotografias: Wikimedia Commons, sob CC0, CC BY e CC BY-SA, com crédito individual. Coordenadas: OpenStreetMap, sob ODbL.</p>
+  </div>
+</footer>
