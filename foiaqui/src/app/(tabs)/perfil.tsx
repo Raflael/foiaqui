@@ -102,7 +102,16 @@ export default function PerfilScreen() {
           pill={fila.length > 0 ? String(fila.length) : undefined}
           onPress={() => router.push('/moderacao')}
         />
-        <Row icon="list" title="Minhas contribuições" />
+        <Row
+          icon="list"
+          title="Minhas contribuições"
+          subtitle={
+            criadas.length === 0
+              ? 'Você ainda não contou nenhuma'
+              : `${criadas.length} memória${criadas.length > 1 ? 's' : ''}${emRevisao > 0 ? `, ${emRevisao} em revisão` : ''}`
+          }
+          onPress={() => router.push('/contribuicoes')}
+        />
         <Row
           icon="accessibility"
           title="Acessibilidade"

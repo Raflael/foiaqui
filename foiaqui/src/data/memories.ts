@@ -2,82 +2,166 @@ import { distanceTo, NEARBY_M, type Position } from '@/data/location';
 import type { Memory } from '@/types';
 
 /**
- * As 3 memórias do protótipo, no centro de São José dos Campos.
+ * O acervo semeado: lugares REAIS de São José dos Campos, com história de
+ * fonte pública e coordenadas do OpenStreetMap.
  *
- * Antes ficavam em Santos, herdadas da persona da pesquisa. Mudaram porque
- * o produto inteiro é sobre CAMINHAR até o lugar — e acervo em outra cidade
- * torna isso impossível de testar. As personas continuam valendo; cidade-piloto
- * é decisão de negócio e pode mudar de novo.
+ * As três memórias anteriores (Cine Marrocos, Coreto da Praça, Mural do Beco)
+ * eram invenção minha colada num mapa de verdade. Num app cuja moderação
+ * pergunta "dá para saber quando foi?", semear ficção sobre uma cidade que
+ * existe é reprovar no próprio critério — e pior, ensinar que o acervo pode
+ * ser inventado.
  *
- * As coordenadas são aproximadas, no raio de uma caminhada curta entre elas.
- * Ajuste arrastando o mapa no fluxo de criar quando souber o ponto exato.
+ * A autoria fica em "Acervo do protótipo" de propósito. Atribuir isto à
+ * Pró-Memória da Câmara ou ao arquivo municipal seria pôr na boca de uma
+ * instituição real um texto que ela não escreveu. A fonte vai declarada em
+ * cada memória, para quem quiser conferir.
  */
 export const memories: Memory[] = [
   {
-    id: 'cine',
-    title: 'Cine Marrocos',
-    shortName: 'Cine',
-    marker: 'Aqui funcionou',
-    period: '1958 — 1974',
-    year: '1958',
-    era: 'Anos 50',
-    place: 'Rua Sete de Setembro, 210',
-    coords: { lat: -23.1798, lng: -45.8859 },
+    id: 'mercado-doacao',
+    pontoId: 'mercado',
+    title: 'O terreno da Rua do Fogo',
+    shortName: 'Mercado',
+    marker: 'Aqui começou',
+    period: '1865',
+    year: '1865',
+    era: 'Século XIX',
+    place: 'Rua Sete de Setembro, Centro',
+    coords: { lat: -23.1807493, lng: -45.8859454 },
     story:
-      'Aqui funcionou o Cine Marrocos, o point da cidade nos fins de semana. Minha mãe contava das filas que dobravam a esquina em cada estreia. O cinema fechou em 1974 e o prédio virou uma loja de departamentos — mas o letreiro ainda vive na memória de quem passou por aqui.',
-    emphasis: 'Cine Marrocos',
-    author: { name: 'Íris N.', level: 4, role: 'Guardiã · Nível 4' },
-    kind: 'Foto + relato',
-    verified: true,
-    media: [
-      { type: 'photo', uri: 'past' },
-      { type: 'audio', uri: 'relato-iris' },
-    ],
-    audioSeconds: 72,
-    tags: ['Cinema', 'Lazer', 'Centro'],
-  },
-  {
-    id: 'praca',
-    title: 'Coreto da Praça',
-    shortName: 'Praça',
-    marker: 'Aqui ficava',
-    period: '1962 — 1998',
-    year: '1962',
-    era: 'Anos 60',
-    place: 'Praça Afonso Pena',
-    coords: { lat: -23.1791, lng: -45.8872 },
-    story:
-      'O coreto original da praça, onde havia retreta aos domingos. A banda tocava ao entardecer e a cidade descia pra ouvir. O coreto de hoje é uma réplica erguida em 1998, depois que o antigo foi demolido.',
-    emphasis: 'coreto original',
-    author: { name: 'Arquivo da Cidade', level: 9, role: 'Instituição · Verificada' },
-    kind: 'Foto histórica',
+      'Em 1865, José Caetano de Mascarenhas Ferraz e sua mulher, D. Mariana Nunes de Araújo, doaram este terreno ao município com uma condição escrita: que aqui se construísse um mercado ou uma praça para o proveito da população. A rua ainda se chamava Rua do Fogo — só depois virou Sete de Setembro. O mercado levaria 58 anos para sair do papel.',
+    emphasis: 'com uma condição escrita',
+    author: { name: 'Acervo do protótipo', level: 0, role: 'Compilado de fontes públicas' },
+    fonte: {
+      titulo: '100 anos do Mercado Municipal — Pró-Memória, Câmara de SJC',
+      url: 'https://www.camarasjc.sp.gov.br/promemoria/2023/03/10/100-anos-do-mercado-municipal-de-sao-jose-dos-campos/',
+    },
+    kind: 'Registro documental',
     verified: true,
     media: [{ type: 'photo', uri: 'past' }],
-    tags: ['Praça', 'Música', 'Demolido'],
+    tags: ['Comércio', 'Centro', 'Documento'],
   },
   {
-    id: 'mural',
-    title: 'Mural do Beco',
-    shortName: 'Mural',
-    marker: 'Aqui está',
-    period: '2019',
-    year: '2019',
-    era: 'Atual',
-    place: 'Beco da Estação',
-    coords: { lat: -23.1826, lng: -45.8854 },
+    id: 'mercado-1923',
+    pontoId: 'mercado',
+    title: 'Noventa comerciantes',
+    shortName: 'Mercado',
+    marker: 'Aqui abriu',
+    period: '1923',
+    year: '1923',
+    era: 'Anos 20',
+    place: 'Rua Sete de Setembro, Centro',
+    coords: { lat: -23.1807493, lng: -45.8859454 },
     story:
-      'Mural coletivo pintado por artistas locais no festival de 2019. Cada painel conta um pedaço da história do bairro operário — das fábricas às pessoas que moveram esta parte da cidade.',
-    emphasis: 'Mural coletivo',
-    author: { name: 'Théo A.', level: 2, role: 'Explorador · Nível 2' },
-    kind: 'Foto + microdoc',
-    verified: false,
-    media: [
-      { type: 'photo', uri: 'past' },
-      { type: 'video', uri: 'microdoc' },
-    ],
-    audioSeconds: 48,
-    tags: ['Arte urbana', 'Bairro operário'],
+      'O Mercado Municipal foi inaugurado em 1923 reunindo noventa comerciantes cadastrados pela prefeitura: peixe, carne, verdura, legume, pastel e artesanato. Em 1994, a Lei 4595 transformou o prédio em elemento de preservação EP-2 — restaurável, desde que as características principais fiquem de pé. Completou cem anos em 2023.',
+    emphasis: 'noventa comerciantes',
+    author: { name: 'Acervo do protótipo', level: 0, role: 'Compilado de fontes públicas' },
+    fonte: {
+      titulo: 'Mercado Municipal — ipatrimônio',
+      url: 'https://www.ipatrimonio.org/sao-jose-dos-campos-mercado-municipal/',
+    },
+    kind: 'Registro documental',
+    verified: true,
+    media: [{ type: 'photo', uri: 'past' }],
+    tags: ['Comércio', 'Centro', 'Tombado'],
   },
+  {
+    id: 'vicentina-1924',
+    pontoId: 'vicentina',
+    title: 'O sanatório Vicentina Aranha',
+    shortName: 'Vicentina Aranha',
+    marker: 'Aqui funcionou',
+    period: '1924 — 1952',
+    year: '1924',
+    era: 'Anos 20',
+    place: 'Vila Adyana',
+    coords: { lat: -23.1982378, lng: -45.8970653 },
+    story:
+      'As obras começaram em 1918 e o prédio foi inaugurado ainda incompleto em 27 de abril de 1924, pela Irmandade da Santa Casa de Misericórdia de São Paulo. Projeto de Ramos de Azevedo, execução do engenheiro Augusto Toledo. Foi um dos maiores centros de tratamento de tuberculose da América Latina e o primeiro sanatório da cidade.',
+    emphasis: 'um dos maiores da América Latina',
+    author: { name: 'Acervo do protótipo', level: 0, role: 'Compilado de fontes públicas' },
+    fonte: {
+      titulo: '100 anos do Parque Vicentina Aranha — Pró-Memória, Câmara de SJC',
+      url: 'https://www.camarasjc.sp.gov.br/promemoria/2024/04/01/100-anos-do-parque-vicentina-aranha/',
+    },
+    kind: 'Registro documental',
+    verified: true,
+    media: [{ type: 'photo', uri: 'past' }],
+    tags: ['Saúde', 'Tuberculose', 'Tombado'],
+  },
+  {
+    id: 'vicentina-clima',
+    pontoId: 'vicentina',
+    title: 'A cidade que curava pelo ar',
+    shortName: 'Vicentina Aranha',
+    marker: 'Aqui foi',
+    period: '1924 — 1952',
+    year: '1935',
+    era: 'Anos 30',
+    place: 'Vila Adyana',
+    coords: { lat: -23.1982378, lng: -45.8970653 },
+    story:
+      'São José foi escolhida pelo clima: seco e considerado saudável, os médicos passaram a receitar a cidade a quem tinha tuberculose. Ela virou Estância Climatérica, e o período entre 1924 e 1952 é considerado o auge da doença aqui. Uma cidade inteira reorganizada em torno de quem vinha para respirar — e nem todos voltavam.',
+    emphasis: 'os médicos passaram a receitar a cidade',
+    author: { name: 'Acervo do protótipo', level: 0, role: 'Compilado de fontes públicas' },
+    fonte: {
+      titulo: 'A fase sanatorial e o Vicentina Aranha — Portal SJC',
+      url: 'https://sjc.com.br/a-fase-sanatorial-e-o-vicentina-aranha/',
+    },
+    kind: 'Registro documental',
+    verified: true,
+    media: [{ type: 'photo', uri: 'past' }],
+    tags: ['Saúde', 'Tuberculose', 'Cidade'],
+  },
+  {
+    id: 'matriz-1934',
+    pontoId: 'matriz',
+    title: 'A matriz que desabou',
+    shortName: 'Igreja Matriz',
+    marker: 'Aqui ficava',
+    period: '1816 — 1934',
+    year: '1934',
+    era: 'Anos 30',
+    place: 'Praça Cônego Lima, Centro',
+    coords: { lat: -23.1802791, lng: -45.8879176 },
+    story:
+      'O viajante francês Saint-Hilaire, que passou por aqui entre 1816 e 1822, descreveu uma igreja pequena, de torre pouco elevada. Entre 1830 e 1850 os documentos já falam da necessidade de reconstruir a matriz: ela havia desabado, e restava só a capela-mor. A igreja que está de pé hoje foi inaugurada em 1934, com a primeira missa celebrada pelo padre José Fortunato da Silva Ramos.',
+    emphasis: 'restava só a capela-mor',
+    author: { name: 'Acervo do protótipo', level: 0, role: 'Compilado de fontes públicas' },
+    fonte: {
+      titulo: '380 anos da Igreja Matriz — Pró-Memória, Câmara de SJC',
+      url: 'https://www.camarasjc.sp.gov.br/promemoria/2023/04/28/380-anos-da-igreja-matriz-de-sao-jose-dos-campos/',
+    },
+    kind: 'Registro documental',
+    verified: true,
+    media: [{ type: 'photo', uri: 'past' }],
+    tags: ['Religião', 'Centro', 'Fundação'],
+  },
+  {
+    id: 'benedito-1876',
+    pontoId: 'benedito',
+    title: 'O bem mais antigo da cidade',
+    shortName: 'São Benedito',
+    marker: 'Aqui está',
+    period: '1876',
+    year: '1876',
+    era: 'Século XIX',
+    place: 'Praça Afonso Pena, 267, Centro',
+    coords: { lat: -23.1861851, lng: -45.886922 },
+    story:
+      'Inaugurada em 1876, a Igreja de São Benedito é o patrimônio mais antigo de São José dos Campos, tombada pelo Condephaat em 25 de julho de 1980. Em 1933, quando a matriz estava sendo reconstruída, ela assumiu por um tempo o posto de igreja matriz da cidade.',
+    emphasis: 'o patrimônio mais antigo',
+    author: { name: 'Acervo do protótipo', level: 0, role: 'Compilado de fontes públicas' },
+    fonte: {
+      titulo: 'Centro (São José dos Campos) — Wikipédia',
+      url: 'https://pt.wikipedia.org/wiki/Centro_(S%C3%A3o_Jos%C3%A9_dos_Campos)',
+    },
+    kind: 'Registro documental',
+    verified: true,
+    media: [{ type: 'photo', uri: 'present' }],
+    tags: ['Religião', 'Centro', 'Tombado'],
+  },
+
 ];
 
 export const memoryById = (id?: string) => memories.find((m) => m.id === id);

@@ -1,4 +1,4 @@
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -8,9 +8,9 @@ import { PhotoPlaceholder } from '@/components/PhotoPlaceholder';
 import { Plaque as PlaquePlate } from '@/components/Plaque';
 import { Body, Eyebrow, Mono, Plaque, Story } from '@/components/Type';
 import { criterios } from '@/data/criterios';
-import { useAcervo } from '@/store/acervo';
+import { useAcervo, useMemoria } from '@/store/acervo';
 import { useFila, useModeracao, useRevisoes } from '@/store/moderacao';
-import { colors, HIT, radius, space } from '@/theme';
+import { alpha, colors, HIT, radius, space } from '@/theme';
 import type { Memory } from '@/types';
 
 /**
@@ -39,12 +39,27 @@ export default function ModeracaoScreen() {
   const minhasEmRevisao = useAcervo((s) => s.criadas).filter(
     (m) => m.status === 'em_revisao',
   ).length;
+  const definirStatus = useAcervo((s) => s.definirStatus);
+
+  /**
+   * Modo "simular": revisar uma memória SUA.
+   *
+   * A regra de não revisar a própria memória continua de pé no produto — mas
+   * num aparelho só ela vira beco sem saída: o que você cria fica preso em
+   * revisão para sempre, e quem está testando nunca vê como fica uma memória
+   * aprovada ou recusada. Então existe esta porta, chegando só pela tela de
+   * contribuições e sempre com o aviso na tela de que é ferramenta de
+   * protótipo, não comportamento do app real.
+   */
+  const { simular } = useLocalSearchParams<{ simular?: string }>();
+  const minha = useMemoria(simular);
 
   const [recusando, setRecusando] = useState(false);
   const [criterioId, setCriterioId] = useState<string | null>(null);
   const [nota, setNota] = useState('');
 
-  const atual = fila[0];
+  const atual = minha ?? fila[0];
+  const simulando = !!minha;
 
   const limpar = () => {
     setRecusando(false);
@@ -55,6 +70,11 @@ export default function ModeracaoScreen() {
   const aprovar = () => {
     if (!atual) return;
     registrar({ memoriaId: atual.id, decisao: 'aprovada', quando: Date.now() });
+    if (simulando) {
+      definirStatus(atual.id, 'publicada');
+      router.back();
+      return;
+    }
     limpar();
   };
 
@@ -67,6 +87,11 @@ export default function ModeracaoScreen() {
       nota: nota.trim() || undefined,
       quando: Date.now(),
     });
+    if (simulando) {
+      definirStatus(atual.id, 'recusada');
+      router.back();
+      return;
+    }
     limpar();
   };
 
@@ -83,7 +108,7 @@ export default function ModeracaoScreen() {
         <View style={styles.tituloBloco}>
           <Eyebrow style={styles.eyebrow}>Revisão da comunidade</Eyebrow>
           <Plaque style={styles.titulo}>
-            {fila.length > 0 ? `${fila.length} na fila` : 'Fila vazia'}
+            {simulando ? 'Simulando revisão' : fila.length > 0 ? `${fila.length} na fila` : 'Fila vazia'}
           </Plaque>
         </View>
       </View>
@@ -96,6 +121,15 @@ export default function ModeracaoScreen() {
         showsVerticalScrollIndicator={false}>
         {atual ? (
           <>
+            {simulando ? (
+              <View style={styles.aviso}>
+                <Icon name="flag" size={15} color={colors.ferrugem} strokeWidth={2.2} />
+                <Body style={styles.avisoText}>
+                  Esta memória é sua. No app real ninguém revisa a própria — isto é
+                  ferramenta de protótipo, para você ver como ficam os dois desfechos.
+                </Body>
+              </View>
+            ) : null}
             <Regua />
             <MemoriaEmAnalise memory={atual} />
 
@@ -574,6 +608,18 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: space.lg,
   },
+
+  aviso: {
+    flexDirection: 'row',
+    gap: space.sm,
+    alignItems: 'flex-start',
+    marginTop: space.lg,
+    padding: space.lg,
+    backgroundColor: alpha.ferrugemTinta,
+    borderLeftWidth: 3,
+    borderLeftColor: colors.ferrugem,
+  },
+  avisoText: { flex: 1, fontSize: 12.5, lineHeight: 18, color: colors.grafite },
 
   // suas memórias
   suas: {

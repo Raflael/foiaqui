@@ -12,6 +12,8 @@ interface AcervoState {
   criadas: Memory[];
   adicionar: (memory: Memory) => void;
   remover: (id: string) => void;
+  /** aplica o resultado de uma revisão à sua própria memória */
+  definirStatus: (id: string, status: NonNullable<Memory['status']>) => void;
 }
 
 /**
@@ -33,6 +35,10 @@ export const useAcervo = create<AcervoState>()(
       criadas: [],
       adicionar: (memory) => set((s) => ({ criadas: [memory, ...s.criadas] })),
       remover: (id) => set((s) => ({ criadas: s.criadas.filter((m) => m.id !== id) })),
+      definirStatus: (id, status) =>
+        set((s) => ({
+          criadas: s.criadas.map((m) => (m.id === id ? { ...m, status } : m)),
+        })),
     }),
     {
       name: 'foiaqui-acervo',

@@ -2,6 +2,15 @@ export type MediaType = 'photo' | 'audio' | 'video';
 
 export interface Memory {
   id: string;
+  /**
+   * A qual PONTO esta memória pertence (`data/pontos.ts`).
+   *
+   * É o que permite várias pessoas contarem coisas do mesmo lugar sem cada uma
+   * plantar um pin solto ao lado do outro: no mapa o ponto é um só, e por
+   * dentro ele é um feed. Memória sem ponto continua válida — é o caso de quem
+   * registra algo num lugar que ainda não existe no acervo.
+   */
+  pontoId?: string;
   title: string;
   /** nome curto pro rótulo do pin no mapa, onde não cabe o título inteiro */
   shortName: string;
@@ -26,11 +35,18 @@ export interface Memory {
   kind: string;
   verified: boolean;
   /**
+   * De onde a informação veio, quando ela é documental.
+   *
+   * O app pergunta "dá para saber quando foi?" a quem envia (`criterios.ts`).
+   * Um acervo que não mostra a própria fonte não tem como cobrar isso.
+   */
+  fonte?: { titulo: string; url: string };
+  /**
    * Onde a memória está no fluxo de moderação (Decisão 5).
    * Recém-criada nasce 'em_revisao': quem enviou vê a própria no mapa,
    * marcada, mas ela ainda não foi conferida pela comunidade.
    */
-  status?: 'publicada' | 'em_revisao';
+  status?: 'publicada' | 'em_revisao' | 'recusada';
   media: { type: MediaType; uri: string }[];
   /** duração do áudio em segundos, quando há relato falado */
   audioSeconds?: number;
