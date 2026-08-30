@@ -39,13 +39,15 @@ function clampPx(v: number, min: number, max: number) {
 export function RevealSlider({
   pastLabel,
   nowLabel = 'HOJE',
-  /** foto de verdade do lado do passado; sem ela, a cena desenhada */
+  /** fotos de verdade; sem elas, as cenas desenhadas */
   pastUri,
+  presentUri,
   height = 270,
 }: {
   pastLabel: string;
   nowLabel?: string;
   pastUri?: string;
+  presentUri?: string;
   height?: number;
 }) {
   const motion = useMotionEnabled();
@@ -109,7 +111,11 @@ export function RevealSlider({
       <View style={[styles.wrap, { height }]} onLayout={onLayout}>
         {/* base: a vista de hoje, sempre inteira por baixo */}
         <PhotoPlaceholder variant="present" style={StyleSheet.absoluteFill}>
-          <StreetScene variant="present" />
+          {presentUri ? (
+            <Image source={{ uri: presentUri }} style={StyleSheet.absoluteFill} contentFit="cover" />
+          ) : (
+            <StreetScene variant="present" />
+          )}
           <View style={[styles.cap, styles.capNow]}>
             <Mono style={styles.capText}>{nowLabel}</Mono>
           </View>

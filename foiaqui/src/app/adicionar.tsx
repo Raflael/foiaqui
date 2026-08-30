@@ -82,6 +82,8 @@ export default function AdicionarScreen() {
 
   const [step, setStep] = useState(0);
   const [media, setMedia] = useState<{ uri: string; type: 'image' | 'video' } | null>(null);
+  /** A vista de hoje, opcional — é ela que faz o antes↔depois existir. */
+  const [hoje, setHoje] = useState<string | null>(null);
   const [audio, setAudio] = useState<{ uri: string; seconds: number } | null>(null);
   const [mediaErro, setMediaErro] = useState<string | null>(null);
 
@@ -111,15 +113,16 @@ export default function AdicionarScreen() {
   const canContinue = [media !== null, story.trim().length >= 10, true, era !== null][step];
   const isLast = step === STEPS.length - 1;
 
-  /** Guarda o que voltou do seletor, seja da câmera ou da galeria. */
-  const guardar = (r: ImagePicker.ImagePickerResult) => {
+  /** Guarda o que voltou do seletor no destino certo. */
+  const guardar = (r: ImagePicker.ImagePickerResult, destino: 'memoria' | 'hoje') => {
     if (r.canceled || !r.assets?.[0]) return;
     const a = r.assets[0];
     setMediaErro(null);
-    setMedia({ uri: a.uri, type: a.type === 'video' ? 'video' : 'image' });
+    if (destino === 'hoje') setHoje(a.uri);
+    else setMedia({ uri: a.uri, type: a.type === 'video' ? 'video' : 'image' });
   };
 
-  const tirarFoto = async () => {
+  const tirarFoto = async (destino: 'memoria' | 'hoje' = 'memoria') => {
     const perm = await ImagePicker.requestCameraPermissionsAsync();
     if (!perm.granted) {
       setMediaErro('Sem acesso à câmera. Você ainda pode enviar da galeria.');
@@ -133,6 +136,7 @@ export default function AdicionarScreen() {
         mediaTypes: ['images'],
         quality: 0.85,
       }),
+      destino,
     );
   };
 
@@ -147,6 +151,7 @@ export default function AdicionarScreen() {
         mediaTypes: ['images', 'videos'],
         quality: 0.85,
       }),
+      'memoria',
     );
   };
 
@@ -244,6 +249,7 @@ export default function AdicionarScreen() {
       audioSeconds: audio?.seconds,
       tags,
       pastImageUri: media?.type === 'image' ? media.uri : undefined,
+      presentImageUri: hoje ?? undefined,
     };
     setTimeout(() => {
       adicionarAoAcervo(nova);
@@ -308,7 +314,11 @@ export default function AdicionarScreen() {
           showsVerticalScrollIndicator={false}>
           {step === 0 ? (
             <>
-              <Label text="Foto ou vídeo" required />
+              <Label
+                text="A foto da memória"
+                required
+                hint="a foto antiga, ou o que você quer registrar"
+              />
 
               {media ? (
                 <View>
@@ -344,7 +354,7 @@ export default function AdicionarScreen() {
               <View style={styles.pickRow}>
                 <Pressable
                   style={styles.pickBtn}
-                  onPress={tirarFoto}
+                  onPress={() => tirarFoto('memoria')}
                   accessibilityRole="button"
                   accessibilityLabel="Tirar foto ou gravar vídeo agora">
                   <Icon name="camera" size={19} color={colors.sobreEsmalte} strokeWidth={2} />
@@ -359,6 +369,35 @@ export default function AdicionarScreen() {
                   <Body style={[styles.pickBtnText, { color: colors.esmalte }]}>Da galeria</Body>
                 </Pressable>
               </View>
+
+              <Label
+                text="Como está hoje"
+                hint="opcional — é o que faz o antes↔depois funcionar na ficha"
+              />
+              {hoje ? (
+                <View>
+                  <Image source={{ uri: hoje }} style={styles.hojeFoto} contentFit="cover" />
+                  <Pressable
+                    style={styles.photoSwap}
+                    onPress={() => setHoje(null)}
+                    accessibilityRole="button"
+                    accessibilityLabel="Remover a foto de hoje">
+                    <Icon name="x" size={15} color="#FFFFFF" strokeWidth={2.2} />
+                    <Body style={styles.photoSwapText}>Trocar</Body>
+                  </Pressable>
+                </View>
+              ) : (
+                <Pressable
+                  style={[styles.pickBtn, styles.pickBtnGhost]}
+                  onPress={() => tirarFoto('hoje')}
+                  accessibilityRole="button"
+                  accessibilityLabel="Fotografar como o lugar está hoje">
+                  <Icon name="camera" size={19} color={colors.esmalte} strokeWidth={2} />
+                  <Body style={[styles.pickBtnText, { color: colors.esmalte }]}>
+                    Fotografar o lugar hoje
+                  </Body>
+                </Pressable>
+              )}
 
               <Label text="Áudio" hint="quem viveu contando — vale mais que legenda" />
               <Pressable
@@ -628,6 +667,7 @@ const styles = StyleSheet.create({
   photoboxTitle: { fontSize: 14, fontWeight: '700', color: colors.grafite, textAlign: 'center' },
   photoboxHint: { fontSize: 12, color: colors.grafiteDim, textAlign: 'center' },
   photoFilled: { height: 150, borderRadius: radius.md },
+  hojeFoto: { height: 120, borderRadius: radius.md, marginTop: space.xs },
   videoBadge: {
     position: 'absolute',
     left: 10,

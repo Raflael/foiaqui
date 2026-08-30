@@ -18,7 +18,9 @@ import { Glass } from '@/components/Glass';
 import { Icon } from '@/components/Icon';
 import { PhotoPlaceholder } from '@/components/PhotoPlaceholder';
 import { Body, Mono, Plaque } from '@/components/Type';
-import { memories } from '@/data/memories';
+import { distanceTo, formatDistance } from '@/data/location';
+import { useCurrentPosition } from '@/hooks/useCurrentPosition';
+import { useMemorias } from '@/store/acervo';
 import { useMotionEnabled } from '@/hooks/useMotion';
 import { useSheet } from '@/store/sheet';
 import { colors, HIT, radius, space } from '@/theme';
@@ -33,8 +35,8 @@ import type { Memory } from '@/types';
  */
 const IDLE_MS = 45_000;
 
-/** Distâncias simuladas; virão do GPS quando o mapa real entrar (Fase 1). */
-const DISTANCES = ['aqui', '40 m', '120 m'];
+/** Quantas memórias flutuam sobre a cena ao mesmo tempo. Mais que isso vira sopa. */
+const CARDS_NA_CENA = 2;
 
 /**
  * Câmera AR — *simulada* nesta fase.
@@ -48,6 +50,20 @@ export default function ARScreen() {
   const insets = useSafeAreaInsets();
   const motion = useMotionEnabled();
   const openSheet = useSheet((s) => s.open);
+  const { position } = useCurrentPosition();
+  const memorias = useMemorias();
+
+  /**
+   * As memórias mais próximas de onde você está, e não duas cravadas no código.
+   *
+   * A posição dos cards na tela ainda é fixa — ancoragem geoespacial de verdade
+   * é v3 no roadmap. Mas o CONTEÚDO já é o certo: o que está perto, com a
+   * distância real. Um card dizendo "40 m" para algo a 400 km era a pior
+   * mentira que restava no app.
+   */
+  const proximas = [...memorias]
+    .sort((a, b) => distanceTo(a, position) - distanceTo(b, position))
+    .slice(0, CARDS_NA_CENA);
 
   const [listOpen, setListOpen] = useState(false);
   const idle = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -90,22 +106,17 @@ export default function ARScreen() {
       </View>
 
       {/* cards ancorados nos "prédios" */}
-      <ARCard
-        memory={memories[0]}
-        distance="aqui"
-        style={{ left: 14, top: insets.top + 112 }}
-        anchor="left"
-        delay={0}
-        onPress={reveal}
-      />
-      <ARCard
-        memory={memories[1]}
-        distance="40m"
-        style={{ right: 14, top: insets.top + 84 }}
-        anchor="right"
-        delay={1200}
-        onPress={reveal}
-      />
+{proximas.map((m, i) => (
+        <ARCard
+          key={m.id}
+          memory={m}
+          distance={formatDistance(distanceTo(m, position))}
+          style={i === 0 ? { left: 14, top: insets.top + 112 } : { right: 14, top: insets.top + 84 }}
+          anchor={i === 0 ? 'left' : 'right'}
+          delay={i * 1200}
+          onPress={reveal}
+        />
+      ))}
 
       <Glass tone="dark" style={[styles.hint, { top: insets.top + space.md }]}>
         <Icon name="sparkle" size={18} color={colors.ferrugemClara} />
@@ -119,7 +130,9 @@ export default function ARScreen() {
         <View style={[styles.list, { paddingBottom: insets.bottom + space.md }]}>
           <Body style={styles.listTitle}>Memórias por perto</Body>
           <ScrollView style={{ maxHeight: 260 }} showsVerticalScrollIndicator={false}>
-            {memories.map((m, i) => (
+            {[...memorias]
+              .sort((a, b) => distanceTo(a, position) - distanceTo(b, position))
+              .map((m) => (
               <Pressable
                 key={m.id}
                 style={styles.listRow}
@@ -130,7 +143,7 @@ export default function ARScreen() {
                 <View style={{ flex: 1 }}>
                   <Plaque style={styles.listRowTitle}>{m.title}</Plaque>
                   <Mono style={styles.listRowMeta}>
-                    {m.year} · {DISTANCES[i] ?? '—'}
+                    {m.year} · {formatDistance(distanceTo(m, position))}
                   </Mono>
                 </View>
                 <Icon name="chevronRight" size={18} color={colors.sobreEsmalteDim} />

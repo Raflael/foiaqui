@@ -1,3 +1,5 @@
+import { useAudioPlayer, useAudioPlayerStatus } from 'expo-audio';
+import { Image } from 'expo-image';
 import { useEffect, useRef, useState } from 'react';
 import {
   BackHandler,
@@ -79,7 +81,16 @@ export function MemorySheet() {
   }, [encontrada]);
 
   const [headerH, setHeaderH] = useState(200);
-  const [playing, setPlaying] = useState(false);
+
+  /**
+   * O áudio das memórias semente é fictício — o campo existe para o protótipo
+   * mostrar o componente, mas não há arquivo. O que a pessoa grava, sim, toca.
+   * Em vez de fingir que toca e não tocar, o app diz qual é qual.
+   */
+  const audioUri = shown?.media.find((m) => m.type === 'audio')?.uri;
+  const tocavel = !!audioUri && /^(file|content|https?):/.test(audioUri);
+  const player = useAudioPlayer(tocavel ? { uri: audioUri } : null);
+  const playing = useAudioPlayerStatus(player).playing;
   // Fora de cena de verdade: enquanto `hidden` for true a folha nem é montada.
   const [hidden, setHidden] = useState(true);
   const scroller = useRef<ScrollView>(null);
@@ -132,7 +143,6 @@ export function MemorySheet() {
   }, [openId, close]);
 
   useEffect(() => {
-    setPlaying(false);
     scroller.current?.scrollTo({ y: 0, animated: false });
   }, [openId]);
 
@@ -181,6 +191,8 @@ export function MemorySheet() {
 
   const saved = savedIds.includes(shown.id);
   const others = [...criadas, ...seed].filter((m) => m.id !== shown.id);
+  // ou as duas fotos existem, ou nenhuma (e aí as duas cenas são desenhadas)
+  const comparavel = !!shown.pastImageUri === !!shown.presentImageUri;
   const isOpen = openId !== null;
 
   return (
@@ -265,21 +277,57 @@ export function MemorySheet() {
           contentContainerStyle={{ paddingBottom: insets.bottom + space.xxl }}
           showsVerticalScrollIndicator={false}>
           <View style={styles.hero}>
-            <RevealSlider pastLabel={shown.year} pastUri={shown.pastImageUri} height={240} />
+            {comparavel ? (
+              <RevealSlider
+                pastLabel={shown.year}
+                pastUri={shown.pastImageUri}
+                presentUri={shown.presentImageUri}
+                height={240}
+              />
+            ) : (
+              /*
+                Uma foto só não é comparação. Mostrar o divisor aqui faria a
+                pessoa arrastar esperando ver o "depois" e encontrar um desenho
+                — pior que não ter o gesto.
+              */
+              <View style={{ height: 240 }}>
+                <Image
+                  source={{ uri: (shown.pastImageUri ?? shown.presentImageUri)! }}
+                  style={StyleSheet.absoluteFill}
+                  contentFit="cover"
+                />
+                <View style={styles.soloCap}>
+                  <Mono style={styles.soloCapText}>
+                    {shown.pastImageUri ? shown.year : 'HOJE'}
+                  </Mono>
+                </View>
+              </View>
+            )}
           </View>
 
           <View style={styles.body}>
             {shown.audioSeconds ? (
               <Pressable
-                style={styles.audio}
-                onPress={() => setPlaying((p) => !p)}
+                style={[styles.audio, !tocavel && styles.audioMudo]}
+                disabled={!tocavel}
+                onPress={() => {
+                  if (playing) {
+                    player.pause();
+                  } else {
+                    player.seekTo(0);
+                    player.play();
+                  }
+                }}
                 accessibilityRole="button"
+                accessibilityState={{ disabled: !tocavel }}
                 accessibilityLabel={
-                  playing
-                    ? 'Pausar o relato em áudio'
-                    : `Ouvir o relato de ${shown.author.name}, ${formatDuration(shown.audioSeconds)}`
+                  !tocavel
+                    ? 'Áudio de exemplo, sem arquivo neste protótipo'
+                    : playing
+                      ? 'Pausar o relato em áudio'
+                      : `Ouvir o relato de ${shown.author.name}, ${formatDuration(shown.audioSeconds)}`
                 }>
-                <View style={styles.audioPlay}>
+                <View style={[styles.audioPlay, !tocavel && styles.audioPlayMudo]}>
                   <Icon name={playing ? 'pause' : 'play'} size={16} color="#FFFFFF" filled />
                 </View>
                 <View style={styles.wave}>
@@ -290,7 +338,9 @@ export function MemorySheet() {
                     />
                   ))}
                 </View>
-                <Mono style={styles.audioTime}>{formatDuration(shown.audioSeconds)}</Mono>
+                <Mono style={styles.audioTime}>
+                  {tocavel ? formatDuration(shown.audioSeconds) : 'exemplo'}
+                </Mono>
               </Pressable>
             ) : null}
 
@@ -466,6 +516,16 @@ const styles = StyleSheet.create({
   },
 
   hero: { marginHorizontal: 22, borderRadius: radius.md, overflow: 'hidden' },
+  soloCap: {
+    position: 'absolute',
+    left: 14,
+    bottom: 14,
+    paddingHorizontal: 9,
+    paddingVertical: 4,
+    borderRadius: radius.sm,
+    backgroundColor: 'rgba(15,43,84,0.72)',
+  },
+  soloCapText: { fontSize: 11, letterSpacing: 1, color: colors.sobreEsmalte },
   body: { paddingHorizontal: 22 },
 
   audio: {
@@ -481,6 +541,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 12,
   },
+  audioMudo: { opacity: 0.55 },
+  audioPlayMudo: { backgroundColor: colors.grafiteDim },
   audioPlay: {
     width: 38,
     height: 38,
