@@ -26,7 +26,11 @@ pessoa contribui com foto, relato, áudio ou vídeo; a comunidade modera. A cida
 vira um museu vivo.
 
 Projeto de UX pela metodologia **Duplo Diamante**, com protótipo em React Native.
-Cidade-piloto: **São José dos Campos–SP**.
+Cidade-piloto: **São José dos Campos–SP** — e o acervo semeado é real: oito
+lugares da cidade, doze memórias de 1865 a 2021, com coordenadas do
+OpenStreetMap e fonte pública declarada em cada uma.
+
+📄 **[O dossiê completo do projeto](https://claude.ai/code/artifact/84a310f1-57f1-4027-8204-adce8bcf60bf)** — problema, benchmarking, as 12 decisões, a identidade e o estado real.
 
 <br>
 
@@ -35,7 +39,7 @@ Cidade-piloto: **São José dos Campos–SP**.
 <table>
 <tr>
 <td width="33%" align="center"><img src=".github/screens/mapa.png" alt="Tela do mapa com pins em forma de placa esmaltada"><br><sub><b>Mapa</b><br>pins que se agrupam quando<br>ficariam empilhados</sub></td>
-<td width="33%" align="center"><img src=".github/screens/ficha.png" alt="Ficha da memória do Cine Marrocos em bottom sheet"><br><sub><b>Ficha da memória</b><br>bottom sheet sobre o mapa,<br>com slider passado↔presente</sub></td>
+<td width="33%" align="center"><img src=".github/screens/ficha.png" alt="Ficha de memória aberta em bottom sheet sobre o mapa"><br><sub><b>Ficha da memória</b><br>bottom sheet sobre o mapa,<br>com slider passado↔presente</sub></td>
 <td width="33%" align="center"><img src=".github/screens/adicionar.png" alt="Formulário de nova memória"><br><sub><b>Adicionar</b><br>foto, vídeo e áudio reais,<br>com rascunho automático</sub></td>
 </tr>
 <tr>
@@ -65,7 +69,9 @@ Cidade-piloto: **São José dos Campos–SP**.
 | **Câmera AR** | câmera real e **bússola**: os cards seguem a direção em que o aparelho aponta, somem fora do campo de visão e indicam para que lado girar · sai sozinha por inatividade |
 | **Adicionar** | 4 passos · foto e vídeo pela câmera ou galeria · gravação de áudio · GPS com ajuste manual e geocodificação reversa · década **e** ano exato · rascunho salvo sozinho |
 | **Trilhas** | lista de percursos e tela de trilha com mini-mapa, paradas numeradas e traçado |
-| **Moderação** | fila de revisão por pares · quatro critérios públicos · recusa que exige apontar o critério · aprovar publica no mapa |
+| **Moderação** | fila de revisão por pares · quatro critérios públicos · recusa que exige apontar o critério · denúncia devolve o publicado para a fila · aprovar publica no mapa |
+| **Linha do tempo** | régua de décadas sobre o mapa, **incluindo as vazias** — o buraco é a informação: "ninguém contou nada dos anos 90 aqui" é um convite |
+| **Identidade** | seu nome assina o que você cria, guardado no aparelho · exigido ao publicar, nunca na porta (Decisão 1) |
 | **Salvos · Perfil** | acervo local · nível e conquistas derivados do uso real |
 
 <details>
@@ -109,9 +115,9 @@ coisa sobreviveu, antes de você ler uma linha:
 
 | Memória | Marcador | Diz |
 |:--|:--|:--|
-| Cine Marrocos | `AQUI FUNCIONOU` | acabou |
-| Coreto da Praça | `AQUI FICAVA` | foi demolido |
-| Mural do Beco | `AQUI ESTÁ` | continua lá |
+| Sanatório Vicentina Aranha | `AQUI FUNCIONOU` | acabou |
+| A matriz de Saint-Hilaire | `AQUI FICAVA` | desabou |
+| Igreja de São Benedito | `AQUI ESTÁ` | continua lá |
 
 </td></tr>
 </table>
