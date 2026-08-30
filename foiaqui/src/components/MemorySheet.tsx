@@ -686,6 +686,24 @@ export function MemorySheet() {
             </View>
           ) : null}
 
+          <Pressable
+            style={styles.placaFisica}
+            onPress={() => {
+              close();
+              router.push({ pathname: '/placa/[id]', params: { id: shown.id } });
+            }}
+            accessibilityRole="button"
+            accessibilityLabel="Gerar uma placa com QR para imprimir e colar no lugar">
+            <Icon name="pinSolid" size={15} color={colors.esmalte} strokeWidth={2.1} />
+            <View style={{ flex: 1 }}>
+              <Body style={styles.placaFisicaTitulo}>Placa para imprimir</Body>
+              <Body style={styles.placaFisicaNota}>
+                Com QR — para colar no lugar onde isto aconteceu
+              </Body>
+            </View>
+            <Icon name="chevronRight" size={16} color={colors.grafiteDim} />
+          </Pressable>
+
           <View style={styles.actions}>
             <Action
               icon="share"
@@ -1099,6 +1117,20 @@ const styles = StyleSheet.create({
     paddingRight: space.md,
   },
   lerAltoText: { fontSize: 13.5, fontWeight: '600', color: colors.esmalte },
+
+  placaFisica: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: space.sm,
+    marginHorizontal: 22,
+    marginTop: space.lg,
+    padding: space.md,
+    borderWidth: 1,
+    borderColor: colors.calLine,
+    minHeight: HIT,
+  },
+  placaFisicaTitulo: { fontSize: 13.5, fontWeight: '600', color: colors.esmalte },
+  placaFisicaNota: { fontSize: 11.5, color: colors.grafiteDim, marginTop: 2 },
 
   chegar: {
     flexDirection: 'row',

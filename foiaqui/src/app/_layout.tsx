@@ -63,6 +63,7 @@ export default function RootLayout() {
             <Stack.Screen name="moderacao" />
             <Stack.Screen name="contribuicoes" />
             <Stack.Screen name="colecao/[id]" />
+            <Stack.Screen name="placa/[id]" />
             <Stack.Screen name="reportar" options={{ presentation: 'modal' }} />
             <Stack.Screen name="entrar" options={{ presentation: 'modal' }} />
             <Stack.Screen name="adicionar" options={{ presentation: 'modal' }} />
