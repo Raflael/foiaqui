@@ -6,12 +6,13 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Icon } from '@/components/Icon';
 import { PhotoPlaceholder } from '@/components/PhotoPlaceholder';
 import { Body, Eyebrow, Mono, Plaque } from '@/components/Type';
-import { trails } from '@/data/trails';
+import { useTrilhas } from '@/store/trilhasMinhas';
 import { alpha, colors, radius, space, TABBAR_HEIGHT } from '@/theme';
 import type { Trail } from '@/types';
 
 export default function TrilhasScreen() {
   const insets = useSafeAreaInsets();
+  const trails = useTrilhas();
 
   return (
     <ScrollView
@@ -66,7 +67,14 @@ function TrailCard({ trail }: { trail: Trail }) {
       </View>
 
       <View style={styles.info}>
-        <Mono style={styles.theme}>{trail.theme.toUpperCase()}</Mono>
+        <View style={styles.temaLinha}>
+          <Mono style={styles.theme}>{trail.theme.toUpperCase()}</Mono>
+          {trail.daPessoa ? (
+            <View style={styles.suaTag}>
+              <Mono style={styles.suaTagText}>SUA</Mono>
+            </View>
+          ) : null}
+        </View>
         <Plaque style={styles.cardTitle}>{trail.title}</Plaque>
         <View style={styles.meta}>
           <View style={styles.metaItem}>
@@ -107,7 +115,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   info: { position: 'absolute', left: space.lg, right: space.lg, bottom: 14 },
+  temaLinha: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   theme: { fontSize: 10, letterSpacing: 2, color: colors.ferrugemSobreEscuro },
+  suaTag: { borderWidth: 1, borderColor: colors.sobreEsmalteDim, paddingHorizontal: 5, paddingVertical: 1 },
+  suaTagText: { fontSize: 8.5, letterSpacing: 1.5, color: colors.sobreEsmalteDim },
   cardTitle: { fontSize: 21, lineHeight: 23, color: colors.sobreEsmalte, marginTop: 5 },
   meta: { flexDirection: 'row', gap: 14, marginTop: 9 },
   metaItem: { flexDirection: 'row', alignItems: 'center', gap: 5, minHeight: 20 },

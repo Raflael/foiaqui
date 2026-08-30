@@ -85,6 +85,14 @@ export interface Trail {
   stopCount: number;
   cover: TrailCover;
   coverUri?: string;
+  /**
+   * Trilha montada por quem usa o app, a partir de uma coleção.
+   *
+   * Distingue percurso curado pelo projeto do percurso de alguém — e a tela
+   * mostra a diferença, porque "roteiro da casa" e "roteiro do vizinho"
+   * carregam autoridades diferentes.
+   */
+  daPessoa?: boolean;
 }
 
 export interface Badge {

@@ -7,7 +7,7 @@ import { Icon, type IconName } from '@/components/Icon';
 import { Body, Mono, Plaque } from '@/components/Type';
 import { conquistas, nivelPor } from '@/data/profile';
 import { inicialDe, usePerfil } from '@/store/perfil';
-import { trails } from '@/data/trails';
+import { useTrilhas } from '@/store/trilhasMinhas';
 import { useAcervo, useMemorias } from '@/store/acervo';
 import { trilhasCompletas, useCaminhada } from '@/store/caminhada';
 import { useColecoes } from '@/store/colecoes';
@@ -37,6 +37,7 @@ export default function PerfilScreen() {
   const fila = useFila();
   const revisoes = useRevisoes();
   const memorias = useMemorias();
+  const trails = useTrilhas();
   const chegadas = useCaminhada((s) => s.chegadas);
   const trilhasFeitas = trilhasCompletas(chegadas, trails, (mid) =>
     memorias.some((m) => m.id === mid),

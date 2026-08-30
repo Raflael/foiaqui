@@ -10,7 +10,7 @@ import { Plaque as PlaquePlate } from '@/components/Plaque';
 import { Body, Mono, Plaque } from '@/components/Type';
 import { distanceMeters, distanceTo, formatDistance } from '@/data/location';
 import { mapStyle } from '@/data/mapStyle';
-import { trails } from '@/data/trails';
+import { useTrilhas } from '@/store/trilhasMinhas';
 import { useCurrentPosition } from '@/hooks/useCurrentPosition';
 import { useMarkerTracking } from '@/hooks/useMarkerTracking';
 import { useMemorias } from '@/store/acervo';
@@ -31,6 +31,7 @@ export default function TrilhaScreen() {
   const { position } = useCurrentPosition();
   const memorias = useMemorias();
   const openSheet = useSheet((s) => s.open);
+  const trails = useTrilhas();
 
   const trail = trails.find((t) => t.id === id);
 
