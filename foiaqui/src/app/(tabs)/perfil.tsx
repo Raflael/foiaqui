@@ -7,7 +7,9 @@ import { Icon, type IconName } from '@/components/Icon';
 import { Body, Mono, Plaque } from '@/components/Type';
 import { conquistas, nivelPor } from '@/data/profile';
 import { inicialDe, usePerfil } from '@/store/perfil';
-import { useAcervo } from '@/store/acervo';
+import { trails } from '@/data/trails';
+import { useAcervo, useMemorias } from '@/store/acervo';
+import { trilhasCompletas, useCaminhada } from '@/store/caminhada';
 import { useFila, useRevisoes } from '@/store/moderacao';
 import { useSaved } from '@/store/saved';
 import { useSettings } from '@/store/settings';
@@ -31,8 +33,13 @@ export default function PerfilScreen() {
   const sair = usePerfil((s) => s.sair);
   const fila = useFila();
   const revisoes = useRevisoes();
+  const memorias = useMemorias();
+  const chegadas = useCaminhada((s) => s.chegadas);
+  const trilhasFeitas = trilhasCompletas(chegadas, trails, (mid) =>
+    memorias.some((m) => m.id === mid),
+  );
   const nivel = nivelPor(criadas.length);
-  const badges = conquistas(criadas.length, salvas.length, revisoes);
+  const badges = conquistas(criadas.length, salvas.length, revisoes, trilhasFeitas);
   const emRevisao = criadas.filter((m) => m.status === 'em_revisao').length;
 
   return (

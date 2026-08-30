@@ -14,6 +14,7 @@ import { trails } from '@/data/trails';
 import { useCurrentPosition } from '@/hooks/useCurrentPosition';
 import { useMarkerTracking } from '@/hooks/useMarkerTracking';
 import { useMemorias } from '@/store/acervo';
+import { useCaminhada } from '@/store/caminhada';
 import { useSheet } from '@/store/sheet';
 import { alpha, colors, HIT, radius, space } from '@/theme';
 
@@ -44,6 +45,14 @@ export default function TrilhaScreen() {
     .map((sid) => memorias.find((m) => m.id === sid))
     .filter((m) => m !== undefined);
   const { aoCarregarMapa, capturando } = useMarkerTracking(paradas.map((m) => m.id).join('|'));
+
+  // o modo caminhada: onde a pessoa já disse "cheguei"
+  const chegadas = useCaminhada((s) => s.chegadas[id ?? ''] ?? []);
+  const marcar = useCaminhada((s) => s.marcar);
+  const desmarcar = useCaminhada((s) => s.desmarcar);
+  const recomecar = useCaminhada((s) => s.recomecar);
+  const proxima = paradas.find((m) => !chegadas.includes(m.id));
+  const completa = paradas.length > 0 && !proxima;
 
   if (!trail) {
     return (
@@ -177,6 +186,37 @@ export default function TrilhaScreen() {
           </View>
         ) : null}
 
+        {/* a caminhada: onde você está no percurso */}
+        {paradas.length > 0 && !completa && chegadas.length > 0 ? (
+          <View style={styles.proxima}>
+            <Mono style={styles.proximaRotulo}>PRÓXIMA PARADA</Mono>
+            <Plaque style={styles.proximaTitulo}>{proxima!.title}</Plaque>
+            <Body style={styles.proximaDist}>
+              a {formatDistance(distanceTo(proxima!, position))} de você
+            </Body>
+          </View>
+        ) : null}
+
+        {completa ? (
+          <View style={styles.completa}>
+            <Icon name="shieldCheck" size={22} color={colors.conferido} strokeWidth={2} />
+            <View style={{ flex: 1 }}>
+              <Plaque style={styles.completaTitulo}>Trilha caminhada inteira</Plaque>
+              <Body style={styles.completaTexto}>
+                Todas as paradas com memória receberam o seu "cheguei". O carimbo está no seu
+                perfil.
+              </Body>
+            </View>
+            <Pressable
+              onPress={() => recomecar(trail.id)}
+              accessibilityRole="button"
+              accessibilityLabel="Recomeçar esta trilha do zero"
+              style={styles.recomecar}>
+              <Body style={styles.recomecarText}>Refazer</Body>
+            </Pressable>
+          </View>
+        ) : null}
+
         {/* as paradas, na ordem */}
         <Plaque style={styles.secao}>As paradas</Plaque>
         {paradas.map((m, i) => (
@@ -201,7 +241,24 @@ export default function TrilhaScreen() {
               </Mono>
             </View>
 
-            <Icon name="chevronRight" size={18} color={colors.grafiteDim} />
+            <Pressable
+              style={[styles.cheguei, chegadas.includes(m.id) && styles.chegueiOn]}
+              onPress={() =>
+                chegadas.includes(m.id) ? desmarcar(trail.id, m.id) : marcar(trail.id, m.id)
+              }
+              accessibilityRole="checkbox"
+              accessibilityState={{ checked: chegadas.includes(m.id) }}
+              accessibilityLabel={
+                chegadas.includes(m.id)
+                  ? `Desmarcar a chegada em ${m.title}`
+                  : `Marcar que você chegou em ${m.title}`
+              }>
+              {chegadas.includes(m.id) ? (
+                <Icon name="checkCircle" size={17} color={colors.sobreEsmalte} strokeWidth={2.4} />
+              ) : (
+                <Body style={styles.chegueiText}>Cheguei</Body>
+              )}
+            </Pressable>
           </Pressable>
         ))}
 
@@ -231,6 +288,51 @@ function Numero({ icone, valor, rotulo }: { icone: 'clock' | 'pinSolid' | 'trail
 }
 
 const styles = StyleSheet.create({
+  proxima: {
+    marginTop: space.lg,
+    padding: space.lg,
+    backgroundColor: colors.esmalte,
+    borderLeftWidth: 4,
+    borderLeftColor: colors.ferrugem,
+  },
+  proximaRotulo: { fontSize: 9.5, letterSpacing: 2, color: colors.sobreEsmalteDim },
+  proximaTitulo: { fontSize: 19, lineHeight: 21, color: colors.sobreEsmalte, marginTop: 4 },
+  proximaDist: { fontSize: 12.5, color: colors.sobreEsmalteDim, marginTop: 4 },
+
+  completa: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: space.md,
+    marginTop: space.lg,
+    padding: space.lg,
+    backgroundColor: colors.cal2,
+    borderLeftWidth: 3,
+    borderLeftColor: colors.conferido,
+  },
+  completaTitulo: { fontSize: 15, color: colors.grafite },
+  completaTexto: { fontSize: 12.5, lineHeight: 18, color: colors.grafiteDim, marginTop: 3 },
+  recomecar: {
+    minHeight: HIT - 8,
+    paddingHorizontal: space.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: colors.calLine,
+  },
+  recomecarText: { fontSize: 13, color: colors.grafiteDim },
+
+  cheguei: {
+    minWidth: 72,
+    minHeight: HIT - 6,
+    paddingHorizontal: space.sm,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1.5,
+    borderColor: colors.esmalte,
+  },
+  chegueiOn: { backgroundColor: colors.conferido, borderColor: colors.conferido },
+  chegueiText: { fontSize: 12.5, fontWeight: '600', color: colors.esmalte },
+
   screen: { flex: 1, backgroundColor: colors.cal },
 
   capa: { height: 240, justifyContent: 'flex-end' },
