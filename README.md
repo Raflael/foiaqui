@@ -11,7 +11,8 @@
   <img src="https://img.shields.io/badge/React%20Native-0.86-14396E?style=flat-square" alt="React Native 0.86">
   <img src="https://img.shields.io/badge/TypeScript-strict-14396E?style=flat-square" alt="TypeScript strict">
   <img src="https://img.shields.io/badge/contraste-29%2F29%20WCAG%20AA-2E6E68?style=flat-square" alt="29 de 29 pares passam no WCAG AA">
-  <img src="https://img.shields.io/badge/fase%202-conclu%C3%ADda-B4471F?style=flat-square" alt="Fase 2 concluída">
+  <img src="https://img.shields.io/badge/acervo-12%20mem%C3%B3rias%20reais-B4471F?style=flat-square" alt="12 memórias reais de São José dos Campos">
+  <img src="https://img.shields.io/badge/APK-aut%C3%B4nomo-B4471F?style=flat-square" alt="Distribuído como APK autônomo">
 </p>
 
 ---
@@ -26,11 +27,17 @@ pessoa contribui com foto, relato, áudio ou vídeo; a comunidade modera. A cida
 vira um museu vivo.
 
 Projeto de UX pela metodologia **Duplo Diamante**, com protótipo em React Native.
-Cidade-piloto: **São José dos Campos–SP** — e o acervo semeado é real: oito
-lugares da cidade, doze memórias de 1865 a 2021, com coordenadas do
-OpenStreetMap e fonte pública declarada em cada uma.
+Cidade-piloto: **São José dos Campos–SP** — e o acervo semeado é real: dez
+lugares da cidade, doze memórias de 1865 a 2021, coordenadas do OpenStreetMap,
+fonte pública declarada em cada uma e **dez das doze com foto de verdade**
+(Wikimedia Commons, com crédito e licença na ficha).
+
+Dois dos dez lugares entram **sem memória nenhuma**, de propósito: o mapa
+precisa mostrar onde falta, não só onde já tem.
 
 📄 **[O dossiê completo do projeto](https://claude.ai/code/artifact/84a310f1-57f1-4027-8204-adce8bcf60bf)** — problema, benchmarking, as 12 decisões, a identidade e o estado real.
+
+🗺️ **[A rota](https://claude.ai/code/artifact/8473c558-4c7a-4a25-9c4b-3b17b52ee4bd)** — o plano em cinco horizontes, do protótipo que existe até a AR de verdade.
 
 <br>
 
@@ -68,12 +75,14 @@ OpenStreetMap e fonte pública declarada em cada uma.
 | **Ficha** | bottom sheet de três alturas · slider passado↔presente · áudio e **vídeo** que tocam · fonte e crédito de foto declarados · o feed das outras histórias do mesmo lugar |
 | **Câmera AR** | câmera real e **bússola**: os cards seguem a direção em que o aparelho aponta, somem fora do campo de visão e indicam para que lado girar · sai sozinha por inatividade |
 | **Adicionar** | 4 passos · foto e vídeo pela câmera ou galeria · gravação de áudio · GPS com ajuste manual e geocodificação reversa · década **e** ano exato · rascunho salvo sozinho |
-| **Trilhas** | lista de percursos e tela de trilha com mini-mapa, paradas numeradas e traçado |
+| **Trilhas** | lista de percursos e tela de trilha com mini-mapa, paradas numeradas e traçado · caminhada narrada parada a parada · trilha montada a partir de uma coleção sua, com link que abre no aparelho de outra pessoa |
 | **Moderação** | fila de revisão por pares · quatro critérios públicos · recusa que exige apontar o critério · denúncia devolve o publicado para a fila · aprovar publica no mapa |
 | **Linha do tempo** | régua de décadas sobre o mapa, **incluindo as vazias** — o buraco é a informação: "ninguém contou nada dos anos 90 aqui" é um convite |
 | **Identidade** | seu nome assina o que você cria, guardado no aparelho · exigido ao publicar, nunca na porta (Decisão 1) |
 | **Salvos** | coleções de verdade (Decisão 10): criar, renomear, guardar — a mesma memória pode estar em várias |
 | **Perfil** | identidade local que assina o que você cria · nível e conquistas derivados do uso real |
+| **Contribuir** | quatro portas de largura diferente para a mesma coisa (abaixo) · corrigir o que você já enviou · gaveta de rascunhos, porque memória chama memória |
+| **Ler** | ouvir a memória em voz alta (`expo-speech`) · lupa com pinça e toque duplo na foto · compartilhar como imagem · placa com QR para colar no lugar de verdade |
 
 <details>
 <summary><b>E o que ainda não existe</b> — para ninguém se enganar com a demo</summary>
@@ -88,13 +97,48 @@ OpenStreetMap e fonte pública declarada em cada uma.
   `em_revisao` para sempre: não há outras pessoas para revisá-las.
 - **A AR não é AR.** É câmera com sobreposição orientada por bússola e GPS.
   ARKit/ARCore é a última fase, e por um motivo documentado (Decisão 8).
-- **A maior parte das fotos antigas ainda é placeholder.** Cinco memórias já
-  têm foto real (Wikimedia Commons, com crédito na ficha); as demais mostram
-  o gradiente desenhado até existir acervo digitalizado.
+- **As fotos reais são de acervo público, não de gaveta.** Dez das doze
+  memórias semeadas têm foto do Wikimedia Commons, com crédito e licença na
+  ficha; as demais mostram o gradiente desenhado. O material que o produto
+  realmente quer — a foto da caixa de sapato — só aparece com pessoas usando.
 
 </details>
 
 <br>
+
+## As quatro portas de contribuir
+
+O maior risco deste produto não é técnico. É o **banco vazio**: um app de acervo
+colaborativo sem acervo não tem o que mostrar, e ninguém contribui para uma
+vitrine vazia. A pesquisa apontou isso, e a resposta não foi pedir mais — foi
+parar de pedir tudo de uma vez.
+
+Escrever um relato trava a maior parte das pessoas. Ter a foto, não trava
+ninguém. Então o app tem **quatro portas de largura diferente**, e a mais larga
+é a que pede menos:
+
+| Porta | Pede | Para quem |
+|:--|:--|:--|
+| **Só a foto antiga**<br>`/foto-antiga` | imagem + ano + uma frase | "tenho a foto do álbum da vovó" — quem tem o material e não quer escrever |
+| **Modo entrevista**<br>`/adicionar` | as mesmas etapas, guiadas por perguntas | o neto registrando o que a avó conta. O campo `contadaPor` credita **quem viveu**, não quem digitou |
+| **Formulário completo**<br>`/adicionar` | foto, vídeo, áudio, local, época, relato | quem já sabe o que quer contar |
+| **Acervo livre**<br>`/acervo-livre` | escolher no Wikimedia Commons por proximidade | quem não tem foto nenhuma e mesmo assim quer somar |
+
+Três consequências de design que valem registrar:
+
+- **O ano nunca é dispensado**, em nenhuma das quatro portas — é a Decisão 3.
+  Foto sem data não entra na linha do tempo e não compara com o presente; vira
+  imagem solta. Mas o formulário oferece **âncoras** em vez de exigir precisão
+  ("no tempo do sanatório", "quando a Dutra abriu"): data aproximada é melhor
+  que campo vazio.
+- **A foto antiga herda a vista de hoje** da memória de onde a pessoa veio. É o
+  que faz o slider passado↔presente nascer completo, em vez de meia comparação
+  — e é exatamente o que falta na maioria dos lugares, que têm o hoje e não têm
+  o ontem.
+- **Corrigir devolve à revisão.** O texto que a comunidade aprovou não é o texto
+  de agora, então uma memória editada volta para a fila. E a correção usa o
+  **mesmo formulário** da criação, de propósito: corrigir segue as mesmas
+  regras que criar.
 
 ## A identidade: Placa Esmaltada
 
@@ -339,9 +383,28 @@ Deep link direto para uma tela: `foiaqui://perfil`, `foiaqui://trilha/centro`,
 
 ```bash
 npx tsc --noEmit          # tipos
+npx expo lint             # a regra dos hooks é portão, e o motivo está abaixo
 npm run contraste         # WCAG AA, 29 pares
 npx expo export --platform android --output-dir .bundle-check   # o bundle fecha?
 ```
+
+> [!WARNING]
+> **O lint não é estética aqui.** Um hook chamado depois de um retorno
+> antecipado passa no typecheck, fecha o bundle e roda no *development build*
+> — o Fast Refresh remonta o componente e mascara a contagem de hooks. No APK
+> de release o app morre ao abrir a ficha. `react-hooks/rules-of-hooks` acha
+> isso em segundos; descobrir no aparelho custou uma build inteira.
+
+Gerar o **APK autônomo** (o que se instala sem Metro, para testar na rua):
+
+```bash
+npm ci --dry-run   # 5 segundos aqui evitam 15 minutos de erro na nuvem
+npx eas-cli build --profile preview --platform android
+```
+
+O `eas.json` fixa `node: 24.11.1` nos três perfis: a nuvem validava o lockfile
+com npm 10 e esta máquina com npm 11, e as duas discordavam. Com o mesmo Node
+dos dois lados, a validação converge por construção.
 
 </details>
 
@@ -361,7 +424,9 @@ foiaqui/
   src/app/                rotas (Expo Router)
   src/data/               acervo semeado, distância, agrupamento, estilo do mapa
   src/store/              estado global (Zustand); acervo, rascunho e ajustes persistem
-  scripts/contraste.mjs   auditoria WCAG AA
+  scripts/contraste.mjs   auditoria WCAG AA (portão: falha o processo)
+  scripts/icone.mjs       gera o ícone do app a partir dos tokens da identidade
+  scripts/dossie-pdf.mjs  imprime docs/dossie.html em PDF com as fontes reais
 ```
 
 <details>
@@ -388,7 +453,9 @@ foiaqui/
 
 **Expo SDK 57** · React Native 0.86 · React 19 · TypeScript · Expo Router ·
 `react-native-maps` · Reanimated 4 · gesture-handler · Zustand + AsyncStorage ·
-expo-camera · expo-audio · expo-location · react-native-svg
+expo-camera · expo-audio · expo-video · expo-location · expo-speech ·
+expo-sharing · react-native-view-shot · react-native-qrcode-svg ·
+react-native-svg
 
 <br>
 
