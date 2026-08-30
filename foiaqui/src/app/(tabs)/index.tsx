@@ -14,6 +14,7 @@ import { SearchBar } from '@/components/SearchBar';
 import { Body, Mono } from '@/components/Type';
 import { YouAreHere } from '@/components/YouAreHere';
 import { distanceTo, fallbackPosition, formatDistance } from '@/data/location';
+import { agrupar, type Regiao } from '@/data/cluster';
 import { mapStyle } from '@/data/mapStyle';
 import { mapFilters, matchesQuery } from '@/data/memories';
 import { useCurrentPosition } from '@/hooks/useCurrentPosition';
@@ -49,7 +50,7 @@ const INITIAL_REGION = {
 
 export default function MapScreen() {
   const insets = useSafeAreaInsets();
-  const { height: H } = useWindowDimensions();
+  const { height: H, width: W } = useWindowDimensions();
   const motion = useMotionEnabled();
   const mapRef = useRef<MapView>(null);
   const { position, accuracy, source, denied } = useCurrentPosition();
@@ -122,7 +123,15 @@ export default function MapScreen() {
    * antes disso congela a chapa vazia, sem moldura nem texto — foi exatamente
    * o bug que apareceu no primeiro build.
    */
-  const chaveDosPins = shown.map((m) => m.id).join('|');
+  /**
+   * Memórias empilhadas viram um grupo só. Com placas largas, duas a poucos
+   * metros uma da outra ficam ilegíveis — e é exatamente o que acontece quando
+   * alguém registra várias memórias do mesmo quarteirão.
+   */
+  const [regiao, setRegiao] = useState<Regiao>(INITIAL_REGION);
+  const grupos = agrupar(shown, regiao, W, H);
+
+  const chaveDosPins = grupos.map((g) => g.itens.map((m) => m.id).join(',')).join('|');
   const [mapReady, setMapReady] = useState(false);
   const [tracking, setTracking] = useState(true);
   useEffect(() => {
@@ -144,6 +153,7 @@ export default function MapScreen() {
           initialRegion={INITIAL_REGION}
           customMapStyle={mapStyle}
           onMapReady={() => setMapReady(true)}
+          onRegionChangeComplete={setRegiao}
           mapPadding={{ top: insets.top + TOP_CHROME, left: 0, right: 0, bottom: sheetOccupies }}
           showsCompass={false}
           toolbarEnabled={false}
@@ -172,22 +182,51 @@ export default function MapScreen() {
             <YouAreHere />
           </Marker>
 
-          {shown.map((memory) => (
-            <Marker
-              key={memory.id}
-              coordinate={{ latitude: memory.coords.lat, longitude: memory.coords.lng }}
-              anchor={{ x: 0.5, y: 1 }}
-              tracksViewChanges={tracking}
-              onPress={() => openSheet(memory.id)}
-              accessibilityLabel={`${memory.title}, ${memory.year}. Abrir memória.`}>
-              <MemoryPin
-                icon={PIN_ICONS[memory.id] ?? 'pin'}
-                label={`${memory.shortName} · ${memory.year}`}
-                active={memory.id === openId}
-                pending={memory.status === 'em_revisao'}
-              />
-            </Marker>
-          ))}
+          {grupos.map((g) => {
+            const memory = g.itens[0];
+            const sozinha = g.itens.length === 1;
+            return (
+              <Marker
+                key={sozinha ? memory.id : `grupo-${g.lat}-${g.lng}`}
+                coordinate={{ latitude: g.lat, longitude: g.lng }}
+                anchor={{ x: 0.5, y: 1 }}
+                tracksViewChanges={tracking}
+                onPress={() => {
+                  if (sozinha) {
+                    openSheet(memory.id);
+                    return;
+                  }
+                  // tocar no grupo aproxima até as memórias se separarem
+                  mapRef.current?.fitToCoordinates(
+                    g.itens.map((m) => ({ latitude: m.coords.lat, longitude: m.coords.lng })),
+                    {
+                      edgePadding: { top: 200, right: 90, bottom: 260, left: 90 },
+                      animated: motion,
+                    },
+                  );
+                }}
+                accessibilityLabel={
+                  sozinha
+                    ? `${memory.title}, ${memory.year}. Abrir memória.`
+                    : `${g.itens.length} memórias juntas. Aproximar para separá-las.`
+                }>
+                {sozinha ? (
+                  <MemoryPin
+                    icon={PIN_ICONS[memory.id] ?? 'pin'}
+                    label={`${memory.shortName} · ${memory.year}`}
+                    active={memory.id === openId}
+                    pending={memory.status === 'em_revisao'}
+                  />
+                ) : (
+                  <MemoryPin
+                    icon="list"
+                    label={`${g.itens.length} memórias`}
+                    active={g.itens.some((m) => m.id === openId)}
+                  />
+                )}
+              </Marker>
+            );
+          })}
       </MapView>
 
       {/*

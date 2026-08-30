@@ -29,10 +29,11 @@ import { Body, Mono, Plaque } from '@/components/Type';
 import type { Position } from '@/data/location';
 import { mapStyle } from '@/data/mapStyle';
 import { eras } from '@/data/memories';
+import { nivelPor, perfil } from '@/data/profile';
 import { useCurrentPosition } from '@/hooks/useCurrentPosition';
 import { useAcervo } from '@/store/acervo';
 import { temConteudo, useRascunho } from '@/store/rascunho';
-import { colors, HIT, radius, space } from '@/theme';
+import { colors, fonts, HIT, radius, space } from '@/theme';
 import type { Memory } from '@/types';
 
 const TAGS = ['Cinema', 'Lazer', 'Centro', 'Demolido', 'Família', 'Arte urbana', 'Escola'];
@@ -109,6 +110,8 @@ export default function AdicionarScreen() {
   const playing = useAudioPlayerStatus(player).playing;
   const [story, setStory] = useState(guardado.story);
   const [era, setEra] = useState<string | null>(guardado.era);
+  /** Ano exato, quando a pessoa sabe. Vazio significa "só a década". */
+  const [ano, setAno] = useState(guardado.ano ?? '');
   const [tags, setTags] = useState<string[]>(guardado.tags);
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
@@ -119,6 +122,9 @@ export default function AdicionarScreen() {
   // o local nasce preenchido pelo GPS, então este passo já nasce válido
   const canContinue = [media !== null, story.trim().length >= 10, true, era !== null][step];
   const isLast = step === STEPS.length - 1;
+
+  /** Entre a fotografia existir e hoje. Fora disso é engano de digitação. */
+  const anoValido = /^d{4}$/.test(ano) && +ano >= 1830 && +ano <= new Date().getFullYear();
 
   /** Guarda o que voltou do seletor no destino certo. */
   const guardar = (r: ImagePicker.ImagePickerResult, destino: 'memoria' | 'hoje') => {
@@ -187,8 +193,8 @@ export default function AdicionarScreen() {
 
   // grava a cada mudança: fechar o app no meio não pode custar o relato
   useEffect(() => {
-    useRascunho.getState().salvar({ step, media, hoje, audio, story, era, tags, local });
-  }, [step, media, hoje, audio, story, era, tags, local]);
+    useRascunho.getState().salvar({ step, media, hoje, audio, story, era, ano, tags, local });
+  }, [step, media, hoje, audio, story, era, ano, tags, local]);
 
   /**
    * O mapa do local lia a posição uma vez, na montagem. Se o GPS ainda não
@@ -248,14 +254,25 @@ export default function AdicionarScreen() {
       id: `local-${agora.getTime()}`,
       title: tituloDoRelato(story),
       shortName: (endereco?.split(',')[0] ?? 'Aqui').slice(0, 14),
-      marker: era === 'Atual' ? 'Aqui está' : 'Aqui foi',
-      period: era ?? String(agora.getFullYear()),
-      year: era === 'Atual' ? String(agora.getFullYear()) : (ANO_DA_ERA[era ?? ''] ?? '—'),
+      // o tempo verbal conta se a coisa sobreviveu: presente para o que ainda está lá
+      marker: era === 'Atual' || (anoValido && +ano >= new Date().getFullYear() - 1)
+        ? 'Aqui está'
+        : 'Aqui foi',
+      period: anoValido ? ano : (era ?? String(agora.getFullYear())),
+      year: anoValido
+        ? ano
+        : era === 'Atual'
+          ? String(agora.getFullYear())
+          : (ANO_DA_ERA[era ?? ''] ?? '—'),
       era: era ?? 'Atual',
       place: endereco ?? 'Local marcado no mapa',
       coords: { lat: alvo.lat, lng: alvo.lng },
       story: story.trim(),
-      author: { name: 'Você', level: 1, role: 'Contribuição sua' },
+      author: {
+        name: perfil.nome,
+        level: nivelPor(useAcervo.getState().criadas.length + 1).nivel,
+        role: nivelPor(useAcervo.getState().criadas.length + 1).titulo,
+      },
       kind: media?.type === 'video' ? 'Vídeo + relato' : 'Foto + relato',
       verified: false,
       status: 'em_revisao',
@@ -329,6 +346,7 @@ export default function AdicionarScreen() {
                 setAudio(null);
                 setStory('');
                 setEra(null);
+                setAno('');
                 setTags([]);
                 setLocal(null);
               }}
@@ -591,6 +609,30 @@ export default function AdicionarScreen() {
                 ))}
               </ScrollView>
 
+              <Label
+                text="Sabe o ano?"
+                hint="opcional — se souber, é ele que vai na placa"
+              />
+              <View style={styles.anoLinha}>
+                <TextInput
+                  style={styles.anoInput}
+                  value={ano}
+                  onChangeText={(t) => setAno(t.replace(/[^0-9]/g, '').slice(0, 4))}
+                  placeholder="1958"
+                  placeholderTextColor={colors.grafiteDim}
+                  keyboardType="number-pad"
+                  maxLength={4}
+                  accessibilityLabel="Ano exato da memória, se você souber"
+                />
+                <Body style={styles.anoAjuda}>
+                  {anoValido
+                    ? `A placa vai dizer ${ano}.`
+                    : ano.length > 0
+                      ? 'Ano fora do intervalo — vai valer só a década.'
+                      : `Sem isso, a placa diz "${era ?? 'a década escolhida'}".`}
+                </Body>
+              </View>
+
               <Label text="Marcadores" />
               <View style={styles.tagWrap}>
                 {TAGS.map((t) => (
@@ -847,6 +889,22 @@ const styles = StyleSheet.create({
   locGps: { fontSize: 10, color: colors.conferido, fontWeight: '700' },
   locText: { flex: 1, fontSize: 11.5, fontWeight: '600', color: colors.grafite },
   help: { fontSize: 12.5, lineHeight: 18, color: colors.grafiteDim, marginTop: space.md },
+
+  anoLinha: { flexDirection: 'row', alignItems: 'center', gap: space.md },
+  anoInput: {
+    width: 92,
+    minHeight: HIT,
+    paddingHorizontal: space.md,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.calLine,
+    backgroundColor: colors.cal2,
+    fontFamily: fonts.mono.regular,
+    fontSize: 17,
+    letterSpacing: 1,
+    color: colors.grafite,
+  },
+  anoAjuda: { flex: 1, fontSize: 12, lineHeight: 17, color: colors.grafiteDim },
 
   chipRow: { gap: space.sm, paddingRight: space.xl },
   tagWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: space.sm },

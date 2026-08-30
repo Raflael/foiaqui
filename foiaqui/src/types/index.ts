@@ -63,14 +63,4 @@ export interface Badge {
   icon: string;
 }
 
-export interface UserProfile {
-  name: string;
-  initial: string;
-  level: number;
-  city: string;
-  role: string;
-  stats: { memories: number; views: number; collections: number };
-  badges: Badge[];
-  /** memórias de outras pessoas esperando revisão da comunidade */
-  moderationQueue: number;
-}
+/** O perfil deixou de ser mock: ver `data/profile.ts`, que o deriva do uso real. */

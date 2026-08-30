@@ -11,6 +11,7 @@ export interface Rascunho {
   audio: { uri: string; seconds: number } | null;
   story: string;
   era: string | null;
+  ano: string;
   tags: string[];
   local: Position | null;
 }
@@ -22,6 +23,7 @@ const VAZIO: Rascunho = {
   audio: null,
   story: '',
   era: null,
+  ano: '',
   tags: [],
   local: null,
 };

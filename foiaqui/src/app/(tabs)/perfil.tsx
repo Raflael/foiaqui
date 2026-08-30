@@ -4,7 +4,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Icon, type IconName } from '@/components/Icon';
 import { Body, Mono, Plaque } from '@/components/Type';
-import { formatCount, profile } from '@/data/profile';
+import { conquistas, nivelPor, perfil } from '@/data/profile';
+import { useAcervo } from '@/store/acervo';
+import { useSaved } from '@/store/saved';
 import { useSettings } from '@/store/settings';
 import { alpha, colors, HIT, radius, space, TABBAR_HEIGHT } from '@/theme';
 
@@ -13,6 +15,17 @@ export default function PerfilScreen() {
   const [a11yOpen, setA11yOpen] = useState(false);
 
   const { largeText, simpleMode, toggleLargeText, toggleSimpleMode } = useSettings();
+
+  /**
+   * Tudo aqui vem do uso real. Antes eram números fixos — 27 memórias, 1,4 mil
+   * visualizações — que nunca mudavam por mais que a pessoa contribuísse.
+   * Estatística que não se mexe é enfeite, e ensina a ignorar a tela inteira.
+   */
+  const criadas = useAcervo((s) => s.criadas);
+  const salvas = useSaved((s) => s.ids);
+  const nivel = nivelPor(criadas.length);
+  const badges = conquistas(criadas.length, salvas.length);
+  const emRevisao = criadas.filter((m) => m.status === 'em_revisao').length;
 
   return (
     <ScrollView
@@ -24,23 +37,25 @@ export default function PerfilScreen() {
       showsVerticalScrollIndicator={false}>
       <View style={styles.head}>
         <View style={styles.avatar}>
-          <Plaque style={styles.avatarText}>{profile.initial}</Plaque>
+          <Plaque style={styles.avatarText}>{perfil.inicial}</Plaque>
           <View style={styles.level}>
-            <Mono style={styles.levelText}>Nv {profile.level}</Mono>
+            <Mono style={styles.levelText}>Nv {nivel.nivel}</Mono>
           </View>
         </View>
         <View style={{ flex: 1 }}>
-          <Plaque style={styles.name}>{profile.name}</Plaque>
+          <Plaque style={styles.name} numberOfLines={2}>
+            {perfil.nome}
+          </Plaque>
           <Mono style={styles.tag}>
-            {profile.role} · {profile.city}
+            {nivel.titulo} · {perfil.cidade}
           </Mono>
         </View>
       </View>
 
       <View style={styles.stats}>
-        <Stat value={String(profile.stats.memories)} label="memórias" />
-        <Stat value={formatCount(profile.stats.views)} label="visualizações" />
-        <Stat value={String(profile.stats.collections)} label="coleções" />
+        <Stat value={String(criadas.length)} label={criadas.length === 1 ? 'memória' : 'memórias'} />
+        <Stat value={String(salvas.length)} label={salvas.length === 1 ? 'salva' : 'salvas'} />
+        <Stat value={String(emRevisao)} label="em revisão" />
       </View>
 
       <View style={styles.badges}>
@@ -49,7 +64,7 @@ export default function PerfilScreen() {
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.badgeRow}>
-          {profile.badges.map((badge) => (
+          {badges.map((badge) => (
             <View key={badge.id} style={styles.badge}>
               <View style={[styles.badgeIcon, badge.earned && styles.badgeIconOn]}>
                 <Icon
@@ -74,7 +89,7 @@ export default function PerfilScreen() {
           icon="shieldCheck"
           title="Moderação da comunidade"
           subtitle="Ajude a revisar novas memórias"
-          pill={`${profile.moderationQueue} novas`}
+          pill={emRevisao > 0 ? `${emRevisao} sua${emRevisao > 1 ? 's' : ''}` : undefined}
         />
         <Row icon="list" title="Minhas contribuições" />
         <Row
