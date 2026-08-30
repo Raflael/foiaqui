@@ -1,10 +1,11 @@
 import { router } from 'expo-router';
-import { Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Alert, Pressable, ScrollView, Share, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Icon } from '@/components/Icon';
 import { Body, Eyebrow, Mono, Plaque } from '@/components/Type';
 import { criterioPor } from '@/data/criterios';
+import { geojsonDasMemorias } from '@/data/exportar';
 import { useAcervo } from '@/store/acervo';
 import { useModeracao } from '@/store/moderacao';
 import { alpha, colors, HIT, space } from '@/theme';
@@ -95,6 +96,28 @@ export default function ContribuicoesScreen() {
               os dois desfechos.
             </Body>
           </View>
+        ) : null}
+
+        {criadas.length > 0 ? (
+          <Pressable
+            style={styles.exportar}
+            onPress={() =>
+              Share.share({
+                title: 'Minhas memórias do FoiAqui',
+                message: geojsonDasMemorias(criadas),
+              })
+            }
+            accessibilityRole="button"
+            accessibilityLabel="Levar minhas memórias como arquivo GeoJSON">
+            <Icon name="share" size={16} color={colors.esmalte} strokeWidth={2.1} />
+            <View style={{ flex: 1 }}>
+              <Body style={styles.exportarTitulo}>Levar minhas memórias</Body>
+              <Body style={styles.exportarNota}>
+                GeoJSON com texto e lugar — abre em qualquer mapa. As fotos e áudios ficam no
+                aparelho.
+              </Body>
+            </View>
+          </Pressable>
         ) : null}
 
         {criadas.map((m) => {
@@ -216,6 +239,19 @@ const styles = StyleSheet.create({
     backgroundColor: colors.cal2,
   },
   notaText: { flex: 1, fontSize: 12.5, lineHeight: 18.5, color: colors.grafiteDim },
+
+  exportar: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: space.sm,
+    marginTop: space.lg,
+    padding: space.lg,
+    borderWidth: 1.5,
+    borderColor: colors.esmalte,
+    minHeight: HIT,
+  },
+  exportarTitulo: { fontSize: 14, fontWeight: '600', color: colors.esmalte },
+  exportarNota: { fontSize: 12, lineHeight: 17, color: colors.grafiteDim, marginTop: 2 },
 
   item: {
     marginTop: space.lg,
