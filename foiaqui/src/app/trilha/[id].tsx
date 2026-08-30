@@ -1,4 +1,5 @@
 import { LinearGradient } from 'expo-linear-gradient';
+import * as Speech from 'expo-speech';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
@@ -14,6 +15,8 @@ import { useTrilhas } from '@/store/trilhasMinhas';
 import { useCurrentPosition } from '@/hooks/useCurrentPosition';
 import { useMarkerTracking } from '@/hooks/useMarkerTracking';
 import { useMemorias } from '@/store/acervo';
+import { useEffect, useRef, useState } from 'react';
+
 import { useCaminhada } from '@/store/caminhada';
 import { useSheet } from '@/store/sheet';
 import { alpha, colors, HIT, radius, space } from '@/theme';
@@ -54,6 +57,43 @@ export default function TrilhaScreen() {
   const recomecar = useCaminhada((s) => s.recomecar);
   const proxima = paradas.find((m) => !chegadas.includes(m.id));
   const completa = paradas.length > 0 && !proxima;
+
+  /**
+   * O tour narrado: caminhar de fone, o celular no bolso.
+   *
+   * Ligado, o app fala a memória da parada assim que você marca "cheguei".
+   * É a única forma de usar o acervo enquanto se anda de verdade — ler
+   * parágrafo andando não acontece, e a Decisão 7 diz que o contexto é mão
+   * ocupada e sol na tela.
+   *
+   * A narração dispara na CHEGADA marcada, não por GPS. O geofence erraria
+   * quarenta metros no centro e começaria a falar do Coreto enquanto a pessoa
+   * ainda olha o Mercado — pior que silêncio, porque desalinha a voz do que
+   * está diante dos olhos.
+   */
+  const [narrando, setNarrando] = useState(false);
+  const jaFalou = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!narrando) {
+      Speech.stop();
+      return;
+    }
+    // fala a última parada marcada, uma vez só
+    const ultima = chegadas[chegadas.length - 1];
+    if (!ultima || jaFalou.current === ultima) return;
+    const parada = paradas.find((m) => m.id === ultima);
+    if (!parada) return;
+    jaFalou.current = ultima;
+    Speech.speak(`${parada.marker}. ${parada.title}. ${parada.story}`, {
+      language: 'pt-BR',
+      rate: 0.94,
+    });
+  }, [narrando, chegadas, paradas]);
+
+  // desliga a voz ao sair da trilha: narração órfã seguindo pela cidade é
+  // assombração, e ninguém encontra o botão de parar depois
+  useEffect(() => () => { Speech.stop(); }, []);
 
   if (!trail) {
     return (
@@ -187,6 +227,39 @@ export default function TrilhaScreen() {
           </View>
         ) : null}
 
+        {paradas.length > 0 ? (
+          <Pressable
+            style={[styles.tour, narrando && styles.tourOn]}
+            onPress={() => {
+              if (narrando) Speech.stop();
+              setNarrando((v) => !v);
+            }}
+            accessibilityRole="switch"
+            accessibilityState={{ checked: narrando }}
+            accessibilityLabel={
+              narrando
+                ? 'Desligar o tour narrado'
+                : 'Ligar o tour narrado: o app conta a memória ao marcar cada chegada'
+            }>
+            <Icon
+              name={narrando ? 'pause' : 'play'}
+              size={17}
+              color={narrando ? colors.sobreEsmalte : colors.esmalte}
+              filled
+            />
+            <View style={{ flex: 1 }}>
+              <Body style={[styles.tourTitulo, narrando && styles.tourTituloOn]}>
+                {narrando ? 'Tour narrado ligado' : 'Tour narrado'}
+              </Body>
+              <Body style={[styles.tourNota, narrando && styles.tourNotaOn]}>
+                {narrando
+                  ? 'A cada "cheguei", o app conta a história'
+                  : 'Ponha o fone e caminhe — o app conta em cada parada'}
+              </Body>
+            </View>
+          </Pressable>
+        ) : null}
+
         {/* a caminhada: onde você está no percurso */}
         {paradas.length > 0 && !completa && chegadas.length > 0 ? (
           <View style={styles.proxima}>
@@ -289,6 +362,22 @@ function Numero({ icone, valor, rotulo }: { icone: 'clock' | 'pinSolid' | 'trail
 }
 
 const styles = StyleSheet.create({
+  tour: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: space.md,
+    marginTop: space.lg,
+    padding: space.lg,
+    borderWidth: 1.5,
+    borderColor: colors.esmalte,
+    minHeight: HIT + 8,
+  },
+  tourOn: { backgroundColor: colors.esmalte, borderColor: colors.esmalte },
+  tourTitulo: { fontSize: 14.5, fontWeight: '600', color: colors.esmalte },
+  tourTituloOn: { color: colors.sobreEsmalte },
+  tourNota: { fontSize: 12, lineHeight: 17, color: colors.grafiteDim, marginTop: 2 },
+  tourNotaOn: { color: colors.sobreEsmalteDim },
+
   proxima: {
     marginTop: space.lg,
     padding: space.lg,

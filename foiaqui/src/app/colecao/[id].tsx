@@ -1,6 +1,6 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { Alert, Pressable, ScrollView, Share, StyleSheet, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Icon } from '@/components/Icon';
@@ -196,6 +196,40 @@ export default function ColecaoScreen() {
           </View>
         ) : null}
 
+        {/*
+          Compartilhar o percurso como texto, não como link.
+          Sem backend não existe URL que abra a coleção de outra pessoa — e um
+          link que não abre nada seria a mentira de interface que este projeto
+          apaga há dias. O roteiro em texto funciona hoje, em qualquer
+          aplicativo, e cada parada leva o deep link que ABRE de verdade em
+          quem tem o app.
+        */}
+        {dentro.length > 0 ? (
+          <Pressable
+            style={styles.compartilhar}
+            onPress={() =>
+              Share.share({
+                title: colecao.nome,
+                message: [
+                  colecao.nome.toUpperCase() + " — um roteiro no FoiAqui",
+                  "",
+                  ...dentro.map(
+                    (m, i) =>
+                      (i + 1) + ". " + m.title + " (" + m.year + ")" + "\n   " +
+                      m.place + "\n   foiaqui://m/" + m.id,
+                  ),
+                  "",
+                  dentro.length + " paradas · memória urbana de São José dos Campos",
+                ].join("\n"),
+              })
+            }
+            accessibilityRole="button"
+            accessibilityLabel={`Compartilhar o roteiro ${colecao.nome} com as ${dentro.length} paradas`}>
+            <Icon name="share" size={17} color={colors.sobreEsmalte} strokeWidth={2.2} />
+            <Body style={styles.compartilharText}>Compartilhar este roteiro</Body>
+          </Pressable>
+        ) : null}
+
         <Pressable
           style={styles.apagar}
           onPress={confirmarApagar}
@@ -283,6 +317,17 @@ const styles = StyleSheet.create({
     backgroundColor: colors.esmalte,
   },
   fecharText: { fontSize: 14.5, fontWeight: '600', color: colors.sobreEsmalte },
+
+  compartilhar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: space.sm,
+    minHeight: HIT + 4,
+    marginTop: space.xl,
+    backgroundColor: colors.esmalte,
+  },
+  compartilharText: { fontSize: 14.5, fontWeight: '600', color: colors.sobreEsmalte },
 
   apagar: { minHeight: HIT, marginTop: space.xxl, alignItems: 'center', justifyContent: 'center' },
   apagarText: { fontSize: 13.5, color: colors.ferrugem, fontWeight: '600' },
