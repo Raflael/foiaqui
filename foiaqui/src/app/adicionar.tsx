@@ -34,6 +34,7 @@ import { criterios } from '@/data/criterios';
 import { pontoPor } from '@/data/pontos';
 import { eras, nomeCurto } from '@/data/memories';
 import { nivelPor } from '@/data/profile';
+import { useImportada } from '@/store/importada';
 import { autorDe, usePerfil } from '@/store/perfil';
 import { useCurrentPosition } from '@/hooks/useCurrentPosition';
 import { useAcervo } from '@/store/acervo';
@@ -182,6 +183,18 @@ export default function AdicionarScreen() {
    * descobrir. Um quadro do primeiro segundo responde na hora.
    */
   const [capaVideo, setCapaVideo] = useState<string | null>(null);
+  /** crédito da foto vinda do acervo livre, quando houver */
+  const [creditoImportado, setCreditoImportado] = useState<string | null>(null);
+
+  // recebe a escolha feita na tela do acervo livre
+  const importada = useImportada((s) => s.escolhida);
+  const limparImportada = useImportada((s) => s.limpar);
+  useEffect(() => {
+    if (!importada) return;
+    setMedia({ uri: importada.uri, type: 'image' });
+    setCreditoImportado(importada.credito);
+    limparImportada();
+  }, [importada, limparImportada]);
   const [era, setEra] = useState<string | null>(guardado.era);
   /** Ano exato, quando a pessoa sabe. Vazio significa "só a década". */
   const [ano, setAno] = useState(guardado.ano ?? '');
@@ -367,6 +380,9 @@ export default function AdicionarScreen() {
       audioSeconds: audio?.seconds,
       tags,
       pastImageUri: media?.type === 'image' ? media.uri : undefined,
+      // o crédito acompanha a foto quando ela veio do acervo livre: é o que
+      // as licenças CC exigem em troca do uso
+      creditoFoto: creditoImportado ?? undefined,
       presentImageUri: hoje ?? undefined,
     };
     setTimeout(() => {
@@ -522,6 +538,34 @@ export default function AdicionarScreen() {
                   <Body style={[styles.pickBtnText, { color: colors.esmalte }]}>Da galeria</Body>
                 </Pressable>
               </View>
+
+              {/*
+                A terceira via, para quem não tem foto: o que já está
+                catalogado e licenciado perto do lugar. É a resposta mais
+                barata ao mapa vazio — o acervo do mundo já fotografou muita
+                coisa que ninguém contou ainda.
+              */}
+              <Pressable
+                style={styles.acervoLivre}
+                onPress={() =>
+                  router.push({
+                    pathname: '/acervo-livre',
+                    params: local
+                      ? { lat: String(local.lat), lng: String(local.lng) }
+                      : undefined,
+                  })
+                }
+                accessibilityRole="button"
+                accessibilityLabel="Procurar fotos com licença livre perto deste lugar">
+                <Icon name="search" size={17} color={colors.esmalte} strokeWidth={2.1} />
+                <View style={{ flex: 1 }}>
+                  <Body style={styles.acervoLivreTitulo}>Não tem foto?</Body>
+                  <Body style={styles.acervoLivreNota}>
+                    Procurar no acervo livre do Wikimedia perto daqui
+                  </Body>
+                </View>
+                <Icon name="chevronRight" size={16} color={colors.grafiteDim} />
+              </Pressable>
 
               <Label
                 text="Como está hoje"
@@ -988,6 +1032,20 @@ const styles = StyleSheet.create({
     color: colors.grafite,
     textAlignVertical: 'top',
   },
+  acervoLivre: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: space.sm,
+    marginTop: space.md,
+    padding: space.md,
+    borderWidth: 1,
+    borderColor: colors.calLine,
+    backgroundColor: colors.cal2,
+    minHeight: HIT,
+  },
+  acervoLivreTitulo: { fontSize: 13.5, fontWeight: '600', color: colors.esmalte },
+  acervoLivreNota: { fontSize: 11.5, lineHeight: 16, color: colors.grafiteDim, marginTop: 2 },
+
   entrevista: {
     marginTop: space.lg,
     padding: space.lg,
