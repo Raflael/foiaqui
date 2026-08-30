@@ -95,6 +95,34 @@ export const pontos: Ponto[] = [
     coords: { lat: -23.1808363, lng: -45.885489 },
     hoje: 'Museu na antiga Capela de Nossa Senhora Aparecida.',
   },
+  /*
+   * Daqui para baixo: lugares que EXISTEM e que ninguém contou ainda.
+   *
+   * Eles viram pins-fantasma no mapa. Não é enfeite nem enchimento de
+   * catálogo: é o medo nº 1 da PO virando convite. Mapa vazio afasta; mapa
+   * que mostra ONDE está vazio chama — a pessoa vê o silêncio no lugar por
+   * onde ela passa todo dia e sabe que pode preenchê-lo.
+   *
+   * O mecanismo é estrutural, não uma lista fixa: qualquer ponto sem memória
+   * vira fantasma sozinho, e deixa de ser no instante em que alguém conta a
+   * primeira história dele.
+   */
+  {
+    id: 'santos-dumont',
+    nome: 'Parque Santos Dumont',
+    shortName: 'Santos Dumont',
+    endereco: 'Jardim São Dimas',
+    coords: { lat: -23.2000684, lng: -45.8909128 },
+    hoje: 'Parque público, um dos mais usados da cidade.',
+  },
+  {
+    id: 'rodoviaria',
+    nome: 'Terminal Rodoviário',
+    shortName: 'Rodoviária',
+    endereco: 'Praça das Nações Unidas, Vila Piratininga',
+    coords: { lat: -23.1924243, lng: -45.877831 },
+    hoje: 'Em funcionamento — a porta de entrada de quem chega.',
+  },
 ];
 
 export const pontoPor = (id?: string | null) => pontos.find((p) => p.id === id);

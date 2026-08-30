@@ -26,22 +26,41 @@ export function MemoryPin({
   active = false,
   /** ainda em revisão pela comunidade: chapa com moldura tracejada */
   pending = false,
+  /**
+   * Lugar sem memória nenhuma: a placa em branco.
+   *
+   * Chapa clara com moldura azul em vez do azul cheio — é o negativo da
+   * placa, e lê como "ainda não escrita" sem precisar de legenda. Some no
+   * meio dos pins de verdade sem competir com eles, que é o correto: o
+   * convite não pode gritar mais alto que o acervo.
+   */
+  vazio = false,
 }: {
   icon: IconName;
   label: string;
   active?: boolean;
   pending?: boolean;
+  vazio?: boolean;
 }) {
   return (
     <View style={styles.pin}>
       <View style={active && styles.lifted}>
         <PlaquePlate
           chipped={active}
+          tone={vazio ? 'cal' : 'esmalte'}
           style={styles.plate}
-          frameStyle={[styles.frame, pending && styles.frameProvisoria]}>
+          frameStyle={[
+            styles.frame,
+            (pending || vazio) && styles.frameProvisoria,
+          ]}>
           <View style={styles.row}>
-            <Icon name={icon} size={13} color={colors.sobreEsmalte} strokeWidth={2} />
-            <Plaque weight="semibold" style={styles.label}>
+            <Icon
+              name={icon}
+              size={13}
+              color={vazio ? colors.esmalte : colors.sobreEsmalte}
+              strokeWidth={2}
+            />
+            <Plaque weight="semibold" style={[styles.label, vazio && styles.labelVazio]}>
               {label}
             </Plaque>
           </View>
@@ -49,8 +68,8 @@ export function MemoryPin({
       </View>
 
       {/* a farpa que aponta o ponto exato no chão */}
-      <View style={styles.spike} />
-      <View style={styles.dot} />
+      <View style={[styles.spike, vazio && styles.spikeVazio]} />
+      <View style={[styles.dot, vazio && styles.dotVazio]} />
     </View>
   );
 }
@@ -73,7 +92,10 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
   },
   label: { fontSize: 11.5, letterSpacing: 0.9, color: colors.sobreEsmalte },
+  labelVazio: { color: colors.esmalte },
   spike: { width: 2, height: 9, backgroundColor: colors.esmalte },
+  spikeVazio: { backgroundColor: colors.esmalteClaro },
+  dotVazio: { backgroundColor: colors.esmalteClaro },
   dot: {
     width: 7,
     height: 7,

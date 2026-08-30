@@ -19,7 +19,7 @@ import { useLinhaDoTempo } from '@/store/linhaDoTempo';
 import { Timeline } from '@/components/Timeline';
 import { agrupar, type Regiao } from '@/data/cluster';
 import { anoDe, decadasDo, naDecada, rotuloLongo } from '@/data/decadas';
-import { pontoPor } from '@/data/pontos';
+import { pontoPor, pontos } from '@/data/pontos';
 import { mapStyle } from '@/data/mapStyle';
 import { mapFilters, matchesQuery } from '@/data/memories';
 import { useCurrentPosition } from '@/hooks/useCurrentPosition';
@@ -172,6 +172,22 @@ export default function MapScreen() {
    * Sai de cena quando há busca ou recorte ativo: o balcão está ocupado
    * respondendo outra pergunta.
    */
+  /**
+   * Lugares que existem e ninguém contou ainda.
+   *
+   * Mapa vazio afasta; mapa que mostra ONDE está vazio chama. O pin-fantasma
+   * é o silêncio virando convite — a pessoa vê o lugar por onde passa todo
+   * dia sem história e sabe que pode preenchê-lo.
+   *
+   * Some quando há busca, filtro ou recorte de época: nesses momentos a
+   * pergunta na tela é outra, e oferecer o que não existe atrapalharia a
+   * leitura do que existe.
+   */
+  const semHistoria =
+    !query && !filter && decada === null
+      ? pontos.filter((p) => !memories.some((m) => m.pontoId === p.id))
+      : [];
+
   const hoje = new Date();
   const comAno = memories.filter((m) => anoDe(m) !== null);
   const diaDoAno = Math.floor(
@@ -243,6 +259,23 @@ export default function MapScreen() {
                 ) : null;
               })()
             : null}
+
+          {semHistoria.map((p) => (
+            <Marker
+              key={`vazio-${p.id}`}
+              coordinate={{ latitude: p.coords.lat, longitude: p.coords.lng }}
+              anchor={{ x: 0.5, y: 1 }}
+              tracksViewChanges={capturando}
+              onPress={() =>
+                router.push({
+                  pathname: '/adicionar',
+                  params: { ponto: p.id },
+                })
+              }
+              accessibilityLabel={`${p.nome}: ninguém contou uma memória aqui ainda. Tocar para contar a primeira.`}>
+              <MemoryPin icon="plus" label={p.shortName} vazio />
+            </Marker>
+          ))}
 
           {grupos.map((g) => {
             const memory = g.itens[0];
