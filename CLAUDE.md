@@ -272,9 +272,21 @@ reversa, rascunho automático do formulário, AR orientada por bússola, tela de
 trilha, agrupamento de pins por distância em pixels, ano exato além da década, e
 o perfil deixando de ser mock (nível e conquistas saem do uso real).
 
-**Próximo:** Fase 2 — moderação comunitária de verdade (fila de revisão por
-pares, critérios públicos, recusa justificada). É a última das cinco coisas que
-a PO chamou de essenciais.
+**Fase 2 concluída** (30/08/2026): moderação comunitária. Fila de revisão por
+pares em `app/moderacao.tsx`, quatro critérios públicos em `data/criterios.ts`,
+decisões persistidas em `store/moderacao.ts`. Recusar EXIGE apontar o critério
+— é decisão de produto, não validação de formulário. Os critérios aparecem
+também no fim do formulário de criar: regra que só aparece na recusa é
+armadilha. Aprovar publica no mapa; você não revisa a própria memória; pular
+não é decidir.
+
+Com isso, as cinco coisas que a PO chamou de essenciais estão de pé — as duas
+últimas com ressalva honesta na tela: uma revisão só já publica (faltam pares
+de verdade), e a AR é bússola, não ARKit.
+
+**Próximo:** o primeiro teste de usabilidade, e só depois o dossiê. Se for
+codar antes, o que sobrou é v2/v3 da pesquisa: linha do tempo sobre o mapa
+(Decisão 11) e coleções (Decisão 10).
 
 Duas dívidas conhecidas:
 - As coordenadas das memórias semeadas em São José dos Campos são aproximações;

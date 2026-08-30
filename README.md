@@ -10,8 +10,8 @@
   <img src="https://img.shields.io/badge/Expo-SDK%2057-14396E?style=flat-square" alt="Expo SDK 57">
   <img src="https://img.shields.io/badge/React%20Native-0.86-14396E?style=flat-square" alt="React Native 0.86">
   <img src="https://img.shields.io/badge/TypeScript-strict-14396E?style=flat-square" alt="TypeScript strict">
-  <img src="https://img.shields.io/badge/contraste-28%2F28%20WCAG%20AA-2E6E68?style=flat-square" alt="28 de 28 pares passam no WCAG AA">
-  <img src="https://img.shields.io/badge/fase%201-conclu%C3%ADda-B4471F?style=flat-square" alt="Fase 1 concluída">
+  <img src="https://img.shields.io/badge/contraste-29%2F29%20WCAG%20AA-2E6E68?style=flat-square" alt="29 de 29 pares passam no WCAG AA">
+  <img src="https://img.shields.io/badge/fase%202-conclu%C3%ADda-B4471F?style=flat-square" alt="Fase 2 concluída">
 </p>
 
 ---
@@ -41,16 +41,14 @@ Cidade-piloto: **São José dos Campos–SP**.
 <tr>
 <td align="center"><img src=".github/screens/trilha.png" alt="Tela de uma trilha com paradas numeradas"><br><sub><b>Trilha</b><br>percurso a pé, e a admissão<br>honesta do que falta</sub></td>
 <td align="center"><img src=".github/screens/perfil.png" alt="Perfil com nível e conquistas"><br><sub><b>Perfil</b><br>nível e conquistas derivados<br>do uso real, não de mock</sub></td>
-<td align="center" valign="middle">
+<td width="33%" align="center"><img src=".github/screens/moderacao.png" alt="Fila de revisão da comunidade com os critérios públicos"><br><sub><b>Moderação</b><br>critérios públicos e recusa<br>que diz o motivo</sub></td>
+</tr>
+<tr>
+<td colspan="3">
 
 > [!NOTE]
-> Telas capturadas em aparelho real,
-> em *development build*.
->
-> A **AR** ficou de fora da galeria
-> de propósito: a tela é a câmera,
-> então todo print mostra a sala de
-> quem tirou.
+> Telas capturadas em aparelho real, em *development build*. A **AR** ficou de fora da
+> galeria de propósito: a tela é a câmera, então todo print mostra a sala de quem tirou.
 
 </td>
 </tr>
@@ -67,6 +65,7 @@ Cidade-piloto: **São José dos Campos–SP**.
 | **Câmera AR** | câmera real e **bússola**: os cards seguem a direção em que o aparelho aponta, somem fora do campo de visão e indicam para que lado girar · sai sozinha por inatividade |
 | **Adicionar** | 4 passos · foto e vídeo pela câmera ou galeria · gravação de áudio · GPS com ajuste manual e geocodificação reversa · década **e** ano exato · rascunho salvo sozinho |
 | **Trilhas** | lista de percursos e tela de trilha com mini-mapa, paradas numeradas e traçado |
+| **Moderação** | fila de revisão por pares · quatro critérios públicos · recusa que exige apontar o critério · aprovar publica no mapa |
 | **Salvos · Perfil** | acervo local · nível e conquistas derivados do uso real |
 
 <details>
@@ -76,8 +75,10 @@ Cidade-piloto: **São José dos Campos–SP**.
 
 - **Sem backend e sem contas.** O que você cria fica no aparelho (AsyncStorage) e
   não sincroniza com ninguém.
-- **A moderação é visual.** Memórias novas nascem `em_revisao` e aparecem
-  marcadas, mas não há fila de revisão por pares — é a próxima fase.
+- **A moderação existe, mas uma revisão já publica.** Em produção seriam vários
+  pareceres concordantes de pessoas distintas, com reputação de quem revisa —
+  o que um aparelho sozinho não simula sem mentir. Suas próprias memórias ficam
+  `em_revisao` para sempre: não há outras pessoas para revisá-las.
 - **A AR não é AR.** É câmera com sobreposição orientada por bússola e GPS.
   ARKit/ARCore é a última fase, e por um motivo documentado (Decisão 8).
 - **As fotos antigas são placeholders.** Gradientes, não acervo real.
@@ -191,6 +192,7 @@ Documento de pesquisa que não muda o produto é enfeite. Estas mudaram:
 | **3** — data obrigatória | O formulário exige década, e ganhou campo de **ano exato** validado entre 1830 e hoje. O ano rege o verbo da placa: 1958 vira "aqui funcionou", 2019 vira "aqui está" |
 | **4** — áudio de primeira classe | Gravação real com `expo-audio` no passo 1, ao lado da foto — não escondida atrás de "adicionar anexo" |
 | **7** — uso na rua | A paleta inteira é clara, alvos ≥ 44px, e o contraste é medido **inclusive sobre fundo translúcido** (veja Acessibilidade) |
+| **5** — moderação comunitária | Recusar **exige** apontar qual critério falhou; não é validação de formulário, é a decisão de que ninguém tem o trabalho recusado sem saber por quê. Os critérios aparecem em dois lugares: na fila de quem revisa e no fim do formulário de quem envia |
 | **9** — AR não contínua | A tela de AR se fecha sozinha após 45 s sem interação, e volta ao mapa |
 | **12** — reconhecimento, não volume | Níveis são poucos, largos e nomeiam o **papel** ("Contador de histórias"), não a pontuação. Não existe ranking, e não vai existir |
 
@@ -209,7 +211,7 @@ Documento de pesquisa que não muda o produto é enfeite. Estas mudaram:
 | Adicionar memória | ✅ foto, vídeo, áudio, local e data |
 | Banco colaborativo | 🟡 existe, mas é local ao aparelho |
 | Realidade aumentada | 🟡 câmera + bússola; AR real é a última fase |
-| **Moderação da comunidade** | ❌ **a próxima fase** — é a maior lacuna |
+| Moderação da comunidade | ✅ fila, critérios públicos e recusa justificada |
 
 </details>
 
@@ -328,7 +330,7 @@ Deep link direto para uma tela: `foiaqui://perfil`, `foiaqui://trilha/centro`,
 
 ```bash
 npx tsc --noEmit          # tipos
-npm run contraste         # WCAG AA, 28 pares
+npm run contraste         # WCAG AA, 29 pares
 npx expo export --platform android --output-dir .bundle-check   # o bundle fecha?
 ```
 
