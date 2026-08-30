@@ -65,6 +65,12 @@ export const alpha = {
   /** vidro escuro sobre a câmera, onde o fundo é imprevisível */
   glassDark: 'rgba(15,43,84,0.86)',
   scrim: 'rgba(15,43,84,0.42)',
+  /** chrome opaco sobre a câmera, onde o fundo é imprevisível */
+  chrome: 'rgba(15,43,84,0.93)',
+  /** véu que escurece capa de foto para o texto sobreviver por cima */
+  veu: 'rgba(15,43,84,0.88)',
+  /** tinta de ferrugem para fundo de estado conquistado */
+  ferrugemTinta: 'rgba(180,71,31,0.10)',
 } as const;
 
 export type ColorToken = keyof typeof colors;

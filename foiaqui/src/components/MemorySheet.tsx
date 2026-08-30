@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import {
   BackHandler,
   Pressable,
+  Share,
   ScrollView,
   StyleSheet,
   useWindowDimensions,
@@ -27,6 +28,7 @@ import { MemoryCard } from '@/components/MemoryCard';
 import { Plaque as PlaquePlate } from '@/components/Plaque';
 import { RevealSlider } from '@/components/RevealSlider';
 import { Body, Mono, Plaque, Story } from '@/components/Type';
+import { distanceMeters, formatDistance } from '@/data/location';
 import { memories as seed } from '@/data/memories';
 import { useMotionEnabled } from '@/hooks/useMotion';
 import { useAcervo, useMemoria } from '@/store/acervo';
@@ -190,7 +192,15 @@ export function MemorySheet() {
   if (!shown || hidden) return null;
 
   const saved = savedIds.includes(shown.id);
-  const others = [...criadas, ...seed].filter((m) => m.id !== shown.id);
+  /**
+   * "Deste local" precisa significar alguma coisa: ordena pela distância até
+   * a memória aberta e mostra quanto é. Antes vinha na ordem do arquivo, o
+   * que fazia o título mentir.
+   */
+  const others = [...criadas, ...seed]
+    .filter((m) => m.id !== shown.id)
+    .map((m) => ({ m, metros: distanceMeters(shown.coords, m.coords) }))
+    .sort((a, b) => a.metros - b.metros);
   // ou as duas fotos existem, ou nenhuma (e aí as duas cenas são desenhadas)
   const comparavel = !!shown.pastImageUri === !!shown.presentImageUri;
   const isOpen = openId !== null;
@@ -364,7 +374,22 @@ export function MemorySheet() {
           </View>
 
           <View style={styles.actions}>
-            <Action icon="share" label="Compartilhar" />
+            <Action
+              icon="share"
+              label="Compartilhar"
+              onPress={() =>
+                Share.share({
+                  message:
+                    `${shown.marker.toUpperCase()}: ${shown.title} — ${shown.place}, ${shown.period}.
+
+` +
+                    `${shown.story.slice(0, 180)}${shown.story.length > 180 ? '…' : ''}
+
+` +
+                    `Veja no FoiAqui: foiaqui://m/${shown.id}`,
+                })
+              }
+            />
             <Action icon="timeline" label="Linha do tempo" />
             <Action icon="flag" label="Reportar" />
           </View>
@@ -374,10 +399,11 @@ export function MemorySheet() {
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.moreRow}>
-            {others.map((m) => (
+            {others.map(({ m, metros }) => (
               <MemoryCard
                 key={m.id}
                 memory={m}
+                distance={formatDistance(metros)}
                 // troca o conteúdo da folha: sem navegação, sem recarregar tela
                 onPress={() => {
                   swap(m.id);
@@ -437,11 +463,22 @@ function RoundBtn({
   );
 }
 
-function Action({ icon, label }: { icon: IconName; label: string }) {
+function Action({
+  icon,
+  label,
+  onPress,
+}: {
+  icon: IconName;
+  label: string;
+  onPress?: () => void;
+}) {
   return (
     <Pressable
-      style={({ pressed }) => [styles.action, pressed && { opacity: 0.75 }]}
+      style={({ pressed }) => [styles.action, pressed && { opacity: 0.75 }, !onPress && { opacity: 0.45 }]}
+      disabled={!onPress}
+      onPress={onPress}
       accessibilityRole="button"
+      accessibilityState={{ disabled: !onPress }}
       accessibilityLabel={label}>
       <Icon name={icon} size={20} color={colors.grafite} />
       <Body style={styles.actionLabel}>{label}</Body>
@@ -456,7 +493,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: '#05070C',
+    backgroundColor: colors.esmalteFundo,
   },
   sheet: {
     position: 'absolute',

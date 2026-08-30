@@ -31,6 +31,7 @@ import { mapStyle } from '@/data/mapStyle';
 import { eras } from '@/data/memories';
 import { useCurrentPosition } from '@/hooks/useCurrentPosition';
 import { useAcervo } from '@/store/acervo';
+import { temConteudo, useRascunho } from '@/store/rascunho';
 import { colors, HIT, radius, space } from '@/theme';
 import type { Memory } from '@/types';
 
@@ -80,17 +81,23 @@ const formatSeconds = (s: number) =>
 export default function AdicionarScreen() {
   const insets = useSafeAreaInsets();
 
-  const [step, setStep] = useState(0);
-  const [media, setMedia] = useState<{ uri: string; type: 'image' | 'video' } | null>(null);
+  // o que estava salvo entra como estado inicial: a pessoa volta onde parou
+  const guardado = useRascunho.getState();
+  const [recuperado] = useState(() => temConteudo(guardado));
+
+  const [step, setStep] = useState(guardado.step);
+  const [media, setMedia] = useState<{ uri: string; type: 'image' | 'video' } | null>(
+    guardado.media,
+  );
   /** A vista de hoje, opcional — é ela que faz o antes↔depois existir. */
-  const [hoje, setHoje] = useState<string | null>(null);
-  const [audio, setAudio] = useState<{ uri: string; seconds: number } | null>(null);
+  const [hoje, setHoje] = useState<string | null>(guardado.hoje);
+  const [audio, setAudio] = useState<{ uri: string; seconds: number } | null>(guardado.audio);
   const [mediaErro, setMediaErro] = useState<string | null>(null);
 
   const { position, source } = useCurrentPosition();
   const adicionarAoAcervo = useAcervo((s) => s.adicionar);
   const locMapRef = useRef<MapView>(null);
-  const [local, setLocal] = useState<Position | null>(null);
+  const [local, setLocal] = useState<Position | null>(guardado.local);
   const [endereco, setEndereco] = useState<string | null>(null);
   // o local nasce onde a pessoa está; ela ajusta se a memória for logo ali adiante
   const alvo = local ?? position;
@@ -100,9 +107,9 @@ export default function AdicionarScreen() {
   // ouvir o próprio relato antes de enviar: sem isto a pessoa grava no escuro
   const player = useAudioPlayer(audioSource(audio?.uri));
   const playing = useAudioPlayerStatus(player).playing;
-  const [story, setStory] = useState('');
-  const [era, setEra] = useState<string | null>(null);
-  const [tags, setTags] = useState<string[]>([]);
+  const [story, setStory] = useState(guardado.story);
+  const [era, setEra] = useState<string | null>(guardado.era);
+  const [tags, setTags] = useState<string[]>(guardado.tags);
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
 
@@ -177,6 +184,11 @@ export default function AdicionarScreen() {
     await recorder.prepareToRecordAsync();
     recorder.record();
   };
+
+  // grava a cada mudança: fechar o app no meio não pode custar o relato
+  useEffect(() => {
+    useRascunho.getState().salvar({ step, media, hoje, audio, story, era, tags, local });
+  }, [step, media, hoje, audio, story, era, tags, local]);
 
   /**
    * O mapa do local lia a posição uma vez, na montagem. Se o GPS ainda não
@@ -258,6 +270,7 @@ export default function AdicionarScreen() {
     };
     setTimeout(() => {
       adicionarAoAcervo(nova);
+      useRascunho.getState().limpar();
       setSending(false);
       setSent(true);
     }, 900);
@@ -302,6 +315,30 @@ export default function AdicionarScreen() {
             <Icon name="x" size={17} color={colors.grafite} strokeWidth={2.2} />
           </Pressable>
         </View>
+
+        {recuperado ? (
+          <View style={styles.recuperado}>
+            <Icon name="clock" size={15} color={colors.esmalte} strokeWidth={2.2} />
+            <Body style={styles.recuperadoText}>Continuando de onde você parou</Body>
+            <Pressable
+              onPress={() => {
+                useRascunho.getState().limpar();
+                setStep(0);
+                setMedia(null);
+                setHoje(null);
+                setAudio(null);
+                setStory('');
+                setEra(null);
+                setTags([]);
+                setLocal(null);
+              }}
+              hitSlop={10}
+              accessibilityRole="button"
+              accessibilityLabel="Descartar o rascunho e começar de novo">
+              <Body style={styles.recuperadoLink}>Começar de novo</Body>
+            </Pressable>
+          </View>
+        ) : null}
 
         <View
           style={styles.steps}
@@ -645,6 +682,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+
+  recuperado: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: space.sm,
+    marginHorizontal: 22,
+    marginTop: space.md,
+    paddingHorizontal: space.md,
+    paddingVertical: space.sm,
+    borderRadius: radius.md,
+    backgroundColor: colors.cal2,
+    borderWidth: 1,
+    borderColor: colors.calLine,
+  },
+  recuperadoText: { flex: 1, fontSize: 12.5, color: colors.grafiteDim },
+  recuperadoLink: { fontSize: 12.5, fontWeight: '600', color: colors.esmalte },
 
   steps: { flexDirection: 'row', gap: 6, paddingHorizontal: 22, marginTop: space.gutter },
   stepBar: { flex: 1, height: 4, borderRadius: 2, backgroundColor: colors.calLine },

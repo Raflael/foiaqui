@@ -12,10 +12,13 @@ import type { Memory } from '@/types';
 export function MemoryCard({
   memory,
   surface = 'paper',
+  distance,
   onPress,
 }: {
   memory: Memory;
   surface?: 'paper' | 'dark';
+  /** quando vem, substitui o autor — perto de onde? é a pergunta desta lista */
+  distance?: string;
   onPress: () => void;
 }) {
   const onSurface = surface === 'paper' ? colors.grafite : colors.grafite;
@@ -29,7 +32,9 @@ export function MemoryCard({
       onPress={onPress}
       style={({ pressed }) => [styles.card, pressed && { opacity: 0.8 }]}
       accessibilityRole="button"
-      accessibilityLabel={`${memory.title}, ${memory.year}, por ${memory.author.name}`}>
+      accessibilityLabel={`${memory.title}, ${memory.year}${
+        distance ? `, a ${distance}` : `, por ${memory.author.name}`
+      }`}>
       <PhotoPlaceholder variant="past" style={styles.thumb}>
         <View style={styles.year}>
           <Mono style={styles.yearText}>{memory.year}</Mono>
@@ -39,7 +44,7 @@ export function MemoryCard({
         {memory.title}
       </Plaque>
       <Mono style={[styles.author, { color: metaColor }]} numberOfLines={1}>
-        {memory.author.name}
+        {distance ?? memory.author.name}
       </Mono>
     </Pressable>
   );

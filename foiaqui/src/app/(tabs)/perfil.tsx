@@ -6,7 +6,7 @@ import { Icon, type IconName } from '@/components/Icon';
 import { Body, Mono, Plaque } from '@/components/Type';
 import { formatCount, profile } from '@/data/profile';
 import { useSettings } from '@/store/settings';
-import { colors, HIT, radius, space, TABBAR_HEIGHT } from '@/theme';
+import { alpha, colors, HIT, radius, space, TABBAR_HEIGHT } from '@/theme';
 
 export default function PerfilScreen() {
   const insets = useSafeAreaInsets();
@@ -244,7 +244,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  badgeIconOn: { backgroundColor: 'rgba(247,200,119,0.12)', borderColor: colors.ferrugem },
+  badgeIconOn: { backgroundColor: alpha.ferrugemTinta, borderColor: colors.ferrugem },
   badgeLabel: {
     fontSize: 10.5,
     lineHeight: 13,

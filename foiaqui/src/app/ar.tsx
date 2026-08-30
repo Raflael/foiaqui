@@ -30,7 +30,7 @@ import { useHeading } from '@/hooks/useHeading';
 import { useMotionEnabled } from '@/hooks/useMotion';
 import { useMemorias } from '@/store/acervo';
 import { useSheet } from '@/store/sheet';
-import { colors, HIT, radius, space } from '@/theme';
+import { alpha, colors, HIT, radius, space } from '@/theme';
 import type { Memory } from '@/types';
 
 /**
@@ -435,7 +435,7 @@ function ScanLine() {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: '#0B1120' },
+  screen: { flex: 1, backgroundColor: colors.esmalteFundo },
   fallbackBuildings: { position: 'absolute', left: 0, right: 0, bottom: 0, height: '60%' },
 
   scan: { position: 'absolute', left: 0, right: 0, top: 0, height: 120 },
@@ -499,7 +499,7 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     zIndex: 24,
-    backgroundColor: 'rgba(11,17,32,0.96)',
+    backgroundColor: alpha.chrome,
     borderTopWidth: 1,
     borderTopColor: colors.calLine,
     borderTopLeftRadius: radius.md,
@@ -533,7 +533,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    backgroundColor: 'rgba(15,21,38,0.9)',
+    backgroundColor: alpha.chrome,
     borderWidth: 1,
     borderColor: 'rgba(180,71,31,0.34)',
     borderRadius: radius.md,
@@ -605,7 +605,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.pill,
     borderWidth: 1,
     borderColor: colors.calLine,
-    backgroundColor: 'rgba(15,21,38,0.9)',
+    backgroundColor: alpha.chrome,
   },
   exitBtnOn: { backgroundColor: colors.ferrugem, borderColor: colors.ferrugem },
   exitText: { fontSize: 13, fontWeight: '600', color: colors.sobreEsmalte },

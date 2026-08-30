@@ -7,7 +7,7 @@ import { PhotoPlaceholder } from '@/components/PhotoPlaceholder';
 import { Body, Eyebrow, Mono, Plaque } from '@/components/Type';
 import { trails } from '@/data/trails';
 import { useSheet } from '@/store/sheet';
-import { colors, radius, space, TABBAR_HEIGHT } from '@/theme';
+import { alpha, colors, radius, space, TABBAR_HEIGHT } from '@/theme';
 import type { Trail } from '@/types';
 
 export default function TrilhasScreen() {
@@ -60,7 +60,7 @@ function TrailCard({ trail }: { trail: Trail }) {
 
       {/* escurece a base pro texto ganhar contraste sobre qualquer capa */}
       <LinearGradient
-        colors={['rgba(8,10,16,0.35)', 'rgba(8,10,16,0.15)', 'rgba(8,10,16,0.9)']}
+        colors={[alpha.scrim, 'transparent', alpha.veu]}
         locations={[0, 0.4, 1]}
         style={StyleSheet.absoluteFill}
       />
@@ -74,11 +74,11 @@ function TrailCard({ trail }: { trail: Trail }) {
         <Plaque style={styles.cardTitle}>{trail.title}</Plaque>
         <View style={styles.meta}>
           <View style={styles.metaItem}>
-            <Icon name="clock" size={14} color="#D9D2C4" />
+            <Icon name="clock" size={14} color={colors.sobreEsmalteDim} />
             <Body style={styles.metaText}>{trail.durationMin} min</Body>
           </View>
           <View style={styles.metaItem}>
-            <Icon name="pinSolid" size={14} color="#D9D2C4" />
+            <Icon name="pinSolid" size={14} color={colors.sobreEsmalteDim} />
             <Body style={styles.metaText}>{trail.stopCount} paradas</Body>
           </View>
         </View>
@@ -112,8 +112,8 @@ const styles = StyleSheet.create({
   },
   info: { position: 'absolute', left: space.lg, right: space.lg, bottom: 14 },
   theme: { fontSize: 10, letterSpacing: 2, color: colors.ferrugemClara },
-  cardTitle: { fontSize: 21, lineHeight: 23, color: '#FFFFFF', marginTop: 5 },
+  cardTitle: { fontSize: 21, lineHeight: 23, color: colors.sobreEsmalte, marginTop: 5 },
   meta: { flexDirection: 'row', gap: 14, marginTop: 9 },
   metaItem: { flexDirection: 'row', alignItems: 'center', gap: 5, minHeight: 20 },
-  metaText: { fontSize: 12, color: '#D9D2C4' },
+  metaText: { fontSize: 12, color: colors.sobreEsmalteDim },
 });
