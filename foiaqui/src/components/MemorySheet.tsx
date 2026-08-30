@@ -650,8 +650,14 @@ export function MemorySheet() {
                 <Plaque style={styles.avatarText}>{shown.author.name.charAt(0)}</Plaque>
               </View>
               <View style={{ flex: 1 }}>
-                <Body style={styles.author}>{shown.author.name}</Body>
-                <Mono style={styles.authorRole}>{shown.author.role}</Mono>
+                <Body style={styles.author}>
+                  {shown.contadaPor ?? shown.author.name}
+                </Body>
+                <Mono style={styles.authorRole}>
+                  {shown.contadaPor
+                    ? 'contou · registrado por ' + shown.author.name
+                    : shown.author.role}
+                </Mono>
               </View>
               {shown.verified ? (
                 <View style={styles.verified}>

@@ -31,6 +31,18 @@ export interface Memory {
   /** trecho de `story` que aparece em Fraunces, como o "drop" do protótipo */
   emphasis?: string;
   author: { name: string; level: number; role: string };
+  /**
+   * De quem é a memória, quando não é de quem digitou.
+   *
+   * O produto existe porque a lembrança mora com os mais velhos e a mão que
+   * digita costuma ser de outra pessoa — o neto registrando o que a avó
+   * conta. Sem este campo, o app rouba a autoria de quem viveu e entrega a
+   * quem transcreveu, que é o oposto do que ele promete.
+   *
+   * O campo author continua sendo quem registrou, porque é quem responde
+   * pelo envio na moderação; contadaPor é a voz de origem.
+   */
+  contadaPor?: string;
   /** "Foto + relato", "Foto histórica", "Foto + microdoc" */
   kind: string;
   verified: boolean;
