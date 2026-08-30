@@ -1,5 +1,6 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
+import { Alert } from 'react-native';
 import { Pressable, ScrollView, StyleSheet, Switch, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -10,6 +11,9 @@ import { inicialDe, usePerfil } from '@/store/perfil';
 import { trails } from '@/data/trails';
 import { useAcervo, useMemorias } from '@/store/acervo';
 import { trilhasCompletas, useCaminhada } from '@/store/caminhada';
+import { useColecoes } from '@/store/colecoes';
+import { useModeracao } from '@/store/moderacao';
+import { useRascunho } from '@/store/rascunho';
 import { useFila, useRevisoes } from '@/store/moderacao';
 import { useSaved } from '@/store/saved';
 import { useSettings } from '@/store/settings';
@@ -38,6 +42,36 @@ export default function PerfilScreen() {
   const trilhasFeitas = trilhasCompletas(chegadas, trails, (mid) =>
     memorias.some((m) => m.id === mid),
   );
+
+  /**
+   * O reset do teste de usabilidade: devolve o aparelho ao estado de quem
+   * nunca abriu o app. Sem isto, o segundo participante herda o acervo, o
+   * nome e os pareceres do primeiro — e o teste mede a bagunça, não o app.
+   *
+   * Os ajustes de acessibilidade ficam DE FORA de propósito: fonte grande é
+   * do aparelho e de quem o segura, não da sessão de teste.
+   */
+  const recomecarComoVisitante = () =>
+    Alert.alert(
+      'Recomeçar como visitante?',
+      'Apaga deste aparelho: suas memórias, coleções, pareceres, caminhadas, rascunho e o nome. Os ajustes de acessibilidade ficam. Não dá para desfazer.',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Apagar tudo',
+          style: 'destructive',
+          onPress: () => {
+            useAcervo.setState({ criadas: [] });
+            useSaved.setState({ ids: [] });
+            useModeracao.setState({ pareceres: [], denuncias: [], pulados: [] });
+            useCaminhada.setState({ chegadas: {} });
+            useColecoes.setState({ colecoes: [] });
+            useRascunho.getState().limpar();
+            sair();
+          },
+        },
+      ],
+    );
   const nivel = nivelPor(criadas.length);
   const badges = conquistas(criadas.length, salvas.length, revisoes, trilhasFeitas);
   const emRevisao = criadas.filter((m) => m.status === 'em_revisao').length;
@@ -131,6 +165,12 @@ export default function PerfilScreen() {
             onPress={sair}
           />
         ) : null}
+        <Row
+          icon="flag"
+          title="Recomeçar como visitante"
+          subtitle="Apaga tudo deste aparelho — para testar com outra pessoa"
+          onPress={recomecarComoVisitante}
+        />
         <Row
           icon="list"
           title="Minhas contribuições"
