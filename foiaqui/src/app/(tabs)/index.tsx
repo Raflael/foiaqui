@@ -2,7 +2,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
-import MapView, { Circle, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { Circle, Marker, PROVIDER_GOOGLE, Polyline } from 'react-native-maps';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Chip } from '@/components/Chip';
@@ -221,6 +221,28 @@ export default function MapScreen() {
             accessibilityLabel="Sua localização atual">
             <YouAreHere />
           </Marker>
+
+          {/*
+            O fio até a memória aberta: tracejado, em ferrugem, porque andar
+            até lá é ação. Some sem GPS — traçar a partir do fallback seria
+            desenhar um caminho que ninguém está percorrendo.
+          */}
+          {openId && !denied
+            ? (() => {
+                const alvo = memories.find((m) => m.id === openId);
+                return alvo ? (
+                  <Polyline
+                    coordinates={[
+                      { latitude: position.lat, longitude: position.lng },
+                      { latitude: alvo.coords.lat, longitude: alvo.coords.lng },
+                    ]}
+                    strokeColor={colors.ferrugem}
+                    strokeWidth={2}
+                    lineDashPattern={[6, 8]}
+                  />
+                ) : null;
+              })()
+            : null}
 
           {grupos.map((g) => {
             const memory = g.itens[0];

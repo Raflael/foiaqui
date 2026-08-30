@@ -37,6 +37,7 @@ import { useLinhaDoTempo } from '@/store/linhaDoTempo';
 import { Body, Mono, Plaque, Story } from '@/components/Type';
 import { distanceMeters, formatDistance } from '@/data/location';
 import { memories as seed } from '@/data/memories';
+import { useCurrentPosition } from '@/hooks/useCurrentPosition';
 import { useMotionEnabled } from '@/hooks/useMotion';
 import { useAcervo, useMemoria } from '@/store/acervo';
 import { useSaved } from '@/store/saved';
@@ -88,6 +89,8 @@ export function MemorySheet() {
    * edição e mascarava a diferença de contagem.
    */
   const escolherDecada = useLinhaDoTempo((s) => s.escolher);
+  // para o "como chegar": só mostramos distância quando a posição é real
+  const { position, denied } = useCurrentPosition();
 
   const savedIds = useSaved((s) => s.ids);
   const toggleSaved = useSaved((s) => s.toggle);
@@ -440,6 +443,24 @@ export function MemorySheet() {
                 </View>
                 <Icon name="chevronRight" size={18} color={colors.sobreEsmalteDim} />
               </Pressable>
+            ) : null}
+
+            {/*
+              Como chegar — com a honestidade no rótulo. A conta é em linha
+              reta (Haversine ÷ passo de caminhada), não por rota nas ruas:
+              dizer "12 min a pé" seco prometeria um cálculo que não fazemos.
+              E sem GPS a linha some inteira — distância a partir de um centro
+              de fallback seria mentira com aparência de precisão.
+            */}
+            {!denied ? (
+              <View style={styles.chegar}>
+                <Icon name="trail" size={15} color={colors.esmalte} strokeWidth={2.1} />
+                <Body style={styles.chegarText}>
+                  {formatDistance(distanceMeters(position, shown.coords))} daqui · ≈{' '}
+                  {Math.max(1, Math.round(distanceMeters(position, shown.coords) / 78))} min a pé
+                  em linha reta
+                </Body>
+              </View>
             ) : null}
 
             <View style={styles.byline}>
@@ -857,6 +878,15 @@ const styles = StyleSheet.create({
   fonteLinha: { flexDirection: 'row', gap: 7, alignItems: 'flex-start', minHeight: 22 },
   fonteText: { flex: 1, fontSize: 12.5, lineHeight: 17.5, color: colors.esmalte },
   credito: { fontSize: 11.5, lineHeight: 16, color: colors.grafiteDim },
+
+  chegar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: space.lg,
+    minHeight: 22,
+  },
+  chegarText: { flex: 1, fontSize: 12.5, color: colors.grafiteDim },
 
   // o elo entre capítulos: uma chapa fina, deitada
   continua: {
