@@ -31,6 +31,7 @@ import { mapStyle } from '@/data/mapStyle';
 import * as VideoThumbnails from 'expo-video-thumbnails';
 
 import { criterios } from '@/data/criterios';
+import { rotuloLongo } from '@/data/decadas';
 import { pontoPor } from '@/data/pontos';
 import { eras, nomeCurto } from '@/data/memories';
 import { nivelPor } from '@/data/profile';
@@ -57,6 +58,29 @@ const STEPS = ['Mídia', 'História', 'Local', 'Época'] as const;
  *
  * Nenhuma delas escreve nada pela pessoa. A pergunta é isca, não modelo.
  */
+/**
+ * Âncoras de época: marcos que quase todo mundo em São José consegue datar.
+ *
+ * Ninguém lembra "1983". Todo mundo lembra "foi na época da enchente". A
+ * Decisão 3 torna a data obrigatória porque é ela que viabiliza linha do
+ * tempo, sobreposição e coleções — mas obrigatoriedade sem ferramenta vira
+ * chute, e chute registrado como data é dado falso no acervo.
+ *
+ * As âncoras são fatos verificáveis do próprio acervo semeado ou da história
+ * pública da cidade, não efemérides genéricas: "quando a Parahyba abriu"
+ * ancora quem trabalhou lá, e isso um calendário nacional não faz.
+ */
+const ANCORAS: { rotulo: string; ano: number }[] = [
+  { rotulo: 'Quando o Mercado abriu', ano: 1923 },
+  { rotulo: 'Quando a Tecelagem Parahyba abriu', ano: 1925 },
+  { rotulo: 'Quando o sanatório funcionava', ano: 1940 },
+  { rotulo: 'Quando a Dutra ficou pronta', ano: 1951 },
+  { rotulo: 'Quando o homem foi à Lua', ano: 1969 },
+  { rotulo: 'Na época da enchente grande', ano: 1983 },
+  { rotulo: 'Quando o Plano Real chegou', ano: 1994 },
+  { rotulo: 'Na virada do milênio', ano: 2000 },
+];
+
 const PERGUNTAS = [
   'Quem te levou lá pela primeira vez?',
   'Que barulho tinha? E que cheiro?',
@@ -174,6 +198,8 @@ export default function AdicionarScreen() {
   const [story, setStory] = useState(guardado.story);
   // modo entrevista: qual pergunta está servindo de isca agora
   const [pergunta, setPergunta] = useState(0);
+  /** de quem é a memória, quando quem digita é outra pessoa */
+  const [contadaPor, setContadaPor] = useState('');
 
   /**
    * A miniatura do vídeo escolhido.
@@ -383,6 +409,7 @@ export default function AdicionarScreen() {
       // o crédito acompanha a foto quando ela veio do acervo livre: é o que
       // as licenças CC exigem em troca do uso
       creditoFoto: creditoImportado ?? undefined,
+      contadaPor: contadaPor.trim() || undefined,
       presentImageUri: hoje ?? undefined,
     };
     setTimeout(() => {
@@ -677,6 +704,21 @@ export default function AdicionarScreen() {
               </Body>
 
               {/*
+                Quem viveu nem sempre é quem digita. Sem este campo o app
+                rouba a autoria de quem lembra e entrega a quem transcreveu.
+              */}
+              <Label text="De quem é esta memória?" />
+              <TextInput
+                style={styles.campoCurto}
+                value={contadaPor}
+                onChangeText={setContadaPor}
+                placeholder="Minha avó, Dona Cecília — vazio se for sua"
+                placeholderTextColor="#A89A82"
+                maxLength={60}
+                accessibilityLabel="De quem é esta memória, se não for sua"
+              />
+
+              {/*
                 O modo entrevista: uma pergunta concreta como isca para quem
                 congela na tela em branco. Ela não escreve nada pela pessoa —
                 só muda a pergunta na cabeça de "o que eu escrevo?" para
@@ -749,6 +791,34 @@ export default function AdicionarScreen() {
 
           {step === 3 ? (
             <>
+              {/*
+                Para quem não lembra o número mas lembra do que aconteceu
+                junto. A âncora preenche o ano — e continua editável, porque
+                ela é ponto de partida, não veredito.
+              */}
+              <View style={styles.ancoras}>
+                <Body style={styles.ancorasTitulo}>Não lembra o ano?</Body>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.ancorasLinha}>
+                  {ANCORAS.map((a) => (
+                    <Pressable
+                      key={a.rotulo}
+                      style={styles.ancora}
+                      onPress={() => {
+                        setAno(String(a.ano));
+                        setEra(rotuloLongo(Math.floor(a.ano / 10) * 10));
+                      }}
+                      accessibilityRole="button"
+                      accessibilityLabel={`${a.rotulo}: preencher o ano ${a.ano}`}>
+                      <Body style={styles.ancoraText}>{a.rotulo}</Body>
+                      <Mono style={styles.ancoraAno}>{a.ano}</Mono>
+                    </Pressable>
+                  ))}
+                </ScrollView>
+              </View>
+
               <Label text="Época" required />
               <ScrollView
                 horizontal
@@ -1045,6 +1115,31 @@ const styles = StyleSheet.create({
   },
   acervoLivreTitulo: { fontSize: 13.5, fontWeight: '600', color: colors.esmalte },
   acervoLivreNota: { fontSize: 11.5, lineHeight: 16, color: colors.grafiteDim, marginTop: 2 },
+
+  ancoras: { marginBottom: space.lg, gap: 6 },
+  ancorasTitulo: { fontSize: 12.5, color: colors.grafiteDim },
+  ancorasLinha: { gap: space.sm, paddingRight: space.lg },
+  ancora: {
+    minHeight: HIT,
+    justifyContent: 'center',
+    paddingHorizontal: space.md,
+    borderWidth: 1,
+    borderColor: colors.calLine,
+    backgroundColor: colors.cal2,
+  },
+  ancoraText: { fontSize: 12.5, color: colors.grafite },
+  ancoraAno: { fontSize: 11, color: colors.ferrugem, marginTop: 1 },
+
+  campoCurto: {
+    minHeight: HIT + 4,
+    marginTop: 6,
+    paddingHorizontal: space.md,
+    borderWidth: 1,
+    borderColor: colors.calLine,
+    backgroundColor: colors.cal2,
+    color: colors.grafite,
+    fontSize: 15.5,
+  },
 
   entrevista: {
     marginTop: space.lg,
