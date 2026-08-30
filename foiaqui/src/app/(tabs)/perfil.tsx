@@ -5,7 +5,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Icon, type IconName } from '@/components/Icon';
 import { Body, Mono, Plaque } from '@/components/Type';
-import { conquistas, nivelPor, perfil } from '@/data/profile';
+import { conquistas, nivelPor } from '@/data/profile';
+import { inicialDe, usePerfil } from '@/store/perfil';
 import { useAcervo } from '@/store/acervo';
 import { useFila, useRevisoes } from '@/store/moderacao';
 import { useSaved } from '@/store/saved';
@@ -25,6 +26,9 @@ export default function PerfilScreen() {
    */
   const criadas = useAcervo((s) => s.criadas);
   const salvas = useSaved((s) => s.ids);
+  const nome = usePerfil((s) => s.nome);
+  const cidade = usePerfil((s) => s.cidade);
+  const sair = usePerfil((s) => s.sair);
   const fila = useFila();
   const revisoes = useRevisoes();
   const nivel = nivelPor(criadas.length);
@@ -41,17 +45,17 @@ export default function PerfilScreen() {
       showsVerticalScrollIndicator={false}>
       <View style={styles.head}>
         <View style={styles.avatar}>
-          <Plaque style={styles.avatarText}>{perfil.inicial}</Plaque>
+          <Plaque style={styles.avatarText}>{inicialDe(nome)}</Plaque>
           <View style={styles.level}>
             <Mono style={styles.levelText}>Nv {nivel.nivel}</Mono>
           </View>
         </View>
         <View style={{ flex: 1 }}>
           <Plaque style={styles.name} numberOfLines={2}>
-            {perfil.nome}
+            {nome ?? 'Visitante'}
           </Plaque>
           <Mono style={styles.tag}>
-            {nivel.titulo} · {perfil.cidade}
+            {nome ? `${nivel.titulo} · ${cidade}` : 'Explorando sem se identificar'}
           </Mono>
         </View>
       </View>
@@ -102,6 +106,24 @@ export default function PerfilScreen() {
           pill={fila.length > 0 ? String(fila.length) : undefined}
           onPress={() => router.push('/moderacao')}
         />
+        <Row
+          icon="user"
+          title={nome ? 'Sua identidade' : 'Identificar-se'}
+          subtitle={
+            nome
+              ? `Assinando como ${nome}`
+              : 'Explorar é livre; assinar o que você cria pede um nome'
+          }
+          onPress={() => router.push('/entrar')}
+        />
+        {nome ? (
+          <Row
+            icon="x"
+            title="Sair deste aparelho"
+            subtitle="Apaga só o nome — suas memórias continuam aqui"
+            onPress={sair}
+          />
+        ) : null}
         <Row
           icon="list"
           title="Minhas contribuições"

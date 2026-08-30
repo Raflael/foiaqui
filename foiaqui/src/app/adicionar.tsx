@@ -31,7 +31,8 @@ import { mapStyle } from '@/data/mapStyle';
 import { criterios } from '@/data/criterios';
 import { pontoPor } from '@/data/pontos';
 import { eras, nomeCurto } from '@/data/memories';
-import { nivelPor, perfil } from '@/data/profile';
+import { nivelPor } from '@/data/profile';
+import { autorDe, usePerfil } from '@/store/perfil';
 import { useCurrentPosition } from '@/hooks/useCurrentPosition';
 import { useAcervo } from '@/store/acervo';
 import { temConteudo, useRascunho } from '@/store/rascunho';
@@ -263,6 +264,16 @@ export default function AdicionarScreen() {
    * O que continua simulado é a espera — não há backend para subir a mídia.
    */
   const submit = () => {
+    /*
+     * Identificar-se é exigido AQUI, não na porta do app (Decisão 1): a
+     * autoria só passa a importar quando algo vai ser publicado com um nome.
+     * O rascunho já está salvo, então ir e voltar não custa nada a quem
+     * escreveu.
+     */
+    if (!usePerfil.getState().nome) {
+      router.push({ pathname: '/entrar', params: { motivo: 'criar' } });
+      return;
+    }
     setSending(true);
     const agora = new Date();
     const nova: Memory = {
@@ -285,7 +296,7 @@ export default function AdicionarScreen() {
       coords: { lat: alvo.lat, lng: alvo.lng },
       story: story.trim(),
       author: {
-        name: perfil.nome,
+        name: autorDe(usePerfil.getState().nome),
         level: nivelPor(useAcervo.getState().criadas.length + 1).nivel,
         role: nivelPor(useAcervo.getState().criadas.length + 1).titulo,
       },

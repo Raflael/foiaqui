@@ -1,17 +1,13 @@
 import type { Badge } from '@/types';
 
-/**
- * Quem está usando o app neste aparelho.
+/*
+ * A identidade de quem usa saiu daqui e virou `store/perfil.ts`.
  *
- * Antes era a Íris Nogueira — persona da pesquisa — logada como se fosse a
- * dona do celular. Confundia dois papéis: a Íris é o arquétipo de quem
- * CONTRIBUI, e continua no acervo como autora de memórias. Quem usa é você.
+ * Era uma constante: o nome ficava gravado no fonte, e qualquer pessoa que
+ * instalasse o app assinava como "Rafael". Num produto sobre autoria — cada
+ * memória mostra quem contou — identidade fixa no código é mentira
+ * estrutural. Este arquivo ficou só com o que é regra: níveis e conquistas.
  */
-export const perfil = {
-  nome: 'Rafael Vitor de Medeiros Costa',
-  inicial: 'R',
-  cidade: 'São José dos Campos',
-};
 
 /**
  * O nível vem do que a pessoa contribuiu de verdade.

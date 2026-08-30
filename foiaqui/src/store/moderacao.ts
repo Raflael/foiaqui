@@ -4,7 +4,7 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 
 import { filaSemeada } from '@/data/fila';
 import { memories as seed } from '@/data/memories';
-import { perfil } from '@/data/profile';
+import { usePerfil } from '@/store/perfil';
 import type { Memory } from '@/types';
 
 export type Decisao = 'aprovada' | 'recusada';
@@ -99,8 +99,17 @@ export const useModeracao = create<ModeracaoState>()(
   ),
 );
 
-/** É sua? Não se revisa a própria memória. */
-const minha = (m: Memory) => m.author.name === perfil.nome;
+/**
+ * É sua? Não se revisa a própria memória.
+ *
+ * Lê do store em vez de comparar com uma constante: quem usa o app pode ter
+ * qualquer nome agora, e com o nome fixo no código a regra protegia só uma
+ * pessoa. Sem identidade, nada é seu — e a fila fica inteira disponível.
+ */
+const minha = (m: Memory) => {
+  const nome = usePerfil.getState().nome;
+  return !!nome && m.author.name === nome;
+};
 
 /**
  * O que espera parecer seu: o que nunca foi revisado, e o que foi DENUNCIADO
