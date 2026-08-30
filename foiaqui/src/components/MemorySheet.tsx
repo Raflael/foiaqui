@@ -76,6 +76,18 @@ export function MemorySheet() {
   const close = useSheet((s) => s.close);
   const swap = useSheet((s) => s.swap);
 
+  /*
+   * Este hook precisa ficar aqui em cima, junto dos outros.
+   *
+   * Ele estava depois do `if (!shown || hidden) return null`, e isso derrubava
+   * o app: com a folha fechada o React conta N hooks, ao abrir uma memória
+   * conta N+1, e a regra dos hooks quebra. O erro aparecia como crash em
+   * "Rendered more hooks than during the previous render" — só que em release,
+   * porque o Fast Refresh do desenvolvimento remonta o componente a cada
+   * edição e mascarava a diferença de contagem.
+   */
+  const escolherDecada = useLinhaDoTempo((s) => s.escolher);
+
   const savedIds = useSaved((s) => s.ids);
   const toggleSaved = useSaved((s) => s.toggle);
   const criadas = useAcervo((s) => s.criadas);
@@ -222,10 +234,9 @@ export function MemorySheet() {
     .filter((m) => !idsDoPonto.has(m.id))
     .map((m) => ({ m, metros: distanceMeters(shown.coords, m.coords) }))
     .sort((a, b) => a.metros - b.metros);
-  // ou as duas fotos existem, ou nenhuma (e aí as duas cenas são desenhadas)
   const anoDaMemoria = anoDe(shown);
   const decadaDaMemoria = anoDaMemoria !== null ? Math.floor(anoDaMemoria / 10) * 10 : null;
-  const escolherDecada = useLinhaDoTempo((s) => s.escolher);
+  // ou as duas fotos existem, ou nenhuma (e aí as duas cenas são desenhadas)
   const comparavel = !!shown.pastImageUri === !!shown.presentImageUri;
   const isOpen = openId !== null;
 

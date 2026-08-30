@@ -32,6 +32,19 @@ export default function TrilhaScreen() {
   const openSheet = useSheet((s) => s.open);
 
   const trail = trails.find((t) => t.id === id);
+
+  /*
+   * As paradas e o hook de captura ficam ANTES do retorno de "trilha não
+   * encontrada". Estavam depois, e isso quebrava a regra dos hooks: o render
+   * do caso vazio conta um hook a menos que o render normal, e o React derruba
+   * o app quando um vira o outro. Em desenvolvimento o Fast Refresh remonta o
+   * componente e mascara; em release, crash.
+   */
+  const paradas = (trail?.stopIds ?? [])
+    .map((sid) => memorias.find((m) => m.id === sid))
+    .filter((m) => m !== undefined);
+  const { aoCarregarMapa, capturando } = useMarkerTracking(paradas.map((m) => m.id).join('|'));
+
   if (!trail) {
     return (
       <View style={[styles.screen, styles.vazia, { paddingTop: insets.top + space.xxl }]}>
@@ -43,10 +56,6 @@ export default function TrilhaScreen() {
     );
   }
 
-  const paradas = trail.stopIds
-    .map((sid) => memorias.find((m) => m.id === sid))
-    .filter((m) => m !== undefined);
-
   /**
    * O acervo ainda não tem todas as paradas do roteiro. Dizer isso é melhor
    * que inflar o número: é exatamente o "mapa vazio" que a PO listou como
@@ -56,7 +65,6 @@ export default function TrilhaScreen() {
   const faltando = Math.max(0, trail.stopCount - paradas.length);
 
   const rota = paradas.map((m) => ({ latitude: m.coords.lat, longitude: m.coords.lng }));
-  const { aoCarregarMapa, capturando } = useMarkerTracking(paradas.map((m) => m.id).join('|'));
   const centro = rota.length
     ? {
         latitude: rota.reduce((s, p) => s + p.latitude, 0) / rota.length,

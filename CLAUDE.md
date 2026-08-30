@@ -295,6 +295,12 @@ Duas dívidas conhecidas:
   para depois do primeiro teste de usabilidade — escrever antes seria
   documentar suposição.
 
-**Antes de commitar:** `npx tsc --noEmit`, `npm run contraste` (falha se
-algum par reprovar em AA) e um `npx expo export --platform android` para
-garantir que o bundle fecha.
+**Antes de commitar:** `npx tsc --noEmit`, `npx expo lint`, `npm run contraste`
+(falha se algum par reprovar em AA) e um `npx expo export --platform android`
+para garantir que o bundle fecha.
+
+O `lint` entrou na lista depois de um crash que só aparecia em release: um
+hook chamado depois de um retorno antecipado. O typecheck passa, o bundle
+fecha, o dev build não quebra (o Fast Refresh remonta o componente e mascara
+a contagem de hooks) — e o APK morre ao abrir a ficha. A regra
+`react-hooks/rules-of-hooks` pega isso em segundos.
