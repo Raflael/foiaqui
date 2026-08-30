@@ -181,8 +181,22 @@ export default function AdicionarScreen() {
    * mapa de novo, na mão, e provavelmente erraria por alguns metros: nasceria
    * um pin novo ao lado em vez de mais uma história no mesmo lugar.
    */
-  const { ponto: pontoParam } = useLocalSearchParams<{ ponto?: string }>();
+  const { ponto: pontoParam, editar: editarId } = useLocalSearchParams<{
+    ponto?: string;
+    editar?: string;
+  }>();
   const pontoDeOrigem = pontoPor(pontoParam);
+
+  /**
+   * Modo correção: a mesma tela, editando uma memória que já existe.
+   *
+   * Reaproveitar o formulário em vez de escrever um editor separado não é
+   * economia — é o que garante que corrigir siga as mesmas regras de criar.
+   * Um editor paralelo divergiria na primeira validação nova, e a memória
+   * corrigida passaria por um crivo mais frouxo que a original.
+   */
+  const emEdicao = useAcervo((s) => s.criadas.find((m) => m.id === editarId));
+  const editarMemoria = useAcervo((s) => s.editar);
 
   const [local, setLocal] = useState<Position | null>(
     pontoDeOrigem ? { lat: pontoDeOrigem.coords.lat, lng: pontoDeOrigem.coords.lng } : guardado.local,
@@ -201,6 +215,23 @@ export default function AdicionarScreen() {
   const [pergunta, setPergunta] = useState(0);
   /** de quem é a memória, quando quem digita é outra pessoa */
   const [contadaPor, setContadaPor] = useState('');
+
+  // carrega a memória em edição no formulário, uma vez só
+  const carregou = useRef(false);
+  useEffect(() => {
+    if (!emEdicao || carregou.current) return;
+    carregou.current = true;
+    setStory(emEdicao.story);
+    setEra(emEdicao.era);
+    setAno(emEdicao.year);
+    setTags(emEdicao.tags);
+    setLocal({ lat: emEdicao.coords.lat, lng: emEdicao.coords.lng });
+    setContadaPor(emEdicao.contadaPor ?? '');
+    const foto = emEdicao.pastImageUri;
+    if (typeof foto === 'string') setMedia({ uri: foto, type: 'image' });
+    const som = emEdicao.media.find((m) => m.type === 'audio');
+    if (som) setAudio({ uri: som.uri, seconds: emEdicao.audioSeconds ?? 0 });
+  }, [emEdicao]);
 
   /** zera o formulário inteiro — usado pelo "começar de novo" e pela gaveta */
   const zerar = () => {
@@ -449,6 +480,15 @@ export default function AdicionarScreen() {
       presentImageUri: hoje ?? undefined,
     };
     setTimeout(() => {
+      if (emEdicao) {
+        // mantém id e autoria; troca o conteúdo e volta para revisão
+        const { id: _id, author: _autor, ...conteudo } = nova;
+        editarMemoria(emEdicao.id, conteudo);
+        useRascunho.getState().limpar();
+        setSending(false);
+        setSent(true);
+        return;
+      }
       adicionarAoAcervo(nova);
       useRascunho.getState().limpar();
       setSending(false);
@@ -463,9 +503,11 @@ export default function AdicionarScreen() {
           <View style={styles.doneIcon}>
             <Icon name="shieldCheck" size={34} color={colors.conferido} strokeWidth={1.8} />
           </View>
-          <Plaque style={styles.doneTitle}>Memória enviada</Plaque>
+          <Plaque style={styles.doneTitle}>{emEdicao ? 'Correção enviada' : 'Memória enviada'}</Plaque>
           <Body style={styles.doneText}>
-            Ela já está no seu mapa, marcada como <Body style={styles.doneStrong}>em revisão</Body>.
+            {emEdicao ? 'Ela volta para ' : 'Ela já está no seu mapa, marcada como '}
+            <Body style={styles.doneStrong}>em revisão</Body>
+            {emEdicao ? ' — o texto mudou, então a comunidade confere de novo.' : '.'}
             Passa por uma checagem da comunidade antes de aparecer para as outras pessoas.
           </Body>
           <Pressable
@@ -486,7 +528,7 @@ export default function AdicionarScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <View style={styles.sheet}>
         <View style={[styles.head, { paddingTop: space.gutter }]}>
-          <Plaque style={styles.title}>Nova memória</Plaque>
+          <Plaque style={styles.title}>{emEdicao ? 'Corrigir memória' : 'Nova memória'}</Plaque>
           <Pressable
             style={styles.close}
             onPress={() => router.back()}
@@ -951,9 +993,15 @@ export default function AdicionarScreen() {
             onPress={() => (isLast ? submit() : setStep((s) => s + 1))}
             accessibilityRole="button"
             accessibilityState={{ disabled: !canContinue || sending }}
-            accessibilityLabel={isLast ? 'Enviar memória' : 'Continuar para o próximo passo'}>
+            accessibilityLabel={
+              isLast
+                ? emEdicao
+                  ? 'Salvar a correção'
+                  : 'Enviar memória'
+                : 'Continuar para o próximo passo'
+            }>
             <Body style={[styles.primaryText, !canContinue && styles.primaryTextOff]}>
-              {sending ? 'Enviando…' : isLast ? 'Enviar memória' : 'Continuar'}
+              {sending ? 'Enviando…' : isLast ? (emEdicao ? 'Salvar correção' : 'Enviar memória') : 'Continuar'}
             </Body>
           </Pressable>
         </View>

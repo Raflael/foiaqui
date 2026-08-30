@@ -14,6 +14,19 @@ interface AcervoState {
   remover: (id: string) => void;
   /** aplica o resultado de uma revisão à sua própria memória */
   definirStatus: (id: string, status: NonNullable<Memory['status']>) => void;
+  /**
+   * Corrige uma memória já criada.
+   *
+   * Sem isto, um erro de digitação obrigava a apagar e refazer tudo — inclusive
+   * a foto e o áudio, que dão o maior trabalho. Num produto que tenta baixar a
+   * barreira de quem contribui, exigir refazer por causa de uma letra é
+   * exatamente a fricção errada.
+   *
+   * Editar devolve a memória para revisão: o texto que a comunidade aprovou
+   * não é o mesmo texto de agora, e manter o carimbo de aprovado sobre
+   * conteúdo trocado seria furar a própria moderação.
+   */
+  editar: (id: string, mudancas: Partial<Memory>) => void;
 }
 
 /**
@@ -35,6 +48,12 @@ export const useAcervo = create<AcervoState>()(
       criadas: [],
       adicionar: (memory) => set((s) => ({ criadas: [memory, ...s.criadas] })),
       remover: (id) => set((s) => ({ criadas: s.criadas.filter((m) => m.id !== id) })),
+      editar: (id, mudancas) =>
+        set((s) => ({
+          criadas: s.criadas.map((m) =>
+            m.id === id ? { ...m, ...mudancas, status: 'em_revisao' as const } : m,
+          ),
+        })),
       definirStatus: (id, status) =>
         set((s) => ({
           criadas: s.criadas.map((m) => (m.id === id ? { ...m, status } : m)),

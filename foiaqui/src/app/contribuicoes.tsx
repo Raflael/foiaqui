@@ -160,6 +160,17 @@ export default function ContribuicoesScreen() {
 
                 <Pressable
                   style={styles.acao}
+                  onPress={() =>
+                    router.push({ pathname: '/adicionar', params: { editar: m.id } })
+                  }
+                  accessibilityRole="button"
+                  accessibilityLabel={`Corrigir a memória ${m.title}`}>
+                  <Icon name="film" size={15} color={colors.esmalte} strokeWidth={2.2} />
+                  <Body style={styles.acaoText}>Corrigir</Body>
+                </Pressable>
+
+                <Pressable
+                  style={styles.acao}
                   onPress={() => apagar(m)}
                   accessibilityRole="button"
                   accessibilityLabel={`Apagar a memória ${m.title}`}>
