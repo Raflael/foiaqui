@@ -122,6 +122,7 @@ export default function MapScreen() {
    * antes disso congela a chapa vazia, sem moldura nem texto — foi exatamente
    * o bug que apareceu no primeiro build.
    */
+  const chaveDosPins = shown.map((m) => m.id).join('|');
   const [mapReady, setMapReady] = useState(false);
   const [tracking, setTracking] = useState(true);
   useEffect(() => {
@@ -129,7 +130,10 @@ export default function MapScreen() {
     setTracking(true);
     const t = setTimeout(() => setTracking(false), 1200);
     return () => clearTimeout(t);
-  }, [mapReady, openId, filterId, query]);
+    // `chaveDosPins` entra aqui de propósito: criar uma memória muda o
+    // conjunto de marcadores, e sem reabrir a captura os antigos congelavam
+    // em branco no mapa — apareciam na lista e sumiam do mapa.
+  }, [mapReady, openId, filterId, query, chaveDosPins]);
 
   return (
     <View style={styles.screen}>

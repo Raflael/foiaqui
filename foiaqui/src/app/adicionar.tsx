@@ -157,11 +157,16 @@ export default function AdicionarScreen() {
 
   const gravarAudio = async () => {
     if (recState.isRecording) {
+      // a duração vem do PRÓPRIO gravador, antes de parar: o estado pesquisado
+      // a cada 500 ms já pode ter zerado, e aí a memória nascia sem áudio
+      const segundos = Math.max(1, Math.round(recorder.currentTime));
       await recorder.stop();
-      setAudio({
-        uri: recorder.uri ?? '',
-        seconds: Math.max(1, Math.round(recState.durationMillis / 1000)),
-      });
+      const uri = recorder.uri;
+      if (!uri) {
+        setMediaErro('Não consegui salvar o áudio. Tente gravar de novo.');
+        return;
+      }
+      setAudio({ uri, seconds: segundos });
       return;
     }
     const perm = await AudioModule.requestRecordingPermissionsAsync();

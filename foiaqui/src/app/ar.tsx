@@ -18,10 +18,17 @@ import { Glass } from '@/components/Glass';
 import { Icon } from '@/components/Icon';
 import { PhotoPlaceholder } from '@/components/PhotoPlaceholder';
 import { Body, Mono, Plaque } from '@/components/Type';
-import { distanceTo, formatDistance } from '@/data/location';
+import {
+  bearingTo,
+  CAMERA_FOV,
+  distanceTo,
+  formatDistance,
+  relativeAngle,
+} from '@/data/location';
 import { useCurrentPosition } from '@/hooks/useCurrentPosition';
-import { useMemorias } from '@/store/acervo';
+import { useHeading } from '@/hooks/useHeading';
 import { useMotionEnabled } from '@/hooks/useMotion';
+import { useMemorias } from '@/store/acervo';
 import { useSheet } from '@/store/sheet';
 import { colors, HIT, radius, space } from '@/theme';
 import type { Memory } from '@/types';
@@ -36,7 +43,7 @@ import type { Memory } from '@/types';
 const IDLE_MS = 45_000;
 
 /** Quantas memórias flutuam sobre a cena ao mesmo tempo. Mais que isso vira sopa. */
-const CARDS_NA_CENA = 2;
+const CARDS_NA_CENA = 3;
 
 /**
  * Câmera AR — *simulada* nesta fase.
@@ -64,6 +71,33 @@ export default function ARScreen() {
   const proximas = [...memorias]
     .sort((a, b) => distanceTo(a, position) - distanceTo(b, position))
     .slice(0, CARDS_NA_CENA);
+
+  const heading = useHeading(true);
+
+  /**
+   * Onde cada memória cai na tela, a partir da bússola.
+   *
+   * Antes os cards ficavam em dois cantos fixos: apontar o celular para
+   * qualquer lado mostrava a mesma coisa, o que fazia a tela ser cenografia
+   * e não ferramenta. Agora o azimute da memória é comparado com a direção
+   * da câmera, e quem está fora do campo de visão simplesmente não aparece.
+   *
+   * Não é ARKit — não há leitura de superfície nem oclusão por prédio, e a
+   * altura na tela é derivada da distância, não medida. Mas gira o corpo e a
+   * memória se move, que é o que a pessoa espera ao levantar o celular.
+   */
+  const naCena = proximas
+    .map((m) => {
+      const metros = distanceTo(m, position);
+      if (heading === null) return { m, metros, x: null as number | null, angulo: 0 };
+      const angulo = relativeAngle(bearingTo(position, m.coords), heading);
+      const dentro = Math.abs(angulo) <= CAMERA_FOV / 2;
+      return { m, metros, x: dentro ? 0.5 + angulo / CAMERA_FOV : null, angulo };
+    })
+    .filter((c) => heading === null || c.x !== null);
+
+  const foraDeVista = heading !== null && naCena.length === 0;
+  const maisProxima = proximas[0];
 
   const [listOpen, setListOpen] = useState(false);
   const idle = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -106,17 +140,41 @@ export default function ARScreen() {
       </View>
 
       {/* cards ancorados nos "prédios" */}
-{proximas.map((m, i) => (
+{naCena.map((c, i) => (
         <ARCard
-          key={m.id}
-          memory={m}
-          distance={formatDistance(distanceTo(m, position))}
-          style={i === 0 ? { left: 14, top: insets.top + 112 } : { right: 14, top: insets.top + 84 }}
-          anchor={i === 0 ? 'left' : 'right'}
-          delay={i * 1200}
+          key={c.m.id}
+          memory={c.m}
+          distance={formatDistance(c.metros)}
+          // sem bússola, cai no canto; com bússola, na direção real
+          x={c.x}
+          fallbackLeft={i % 2 === 0}
+          // o que está mais longe flutua mais alto, como no horizonte
+          top={insets.top + 96 + Math.min(c.metros / 12, 120)}
+          delay={i * 900}
           onPress={reveal}
         />
       ))}
+
+      {/* nada no campo de visão: dizer para onde virar é mais útil que tela vazia */}
+      {foraDeVista && maisProxima ? (
+        <Glass tone="dark" style={[styles.bussola, { top: insets.top + 110 }]}>
+          <Icon name="sparkle" size={16} color={colors.ferrugemClara} />
+          <Body style={styles.bussolaText}>
+            Gire {relativeAngle(bearingTo(position, maisProxima.coords), heading ?? 0) > 0
+              ? 'à direita'
+              : 'à esquerda'}{' '}
+            para encontrar {maisProxima.shortName}
+          </Body>
+        </Glass>
+      ) : null}
+
+      {heading === null ? (
+        <Glass tone="dark" style={[styles.bussola, { top: insets.top + 110 }]}>
+          <Body style={styles.bussolaText}>
+            Sem bússola neste aparelho — as memórias aparecem sem direção.
+          </Body>
+        </Glass>
+      ) : null}
 
       <Glass tone="dark" style={[styles.hint, { top: insets.top + space.md }]}>
         <Icon name="sparkle" size={18} color={colors.ferrugemClara} />
@@ -204,15 +262,18 @@ export default function ARScreen() {
 function ARCard({
   memory,
   distance,
-  style,
-  anchor,
+  x,
+  fallbackLeft,
+  top,
   delay,
   onPress,
 }: {
   memory: Memory;
   distance: string;
-  style: { left?: number; right?: number; top: number };
-  anchor: 'left' | 'right';
+  /** 0 a 1 na largura da tela; `null` quando não há bússola */
+  x: number | null;
+  fallbackLeft: boolean;
+  top: number;
   delay: number;
   onPress: (id: string) => void;
 }) {
@@ -234,11 +295,15 @@ function ARCard({
     transform: [{ translateY: -6 * float.value }],
   }));
 
-  const tailSide = anchor === 'left' ? { left: 34 } : { right: 34 };
-  const dotSide = anchor === 'left' ? { left: 29 } : { right: 29 };
+  const posicao =
+    x === null
+      ? fallbackLeft
+        ? { left: 14, top }
+        : { right: 14, top }
+      : { left: `${Math.round(x * 100)}%` as const, top, marginLeft: -107 };
 
   return (
-    <Animated.View style={[styles.card, style, floatStyle]}>
+    <Animated.View style={[styles.card, posicao, floatStyle]}>
       <Pressable
         style={styles.cardInner}
         onPress={() => onPress(memory.id)}
@@ -254,8 +319,8 @@ function ARCard({
           </Mono>
         </View>
       </Pressable>
-      <View style={[styles.tail, tailSide]} pointerEvents="none" />
-      <View style={[styles.anchorDot, dotSide]} pointerEvents="none" />
+      <View style={styles.tail} pointerEvents="none" />
+      <View style={styles.anchorDot} pointerEvents="none" />
     </Animated.View>
   );
 }
@@ -413,6 +478,19 @@ const styles = StyleSheet.create({
     paddingVertical: 11,
   },
   hintText: { fontSize: 13, fontWeight: '500', color: colors.sobreEsmalte },
+  bussola: {
+    position: 'absolute',
+    left: space.xl,
+    right: space.xl,
+    zIndex: 21,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: space.sm,
+    borderRadius: radius.md,
+    paddingHorizontal: 14,
+    paddingVertical: 11,
+  },
+  bussolaText: { flex: 1, fontSize: 13, color: colors.sobreEsmalte },
   hintNote: { fontSize: 10, letterSpacing: 0.3, color: colors.sobreEsmalteDim, marginTop: 2 },
 
   list: {
@@ -465,9 +543,20 @@ const styles = StyleSheet.create({
   cardThumb: { width: 46, height: 46, borderRadius: radius.sm },
   cardTitle: { fontSize: 14, lineHeight: 16, color: colors.sobreEsmalte },
   cardMeta: { fontSize: 10.5, letterSpacing: 0.5, color: colors.ferrugemClara, marginTop: 3 },
-  tail: { position: 'absolute', bottom: -30, width: 2, height: 30, backgroundColor: colors.ferrugem },
+  // fio e ponto no centro do card: ele aponta para o ponto no chão
+  tail: {
+    position: 'absolute',
+    bottom: -30,
+    left: '50%',
+    marginLeft: -1,
+    width: 2,
+    height: 30,
+    backgroundColor: colors.ferrugem,
+  },
   anchorDot: {
     position: 'absolute',
+    left: '50%',
+    marginLeft: -6,
     bottom: -36,
     width: 12,
     height: 12,
