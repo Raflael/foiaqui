@@ -55,7 +55,8 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "expo lint",
-    "contraste": "node scripts/contraste.mjs"
+    "contraste": "node scripts/contraste.mjs",
+    "icone": "node scripts/icone.mjs"
   },
   "private": true
 }
