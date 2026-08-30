@@ -27,6 +27,7 @@ import { Icon, type IconName } from '@/components/Icon';
 import { MemoryCard } from '@/components/MemoryCard';
 import { Plaque as PlaquePlate } from '@/components/Plaque';
 import { RevealSlider } from '@/components/RevealSlider';
+import { router } from 'expo-router';
 import { Body, Mono, Plaque, Story } from '@/components/Type';
 import { distanceMeters, formatDistance } from '@/data/location';
 import { memories as seed } from '@/data/memories';
@@ -197,8 +198,23 @@ export function MemorySheet() {
    * a memória aberta e mostra quanto é. Antes vinha na ordem do arquivo, o
    * que fazia o título mentir.
    */
-  const others = [...criadas, ...seed]
-    .filter((m) => m.id !== shown.id)
+  const acervo = [...criadas, ...seed].filter((m) => m.id !== shown.id);
+
+  /**
+   * O feed do lugar.
+   *
+   * "Deste local" por proximidade era aproximação: duas memórias a 40 m são de
+   * lugares diferentes, e duas do mesmo endereço podem ter coordenada
+   * ligeiramente distinta. Com `pontoId` a pergunta passa a ter resposta
+   * exata — estas são as outras histórias DESTE lugar, na ordem do tempo, que
+   * é como um lugar se conta.
+   */
+  const doPonto = shown.pontoId
+    ? acervo.filter((m) => m.pontoId === shown.pontoId).sort((a, b) => (a.year > b.year ? 1 : -1))
+    : [];
+  const idsDoPonto = new Set(doPonto.map((m) => m.id));
+  const others = acervo
+    .filter((m) => !idsDoPonto.has(m.id))
     .map((m) => ({ m, metros: distanceMeters(shown.coords, m.coords) }))
     .sort((a, b) => a.metros - b.metros);
   // ou as duas fotos existem, ou nenhuma (e aí as duas cenas são desenhadas)
@@ -394,7 +410,62 @@ export function MemorySheet() {
             <Action icon="flag" label="Reportar" />
           </View>
 
-          <Plaque style={styles.moreTitle}>Mais memórias deste local</Plaque>
+          {/*
+            O lugar como fio: outras pessoas contando o mesmo ponto, em ordem
+            de tempo, e o convite para somar a sua. É o que faz o pin deixar de
+            ser um registro solto e virar um lugar que acumula.
+          */}
+          {shown.pontoId ? (
+            <>
+              <Plaque style={styles.moreTitle}>
+                {doPonto.length === 0
+                  ? 'Você seria a primeira pessoa a contar mais'
+                  : doPonto.length === 1
+                    ? 'Mais uma história deste lugar'
+                    : `Mais ${doPonto.length} histórias deste lugar`}
+              </Plaque>
+
+              {doPonto.length > 0 ? (
+                <View style={styles.feed}>
+                  {doPonto.map((m) => (
+                    <Pressable
+                      key={m.id}
+                      style={styles.feedItem}
+                      onPress={() => {
+                        swap(m.id);
+                        scroller.current?.scrollTo({ y: 0, animated: motion });
+                      }}
+                      accessibilityRole="button"
+                      accessibilityLabel={`${m.title}, ${m.year}. Abrir.`}>
+                      <Mono style={styles.feedAno}>{m.year}</Mono>
+                      <View style={styles.feedTexto}>
+                        <Plaque style={styles.feedTitulo}>{m.title}</Plaque>
+                        <Body style={styles.feedAutor}>{m.author.name}</Body>
+                      </View>
+                      <Icon name="chevronRight" size={16} color={colors.grafiteDim} />
+                    </Pressable>
+                  ))}
+                </View>
+              ) : null}
+
+              <Pressable
+                style={styles.contarAqui}
+                onPress={() => {
+                  close();
+                  router.push({
+                    pathname: '/adicionar',
+                    params: { ponto: shown.pontoId as string },
+                  });
+                }}
+                accessibilityRole="button"
+                accessibilityLabel="Contar uma memória sua neste lugar">
+                <Icon name="plus" size={17} color={colors.sobreFerrugem} strokeWidth={2.6} />
+                <Body style={styles.contarAquiText}>Contar a minha aqui</Body>
+              </Pressable>
+            </>
+          ) : null}
+
+          <Plaque style={styles.moreTitle}>Por perto</Plaque>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -633,6 +704,30 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   actionLabel: { fontSize: 11.5, fontWeight: '600', color: colors.grafite, textAlign: 'center' },
+
+  feed: { gap: 1, marginTop: space.sm },
+  feedItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: space.md,
+    minHeight: HIT + 6,
+    paddingHorizontal: space.md,
+    backgroundColor: colors.cal2,
+  },
+  feedAno: { fontSize: 13, color: colors.esmalte, width: 40 },
+  feedTexto: { flex: 1 },
+  feedTitulo: { fontSize: 15, lineHeight: 17, color: colors.grafite },
+  feedAutor: { fontSize: 11.5, color: colors.grafiteDim, marginTop: 2 },
+  contarAqui: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: space.sm,
+    minHeight: HIT + 2,
+    marginTop: space.md,
+    backgroundColor: colors.ferrugem,
+  },
+  contarAquiText: { fontSize: 14.5, fontWeight: '600', color: colors.sobreFerrugem },
 
   moreTitle: { fontSize: 17, color: colors.grafite, paddingHorizontal: 22, paddingTop: space.xxl },
   moreRow: { gap: space.md, paddingHorizontal: 22, paddingTop: 10, paddingBottom: space.xl },

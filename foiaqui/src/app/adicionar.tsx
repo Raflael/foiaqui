@@ -9,7 +9,7 @@ import {
 import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import {
   KeyboardAvoidingView,
@@ -29,6 +29,7 @@ import { Body, Mono, Plaque } from '@/components/Type';
 import type { Position } from '@/data/location';
 import { mapStyle } from '@/data/mapStyle';
 import { criterios } from '@/data/criterios';
+import { pontoPor } from '@/data/pontos';
 import { eras, nomeCurto } from '@/data/memories';
 import { nivelPor, perfil } from '@/data/profile';
 import { useCurrentPosition } from '@/hooks/useCurrentPosition';
@@ -99,8 +100,21 @@ export default function AdicionarScreen() {
   const { position, source } = useCurrentPosition();
   const adicionarAoAcervo = useAcervo((s) => s.adicionar);
   const locMapRef = useRef<MapView>(null);
-  const [local, setLocal] = useState<Position | null>(guardado.local);
-  const [endereco, setEndereco] = useState<string | null>(null);
+  /**
+   * Chegando de "Contar a minha aqui": o lugar já vem escolhido.
+   *
+   * É o que faz o ponto virar feed de verdade — sem isso, quem quisesse somar
+   * uma história ao Mercado Municipal teria de encontrar o mesmo endereço no
+   * mapa de novo, na mão, e provavelmente erraria por alguns metros: nasceria
+   * um pin novo ao lado em vez de mais uma história no mesmo lugar.
+   */
+  const { ponto: pontoParam } = useLocalSearchParams<{ ponto?: string }>();
+  const pontoDeOrigem = pontoPor(pontoParam);
+
+  const [local, setLocal] = useState<Position | null>(
+    pontoDeOrigem ? { lat: pontoDeOrigem.coords.lat, lng: pontoDeOrigem.coords.lng } : guardado.local,
+  );
+  const [endereco, setEndereco] = useState<string | null>(pontoDeOrigem?.endereco ?? null);
   // o local nasce onde a pessoa está; ela ajusta se a memória for logo ali adiante
   const alvo = local ?? position;
 
@@ -254,7 +268,7 @@ export default function AdicionarScreen() {
     const nova: Memory = {
       id: `local-${agora.getTime()}`,
       title: tituloDoRelato(story),
-      shortName: nomeCurto(endereco),
+      shortName: pontoDeOrigem?.shortName ?? nomeCurto(endereco),
       // o tempo verbal conta se a coisa sobreviveu: presente para o que ainda está lá
       marker: era === 'Atual' || (anoValido && +ano >= new Date().getFullYear() - 1)
         ? 'Aqui está'
@@ -266,6 +280,7 @@ export default function AdicionarScreen() {
           ? String(agora.getFullYear())
           : (ANO_DA_ERA[era ?? ''] ?? '—'),
       era: era ?? 'Atual',
+      pontoId: pontoDeOrigem?.id,
       place: endereco ?? 'Local marcado no mapa',
       coords: { lat: alvo.lat, lng: alvo.lng },
       story: story.trim(),

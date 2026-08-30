@@ -18,6 +18,7 @@ import { useMarkerTracking } from '@/hooks/useMarkerTracking';
 import { Timeline } from '@/components/Timeline';
 import { agrupar, type Regiao } from '@/data/cluster';
 import { decadasDo, naDecada, rotuloLongo } from '@/data/decadas';
+import { pontoPor } from '@/data/pontos';
 import { mapStyle } from '@/data/mapStyle';
 import { mapFilters, matchesQuery } from '@/data/memories';
 import { useCurrentPosition } from '@/hooks/useCurrentPosition';
@@ -187,19 +188,22 @@ export default function MapScreen() {
 
           {grupos.map((g) => {
             const memory = g.itens[0];
-            const sozinha = g.itens.length === 1;
+            const ponto = pontoPor(g.pontoId);
+            // um lugar com várias histórias abre direto na mais antiga: o pin
+            // é o lugar, e a ficha por dentro é o feed dele
+            const abreFicha = g.itens.length === 1 || !!ponto;
             return (
               <Marker
-                key={sozinha ? memory.id : `grupo-${g.lat}-${g.lng}`}
+                key={abreFicha ? (ponto ? `ponto-${ponto.id}` : memory.id) : `grupo-${g.lat}-${g.lng}`}
                 coordinate={{ latitude: g.lat, longitude: g.lng }}
                 anchor={{ x: 0.5, y: 1 }}
                 tracksViewChanges={capturando}
                 onPress={() => {
-                  if (sozinha) {
+                  if (abreFicha) {
                     openSheet(memory.id);
                     return;
                   }
-                  // tocar no grupo aproxima até as memórias se separarem
+                  // grupo de lugares diferentes: aproxima até se separarem
                   mapRef.current?.fitToCoordinates(
                     g.itens.map((m) => ({ latitude: m.coords.lat, longitude: m.coords.lng })),
                     {
@@ -209,11 +213,19 @@ export default function MapScreen() {
                   );
                 }}
                 accessibilityLabel={
-                  sozinha
-                    ? `${memory.title}, ${memory.year}. Abrir memória.`
-                    : `${g.itens.length} memórias juntas. Aproximar para separá-las.`
+                  ponto && g.itens.length > 1
+                    ? `${ponto.nome}, ${g.itens.length} memórias. Abrir o lugar.`
+                    : abreFicha
+                      ? `${memory.title}, ${memory.year}. Abrir memória.`
+                      : `${g.itens.length} memórias juntas. Aproximar para separá-las.`
                 }>
-                {sozinha ? (
+                {ponto && g.itens.length > 1 ? (
+                  <MemoryPin
+                    icon="list"
+                    label={`${ponto.shortName} · ${g.itens.length}`}
+                    active={g.itens.some((m) => m.id === openId)}
+                  />
+                ) : g.itens.length === 1 ? (
                   <MemoryPin
                     icon={PIN_ICONS[memory.id] ?? 'pin'}
                     label={`${memory.shortName} · ${memory.year}`}
@@ -230,7 +242,7 @@ export default function MapScreen() {
               </Marker>
             );
           })}
-      </MapView>
+        </MapView>
 
       {/*
         A lista fica POR CIMA do mapa, nunca no lugar dele. Trocar de visão
