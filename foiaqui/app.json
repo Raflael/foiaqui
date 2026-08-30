@@ -71,7 +71,8 @@
         }
       ],
       "expo-image",
-      "expo-video"
+      "expo-video",
+      "expo-sharing"
     ],
     "experiments": {
       "typedRoutes": true,
