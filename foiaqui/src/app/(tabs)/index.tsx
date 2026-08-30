@@ -18,7 +18,7 @@ import { useMarkerTracking } from '@/hooks/useMarkerTracking';
 import { useLinhaDoTempo } from '@/store/linhaDoTempo';
 import { Timeline } from '@/components/Timeline';
 import { agrupar, type Regiao } from '@/data/cluster';
-import { decadasDo, naDecada, rotuloLongo } from '@/data/decadas';
+import { anoDe, decadasDo, naDecada, rotuloLongo } from '@/data/decadas';
 import { pontoPor } from '@/data/pontos';
 import { mapStyle } from '@/data/mapStyle';
 import { mapFilters, matchesQuery } from '@/data/memories';
@@ -159,6 +159,27 @@ export default function MapScreen() {
   const grupos = agrupar(shown, regiao, W, H);
 
   const chaveDosPins = grupos.map((g) => g.itens.map((m) => m.id).join(',')).join('|');
+
+  /**
+   * A placa do dia: a efeméride do acervo.
+   *
+   * Todo dia uma memória diferente ganha a linha "há N anos" no balcão — é o
+   * campo de ano obrigatório (Decisão 3) pagando dividendo. A escolha é
+   * determinística pelo dia do ano, não sorteada: quem abre o app três vezes
+   * no mesmo dia vê a mesma placa, e amanhã vê outra. Aleatório a cada
+   * render pareceria quebrado.
+   *
+   * Sai de cena quando há busca ou recorte ativo: o balcão está ocupado
+   * respondendo outra pergunta.
+   */
+  const hoje = new Date();
+  const comAno = memories.filter((m) => anoDe(m) !== null);
+  const diaDoAno = Math.floor(
+    (hoje.getTime() - new Date(hoje.getFullYear(), 0, 0).getTime()) / 86_400_000,
+  );
+  const placaDoDia = comAno.length ? comAno[diaDoAno % comAno.length] : null;
+  const idadeDaPlaca = placaDoDia ? hoje.getFullYear() - (anoDe(placaDoDia) ?? 0) : 0;
+  const mostraEfemeride = !query && !filter && decada === null && !!placaDoDia;
   const { aoCarregarMapa, capturando } = useMarkerTracking(
     `${openId}|${filterId}|${decada}|${query}|${chaveDosPins}`,
   );
@@ -358,6 +379,20 @@ export default function MapScreen() {
           </Body>
         )}
 
+        {mostraEfemeride && placaDoDia ? (
+          <Pressable
+            style={styles.efemeride}
+            onPress={() => openSheet(placaDoDia.id)}
+            accessibilityRole="button"
+            accessibilityLabel={`A placa de hoje: ${placaDoDia.title}, há ${idadeDaPlaca} anos. Abrir.`}>
+            <Mono style={styles.efemerideAnos}>HÁ {idadeDaPlaca} ANOS</Mono>
+            <Body style={styles.efemerideTitulo} numberOfLines={1}>
+              {placaDoDia.title}
+            </Body>
+            <Icon name="chevronRight" size={13} color={colors.grafiteDim} />
+          </Pressable>
+        ) : null}
+
         {/*
           Sem GPS o app não finge saber onde você está. Dizer isso é o que
           permite entender por que "perto de mim" trouxe o que trouxe.
@@ -425,6 +460,18 @@ const styles = StyleSheet.create({
   countNumber: { fontSize: 12, color: colors.esmalte, fontWeight: '700' },
   countStrong: { fontSize: 12, color: colors.grafite, fontWeight: '600' },
   countNote: { fontSize: 11, color: colors.ferrugem, marginTop: 3 },
+  efemeride: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 7,
+    marginTop: 6,
+    paddingTop: 6,
+    borderTopWidth: 1,
+    borderTopColor: colors.calLine,
+    minHeight: 24,
+  },
+  efemerideAnos: { fontSize: 10, letterSpacing: 1, color: colors.ferrugem },
+  efemerideTitulo: { flex: 1, fontSize: 12, color: colors.grafite },
 
   empty: { alignItems: 'center', gap: space.md, paddingHorizontal: space.xxl, paddingTop: 60 },
   emptyText: { fontSize: 14, lineHeight: 21, color: colors.grafiteDim, textAlign: 'center' },
