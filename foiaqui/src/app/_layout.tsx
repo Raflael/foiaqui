@@ -16,6 +16,7 @@ import { View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { Erro } from '@/components/Erro';
 import { MemorySheet } from '@/components/MemorySheet';
 import { colors } from '@/theme';
 
@@ -49,6 +50,8 @@ export default function RootLayout() {
       <SafeAreaProvider>
         {/* app claro: a barra de status usa ícones escuros */}
         <StatusBar style="dark" />
+        {/* a rede: erro de runtime vira chapa com saída, não tela branca */}
+        <Erro>
         <View style={{ flex: 1 }}>
           <Stack
             screenOptions={{
@@ -77,6 +80,7 @@ export default function RootLayout() {
           */}
           <MemorySheet />
         </View>
+        </Erro>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );
