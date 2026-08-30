@@ -54,6 +54,7 @@ const PARES = [
   [C.sobreEsmalteDim, C.esmalte, 'letra dim na chapa'],
   [C.sobreEsmalteDim, C.esmalteFundo, 'letra dim na chapa funda'],
   [C.sobreFerrugem, C.ferrugem, 'letra no botão de ação'],
+  [C.sobreEsmalte, C.conferido, 'letra no botão Aprovar da moderação'],
   [C.ferrugem, C.cal, 'ação sobre a cidade'],
   [C.esmalte, C.cal, 'memória sobre a cidade'],
   [C.esmalte, C.cal2, 'memória em superfície elevada'],

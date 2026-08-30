@@ -57,6 +57,7 @@ export default function RootLayout() {
             }}>
             <Stack.Screen name="(tabs)" />
             <Stack.Screen name="trilha/[id]" />
+            <Stack.Screen name="moderacao" />
             <Stack.Screen name="adicionar" options={{ presentation: 'modal' }} />
             <Stack.Screen
               name="ar"

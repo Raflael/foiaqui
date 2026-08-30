@@ -28,6 +28,7 @@ import { Icon } from '@/components/Icon';
 import { Body, Mono, Plaque } from '@/components/Type';
 import type { Position } from '@/data/location';
 import { mapStyle } from '@/data/mapStyle';
+import { criterios } from '@/data/criterios';
 import { eras, nomeCurto } from '@/data/memories';
 import { nivelPor, perfil } from '@/data/profile';
 import { useCurrentPosition } from '@/hooks/useCurrentPosition';
@@ -647,12 +648,24 @@ export default function AdicionarScreen() {
                 ))}
               </View>
 
+              {/*
+                A mesma régua que o revisor vai usar, mostrada ANTES de enviar.
+                Critério que só aparece na recusa é armadilha: a pessoa gastou o
+                trabalho de escrever para descobrir a regra depois (Decisão 5).
+              */}
               <View style={styles.modNote}>
-                <Icon name="shieldCheck" size={16} color={colors.conferido} />
-                <Body style={styles.modNoteText}>
-                  Sua memória passa por uma checagem rápida da comunidade antes de aparecer no
-                  mapa.
-                </Body>
+                <View style={styles.modNoteTopo}>
+                  <Icon name="shieldCheck" size={16} color={colors.conferido} />
+                  <Body style={styles.modNoteText}>
+                    A comunidade confere antes de publicar. É isto que vão olhar:
+                  </Body>
+                </View>
+                {criterios.map((c) => (
+                  <View key={c.id} style={styles.modCriterio}>
+                    <Icon name={c.icon} size={13} color={colors.esmalte} strokeWidth={2.1} />
+                    <Body style={styles.modCriterioText}>{c.pergunta}</Body>
+                  </View>
+                ))}
               </View>
             </>
           ) : null}
@@ -910,12 +923,17 @@ const styles = StyleSheet.create({
   tagWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: space.sm },
 
   modNote: {
-    flexDirection: 'row',
-    gap: 9,
     marginTop: space.xxl,
-    alignItems: 'flex-start',
+    padding: space.lg,
+    backgroundColor: colors.cal2,
+    borderLeftWidth: 3,
+    borderLeftColor: colors.conferido,
+    gap: space.sm,
   },
-  modNoteText: { flex: 1, fontSize: 12, lineHeight: 17, color: colors.grafiteDim },
+  modNoteTopo: { flexDirection: 'row', gap: 9, alignItems: 'flex-start' },
+  modNoteText: { flex: 1, fontSize: 12.5, lineHeight: 17.5, color: colors.grafiteDim },
+  modCriterio: { flexDirection: 'row', gap: 9, alignItems: 'center', minHeight: 20 },
+  modCriterioText: { flex: 1, fontSize: 12.5, color: colors.grafite },
 
   footer: {
     flexDirection: 'row',

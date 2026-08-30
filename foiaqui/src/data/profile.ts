@@ -37,9 +37,12 @@ export const nivelPor = (memorias: number) =>
  * que nunca acende é pior que conquista nenhuma — ensina que o resto também
  * pode ser enfeite.
  */
-export function conquistas(memorias: number, salvas: number): Badge[] {
+export function conquistas(memorias: number, salvas: number, revisoes = 0): Badge[] {
   return [
     { id: 'primeira', label: 'Primeira memória', earned: memorias >= 1, icon: 'film' },
+    // revisar é contribuição tanto quanto enviar, e é a parte que ninguém
+    // quer fazer — por isso ganha reconhecimento junto das outras
+    { id: 'revisor', label: 'Primeira revisão', earned: revisoes >= 1, icon: 'shieldCheck' },
     { id: 'cinco', label: '5 memórias', earned: memorias >= 5, icon: 'shield' },
     { id: 'colecionador', label: '3 salvas', earned: salvas >= 3, icon: 'bookmark' },
     { id: 'quinze', label: '15 memórias', earned: memorias >= 15, icon: 'star' },

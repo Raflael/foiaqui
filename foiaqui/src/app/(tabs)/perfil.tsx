@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Switch, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -6,6 +7,7 @@ import { Icon, type IconName } from '@/components/Icon';
 import { Body, Mono, Plaque } from '@/components/Type';
 import { conquistas, nivelPor, perfil } from '@/data/profile';
 import { useAcervo } from '@/store/acervo';
+import { useFila, useRevisoes } from '@/store/moderacao';
 import { useSaved } from '@/store/saved';
 import { useSettings } from '@/store/settings';
 import { alpha, colors, HIT, radius, space, TABBAR_HEIGHT } from '@/theme';
@@ -23,8 +25,10 @@ export default function PerfilScreen() {
    */
   const criadas = useAcervo((s) => s.criadas);
   const salvas = useSaved((s) => s.ids);
+  const fila = useFila();
+  const revisoes = useRevisoes();
   const nivel = nivelPor(criadas.length);
-  const badges = conquistas(criadas.length, salvas.length);
+  const badges = conquistas(criadas.length, salvas.length, revisoes);
   const emRevisao = criadas.filter((m) => m.status === 'em_revisao').length;
 
   return (
@@ -88,8 +92,15 @@ export default function PerfilScreen() {
         <Row
           icon="shieldCheck"
           title="Moderação da comunidade"
-          subtitle="Ajude a revisar novas memórias"
-          pill={emRevisao > 0 ? `${emRevisao} sua${emRevisao > 1 ? 's' : ''}` : undefined}
+          subtitle={
+            fila.length > 0
+              ? `${fila.length} esperando parecer`
+              : revisoes > 0
+                ? `${revisoes} revisada${revisoes > 1 ? 's' : ''} por você`
+                : 'Ajude a revisar novas memórias'
+          }
+          pill={fila.length > 0 ? String(fila.length) : undefined}
+          onPress={() => router.push('/moderacao')}
         />
         <Row icon="list" title="Minhas contribuições" />
         <Row

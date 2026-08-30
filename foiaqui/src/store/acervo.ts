@@ -2,7 +2,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
+import { filaSemeada } from '@/data/fila';
 import { memories as seed } from '@/data/memories';
+import { useAprovadas } from '@/store/moderacao';
 import type { Memory } from '@/types';
 
 interface AcervoState {
@@ -39,15 +41,29 @@ export const useAcervo = create<AcervoState>()(
   ),
 );
 
-/** Tudo que existe no app: o acervo semente mais o que a pessoa criou. */
+/**
+ * Tudo que existe no mapa: o acervo semente, o que você criou e o que você
+ * APROVOU na fila de revisão.
+ *
+ * Memória em revisão de outra pessoa não entra: ela ainda não é pública, e
+ * mostrá-la no mapa antes do parecer esvaziaria o sentido da moderação. A sua
+ * própria entra mesmo em revisão — marcada —, porque quem enviou precisa ver
+ * onde ela caiu para poder corrigir.
+ */
 export const useMemorias = (): Memory[] => {
   const criadas = useAcervo((s) => s.criadas);
-  return criadas.length ? [...criadas, ...seed] : seed;
+  const aprovadas = useAprovadas();
+  if (!criadas.length && !aprovadas.length) return seed;
+  return [...criadas, ...aprovadas, ...seed];
 };
 
-/** Uma memória pelo id, venha do acervo semente ou do que foi criado aqui. */
+/** Uma memória pelo id, de qualquer origem — inclusive a que está na fila. */
 export const useMemoria = (id?: string | null): Memory | undefined => {
   const criadas = useAcervo((s) => s.criadas);
   if (!id) return undefined;
-  return criadas.find((m) => m.id === id) ?? seed.find((m) => m.id === id);
+  return (
+    criadas.find((m) => m.id === id) ??
+    seed.find((m) => m.id === id) ??
+    filaSemeada.find((m) => m.id === id)
+  );
 };
