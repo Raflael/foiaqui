@@ -153,7 +153,7 @@ Ordem de navegação e o que cada tela faz. **Espelhe o FLUXO do `foiaqui-protot
 **3. Ficha da Memória** — *a estrela*
 - Surge como **superfície de papel** sobre o escuro.
 - **Slider passado↔presente**: arrasta um divisor pra revelar a foto antiga (sépia) sobre a vista atual. (Implementar com gesture-handler + Reanimated.)
-- Título (Fraunces), história, **chip de áudio** (voz de quem viveu), autor + data (mono), ações (salvar / compartilhar / reportar), "mais memórias deste local".
+- Título (Archivo Narrow, caixa alta), história, **chip de áudio** (voz de quem viveu), autor + data (mono), ações (salvar / compartilhar / reportar), "mais memórias deste local".
 
 **4. Adicionar Memória** — *fluxo guiado, passo a passo*
 - 1) foto/vídeo (câmera ou galeria) → 2) história → 3) local (GPS + ajuste manual) → 4) época + tags → preview → enviar.
@@ -233,9 +233,9 @@ Vindas do benchmarking (aba "Decisões FoiAqui" no xlsx). **Construa só o MVP a
 
 - **TypeScript** sempre. **Expo Router** (navegação por arquivos) para as rotas.
 - **Front-only:** nada de chamadas de rede. Dados de `/data`, estado local. Simule async quando fizer sentido (ex.: "enviando memória...").
-- **Mapa e câmera precisam de Development Build** (`expo-dev-client`) — `react-native-maps` não roda no Expo Go. **Estratégia desta fase:** como o foco são as telas, comece com um **`<MapCanvas>` stub** (View/SVG/imagem escura com os pins por cima, igual ao mockup) pra rodar tudo no **Expo Go**. Troque por `react-native-maps` depois, num dev build. `expo-camera` funciona no Expo Go.
+- **O projeto exige Development Build** — não roda mais no Expo Go. O `<MapCanvas>` desenhado foi substituído por `react-native-maps` (Fase 1), e isso trouxe código nativo. Gerar o APK uma vez com `npx eas-cli build --profile development --platform android`; depois é `npx expo start --dev-client` normalmente. A chave do Google Maps fica em `app.json`, restrita por package name + SHA-1.
 - **Animações e gestos:** `react-native-reanimated` + `react-native-gesture-handler` (o slider passado↔presente e transições). Lembre de configurar o plugin do Reanimated no `babel.config.js`.
-- **Fontes:** `@expo-google-fonts/fraunces` + `expo-font`. Carregue antes de renderizar (splash até as fontes prontas).
+- **Fontes:** Archivo Narrow, Newsreader, Archivo e DM Mono via `@expo-google-fonts` + `expo-font`, importadas **por peso** (`@expo-google-fonts/archivo/600SemiBold`) — o import do índice empacota todas as variantes. Carregue antes de renderizar (splash até as fontes prontas).
 - **Estilo:** um **arquivo de tema central** (`theme/`) com cores, espaçamentos e tipografia; todos os componentes leem de lá. Pode usar StyleSheet puro ou NativeWind (Tailwind) — escolha uma e seja consistente.
 - **Componentize** o que se repete: `MemoryPin`, `MemoryCard`, `RevealSlider`, `MemorySheet` (ficha), `AppTabBar`, `SearchBar`, `Chip`, `OldPhoto`/`PhotoPlaceholder`.
 - **Acessibilidade:** alvos ≥ 44px, `accessibilityLabel` nos botões, respeitar reduce-motion, suportar fonte grande.
@@ -262,4 +262,27 @@ assets/         # fontes, placeholders
 
 ## 9. Onde o projeto está
 
-Tema, navegação, as 7 telas e a identidade "Placa Esmaltada" estão implementados e rodando (dados mockados). O que falta está na **Rota do FoiAqui** — plano em 6 fases ancorado na pesquisa, com a Fase 0 concluída. A Fase 1 começa por um development build no EAS, que é o que destrava trocar o `<MapCanvas>` desenhado pelo `react-native-maps`.
+**Fases 0 e 1 concluídas.** O app roda em development build com mapa real
+(`react-native-maps`), câmera, microfone, GPS e bússola. O que a pessoa cria
+persiste no aparelho (AsyncStorage) — acervo, rascunho do formulário e ajustes.
+
+O que a Fase 1 entregou, além do mapa: busca e filtros que filtram de verdade,
+captura real de foto/vídeo/áudio, localização com ajuste manual e geocodificação
+reversa, rascunho automático do formulário, AR orientada por bússola, tela de
+trilha, agrupamento de pins por distância em pixels, ano exato além da década, e
+o perfil deixando de ser mock (nível e conquistas saem do uso real).
+
+**Próximo:** Fase 2 — moderação comunitária de verdade (fila de revisão por
+pares, critérios públicos, recusa justificada). É a última das cinco coisas que
+a PO chamou de essenciais.
+
+Duas dívidas conhecidas:
+- As coordenadas das memórias semeadas em São José dos Campos são aproximações;
+  precisam ser conferidas no lugar.
+- O dossiê do projeto (PDF + documentação completa) está adiado de propósito
+  para depois do primeiro teste de usabilidade — escrever antes seria
+  documentar suposição.
+
+**Antes de commitar:** `npx tsc --noEmit`, `npm run contraste` (falha se
+algum par reprovar em AA) e um `npx expo export --platform android` para
+garantir que o bundle fecha.
