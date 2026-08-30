@@ -1,0 +1,570 @@
+<title>Rota do FoiAqui</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Archivo+Narrow:wght@600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=DM+Mono:wght@400;500&display=swap">
+
+<style>
+  /* ─────────────────────────────────────────────────────────────
+     Tokens: os mesmos de theme/colors.ts. O plano do FoiAqui é
+     composto na Placa Esmaltada — a rota anterior ainda vestia a
+     identidade abandonada (escuro + âmbar + Fraunces), e um plano
+     que contradiz o próprio produto começa errado.
+     ───────────────────────────────────────────────────────────── */
+  :root {
+    --cal: #F4F3EE; --cal2: #EAE8E0; --cal3: #DFDCD1; --linha: #CFCABA;
+    --esmalte: #14396E; --esmalte-fundo: #0F2B54;
+    --sobre-esmalte: #F4F3EE; --sobre-dim: #A8C2E4;
+    --ferrugem: #B4471F; --conferido: #2E6E68;
+    --tinta: #1A1D23; --tinta-dim: #55524B;
+    --chapa: var(--esmalte); --chapa-texto: var(--sobre-esmalte);
+    --chapa-dim: var(--sobre-dim); --acento: var(--ferrugem);
+    --medida: 34rem; --gutter: clamp(1.25rem, 5vw, 3rem);
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --cal: #10161F; --cal2: #171F2B; --cal3: #1E2733; --linha: #2C3849;
+      --tinta: #ECEAE3; --tinta-dim: #A3AEBE;
+      --chapa: #0F2B54; --chapa-texto: #F4F3EE; --chapa-dim: #A8C2E4;
+      --acento: #EC9A72; --conferido: #6FBDB2;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --cal: #10161F; --cal2: #171F2B; --cal3: #1E2733; --linha: #2C3849;
+    --tinta: #ECEAE3; --tinta-dim: #A3AEBE;
+    --chapa: #0F2B54; --chapa-texto: #F4F3EE; --chapa-dim: #A8C2E4;
+    --acento: #EC9A72; --conferido: #6FBDB2;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--cal); color: var(--tinta);
+    font-family: Archivo, "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px; line-height: 1.65; -webkit-font-smoothing: antialiased;
+  }
+
+  .placa {
+    font-family: "Archivo Narrow", "Arial Narrow", Archivo, sans-serif;
+    font-weight: 700; text-transform: uppercase;
+    letter-spacing: .02em; line-height: 1.05; text-wrap: balance;
+  }
+  .relato { font-family: Newsreader, Georgia, serif; font-size: 1.22rem; line-height: 1.55; }
+  .mono { font-family: "DM Mono", ui-monospace, Consolas, monospace; font-variant-numeric: tabular-nums; }
+
+  .envolt { max-width: 62rem; margin: 0 auto; padding: 0 var(--gutter); }
+  .prosa { max-width: var(--medida); }
+  .prosa p { margin: 0 0 1.1em; }
+  .prosa p:last-child { margin-bottom: 0; }
+  a { color: var(--acento); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  a:focus-visible, input:focus-visible { outline: 2px solid var(--acento); outline-offset: 3px; }
+
+  .chapa {
+    background: var(--chapa); color: var(--chapa-texto);
+    padding: clamp(1.5rem, 4vw, 2.5rem); position: relative;
+  }
+  .chapa .moldura { border: 2px solid var(--chapa-texto); padding: clamp(1.25rem, 3.5vw, 2.25rem); }
+  .chapa.lascada::after {
+    content: ""; position: absolute; right: 0; top: 38%;
+    width: 8px; height: 78px; background: var(--ferrugem);
+  }
+  .chapa .marcador {
+    font-family: "DM Mono", monospace; font-size: .72rem; letter-spacing: .2em;
+    text-transform: uppercase; color: var(--chapa-dim); display: block; margin-bottom: .7rem;
+  }
+  .chapa h1, .chapa h2 { margin: 0; }
+
+  header.capa { padding: clamp(2rem, 7vw, 4.5rem) 0 clamp(1.25rem, 4vw, 2.5rem); }
+  header.capa h1 { font-size: clamp(2.6rem, 10vw, 5.2rem); }
+  header.capa .fala {
+    font-family: Newsreader, Georgia, serif; font-style: italic;
+    font-size: clamp(1.05rem, 3vw, 1.4rem); color: var(--chapa-dim);
+    margin: 1.1rem 0 0; line-height: 1.45;
+  }
+
+  nav.sumario { margin-top: clamp(1.75rem, 5vw, 3rem); border-top: 2px solid var(--tinta); padding-top: 1.1rem; }
+  nav.sumario h2 { font-family: "DM Mono", monospace; font-size: .72rem; letter-spacing: .2em; text-transform: uppercase; color: var(--tinta-dim); margin: 0 0 .9rem; font-weight: 400; }
+  nav.sumario ol { list-style: none; margin: 0; padding: 0; }
+  nav.sumario li { border-bottom: 1px solid var(--linha); }
+  nav.sumario a { display: flex; gap: 1rem; align-items: baseline; padding: .5rem 0; color: var(--tinta); text-decoration: none; }
+  nav.sumario a:hover { color: var(--acento); }
+  nav.sumario .n { font-family: "DM Mono", monospace; font-size: .8rem; color: var(--acento); min-width: 2.2rem; }
+  nav.sumario .t { font-weight: 500; }
+  nav.sumario .d { margin-left: auto; font-size: .8rem; color: var(--tinta-dim); text-align: right; }
+
+  section { padding: clamp(2.5rem, 7vw, 5rem) 0; border-top: 1px solid var(--linha); scroll-margin-top: 1rem; }
+  section h2 { font-size: clamp(1.55rem, 5vw, 2.4rem); }
+  section > .envolt > .chapa { margin-bottom: clamp(1.5rem, 4vw, 2.5rem); }
+  h3 {
+    font-family: "Archivo Narrow", "Arial Narrow", sans-serif;
+    text-transform: uppercase; letter-spacing: .03em;
+    font-size: 1.1rem; margin: 2.4rem 0 .6rem;
+  }
+
+  .caixa { background: var(--cal2); border-left: 3px solid var(--esmalte); padding: 1.2rem 1.35rem; margin: 1.6rem 0; }
+  .caixa.acento { border-left-color: var(--acento); }
+  .caixa.ok { border-left-color: var(--conferido); }
+  .caixa p:last-child { margin-bottom: 0; }
+
+  blockquote {
+    margin: 1.8rem 0; padding-left: 1.35rem; border-left: 3px solid var(--acento);
+    font-family: Newsreader, Georgia, serif; font-size: 1.24rem; line-height: 1.5;
+  }
+  blockquote footer { font-family: Archivo, sans-serif; font-size: .84rem; color: var(--tinta-dim); margin-top: .6rem; font-style: normal; }
+
+  .rolagem { overflow-x: auto; margin: 1.6rem 0; }
+  table { border-collapse: collapse; width: 100%; font-size: .9rem; min-width: 30rem; }
+  th, td { text-align: left; padding: .65rem .85rem; border-bottom: 1px solid var(--linha); vertical-align: top; }
+  thead th { font-family: "DM Mono", monospace; font-size: .67rem; letter-spacing: .14em; text-transform: uppercase; color: var(--tinta-dim); border-bottom-width: 2px; }
+  tbody tr:last-child td { border-bottom: 0; }
+
+  .selo { display: inline-block; font-family: "DM Mono", monospace; font-size: .67rem; letter-spacing: .1em; text-transform: uppercase; padding: .18rem .5rem; border: 1px solid currentColor; white-space: nowrap; }
+  .selo.ok { color: var(--conferido); }
+  .selo.falta { color: var(--acento); }
+  .selo.info { color: var(--tinta-dim); }
+
+  /* etiqueta de tipo de trabalho: código, conteúdo ou gente */
+  .tipo { display: inline-block; font-family: "DM Mono", monospace; font-size: .62rem; letter-spacing: .08em; text-transform: uppercase; padding: .1rem .4rem; border: 1px solid var(--linha); color: var(--tinta-dim); white-space: nowrap; margin-left: .5rem; vertical-align: 1px; }
+  .tipo.gente { border-color: var(--acento); color: var(--acento); }
+  .tipo.conteudo { border-color: var(--conferido); color: var(--conferido); }
+
+  /* ── tarefas: canto reto, conferido quando feito ─────────────── */
+  .progresso {
+    display: flex; align-items: center; gap: .7rem; margin: 1.1rem 0 .9rem;
+    font-family: "DM Mono", monospace; font-size: .72rem; color: var(--tinta-dim);
+  }
+  .trilho { flex: 1; max-width: 220px; height: 4px; background: var(--cal3); overflow: hidden; }
+  .cheio { display: block; height: 100%; width: 0%; background: var(--conferido); transition: width .25s ease; }
+  @media (prefers-reduced-motion: reduce) { .cheio { transition: none; } }
+  .progresso b { color: var(--tinta); font-weight: 500; }
+
+  ul.tarefas { list-style: none; margin: 0 0 .5rem; padding: 0; }
+  ul.tarefas li { display: flex; gap: .8rem; align-items: flex-start; padding: .5rem 0; border-bottom: 1px solid var(--linha); }
+  ul.tarefas li:last-child { border-bottom: 0; }
+  ul.tarefas input {
+    appearance: none; flex: 0 0 auto; width: 17px; height: 17px; margin: .3rem 0 0;
+    border: 1.5px solid var(--linha); background: transparent; cursor: pointer; position: relative;
+  }
+  ul.tarefas input:hover { border-color: var(--acento); }
+  ul.tarefas input:checked { background: var(--conferido); border-color: var(--conferido); }
+  ul.tarefas input:checked::after {
+    content: ""; position: absolute; left: 5px; top: 1px; width: 4px; height: 9px;
+    border: solid var(--cal); border-width: 0 2px 2px 0; transform: rotate(45deg);
+  }
+  ul.tarefas label { cursor: pointer; flex: 1; font-size: .96rem; }
+  ul.tarefas input:checked + label { color: var(--tinta-dim); text-decoration: line-through; text-decoration-color: var(--linha); }
+
+  .portao {
+    display: flex; gap: .8rem; align-items: flex-start;
+    margin: 1.6rem 0 0; padding: 1.1rem 1.3rem;
+    background: var(--chapa); color: var(--chapa-texto);
+    border: 2px solid var(--chapa-texto); outline: 6px solid var(--chapa);
+  }
+  .portao .mono { font-size: .7rem; letter-spacing: .18em; text-transform: uppercase; color: var(--chapa-dim); }
+  .portao p { margin: .2rem 0 0; font-size: .95rem; line-height: 1.5; }
+
+  .metas { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: 1px; background: var(--linha); border: 1px solid var(--linha); margin: 1.6rem 0; }
+  .meta { background: var(--cal); padding: 1rem; }
+  .meta b { font-family: "DM Mono", monospace; font-size: 1.6rem; color: var(--esmalte); display: block; line-height: 1.1; }
+  :root[data-theme="dark"] .meta b { color: var(--sobre-dim); }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .meta b { color: var(--sobre-dim); } }
+  .meta span { font-size: .78rem; color: var(--tinta-dim); }
+
+  ul.limpa { list-style: none; padding: 0; margin: 1.4rem 0; display: grid; gap: .85rem; }
+  ul.limpa li { padding-left: 1.5rem; position: relative; }
+  ul.limpa li::before { content: ""; position: absolute; left: 0; top: .6em; width: 9px; height: 9px; background: var(--acento); }
+  ul.limpa.nunca li::before { background: var(--tinta-dim); clip-path: polygon(0 0,100% 0,100% 18%,18% 18%,18% 100%,0 100%); transform: rotate(45deg); }
+
+  footer.pe { padding: clamp(2rem, 6vw, 3.5rem) 0 5rem; border-top: 1px solid var(--linha); color: var(--tinta-dim); font-size: .85rem; }
+
+  @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+
+  @page { size: A4; margin: 15mm 13mm 17mm; }
+  @media print {
+    :root {
+      --cal:#FFF; --cal2:#F2F0E9; --cal3:#E6E3DA; --linha:#C8C3B4;
+      --tinta:#14171C; --tinta-dim:#4A4842;
+      --chapa:#14396E; --chapa-texto:#FFF; --chapa-dim:#BBD1EC;
+      --acento:#A13F1B; --conferido:#245C57; color-scheme: light;
+    }
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    body { font-size: 10pt; background: #FFF; }
+    .envolt { max-width: none; padding: 0; }
+    .prosa { max-width: none; }
+    .chapa, tr, .caixa, blockquote, .portao, ul.tarefas li, .meta { break-inside: avoid; }
+    section > .envolt > .chapa { break-after: avoid; }
+    section { break-before: page; border-top: 0; padding: 0 0 1.2rem; }
+    thead { display: table-header-group; }
+    .rolagem { overflow: visible; }
+    table { min-width: 0; font-size: 8.5pt; }
+  }
+</style>
+
+<div class="envolt">
+  <header class="capa">
+    <div class="chapa lascada">
+      <div class="moldura">
+        <span class="marcador">Plano de produto · atualizado 30/08/2026</span>
+        <h1 class="placa">Rota do<br>FoiAqui</h1>
+        <p class="fala">O protótipo está de pé. O que falta não é feature — é prova, alicerce e gente.</p>
+      </div>
+    </div>
+
+    <nav class="sumario">
+      <h2>Os horizontes</h2>
+      <ol>
+        <li><a href="#h-feito"><span class="n">✓</span><span class="t">O que já está de pé</span><span class="d">para o plano partir da verdade</span></a></li>
+        <li><a href="#h0"><span class="n">H0</span><span class="t">A prova</span><span class="d">esta semana · o teste de rua</span></a></li>
+        <li><a href="#h1"><span class="n">H1</span><span class="t">O alicerce</span><span class="d">1–2 semanas · robustez</span></a></li>
+        <li><a href="#h2"><span class="n">H2</span><span class="t">O mundo compartilhado</span><span class="d">3–6 semanas · backend</span></a></li>
+        <li><a href="#h3"><span class="n">H3</span><span class="t">A cidade inteira</span><span class="d">2–3 meses · parcerias e acervo</span></a></li>
+        <li><a href="#h4"><span class="n">H4</span><span class="t">A mágica</span><span class="d">depois, com dados · AR real</span></a></li>
+        <li><a href="#nunca"><span class="n">✗</span><span class="t">O que nunca vamos fazer</span><span class="d">anti-metas</span></a></li>
+        <li><a href="#riscos"><span class="n">!</span><span class="t">Riscos e decisões</span><span class="d">o que pode dar errado</span></a></li>
+      </ol>
+    </nav>
+  </header>
+</div>
+
+<!-- ═══ FEITO ═══════════════════════════════════════════════════ -->
+<section id="h-feito">
+  <div class="envolt">
+    <div class="chapa">
+      <div class="moldura">
+        <span class="marcador">Ponto de partida</span>
+        <h2 class="placa">O que já está de pé</h2>
+      </div>
+    </div>
+
+    <div class="prosa">
+      <p>A rota anterior tinha 82 tarefas e abria dizendo que nada era real. Hoje as cinco funcionalidades que a PO chamou de essenciais funcionam, o MVP e o v2 da pesquisa estão implementados, e o app roda como APK autônomo, sem depender de computador.</p>
+    </div>
+
+    <div class="rolagem">
+      <table>
+        <thead><tr><th>Bloco</th><th>Estado</th></tr></thead>
+        <tbody>
+          <tr><td><b>Os cinco essenciais</b> — mapa real, adicionar com foto/áudio/vídeo, moderação por pares, acervo persistido, AR por bússola</td><td><span class="selo ok">De pé</span></td></tr>
+          <tr><td><b>v2 da pesquisa</b> — linha do tempo (D11), coleções (D10), identidade local, denúncia, vídeo tocando</td><td><span class="selo ok">De pé</span></td></tr>
+          <tr><td><b>Acervo real</b> — 8 lugares de São José, 12 memórias de 1865 a 2021, coordenadas OSM, fonte declarada</td><td><span class="selo ok">De pé</span></td></tr>
+          <tr><td><b>Qualidade medida</b> — contraste 29/29 AA por script, tipos, lint, bundle e lockfile como portões de commit</td><td><span class="selo ok">De pé</span></td></tr>
+          <tr><td><b>Documentação viva</b> — dossiê completo (página + PDF da mesma fonte), README fiel, CLAUDE.md atualizado</td><td><span class="selo ok">De pé</span></td></tr>
+          <tr><td><b>Teste com pessoas</b> — nenhuma decisão foi confrontada com alguém de fora</td><td><span class="selo falta">Zero</span></td></tr>
+          <tr><td><b>Backend</b> — nada sai do aparelho; revisão por pares não tem pares</td><td><span class="selo falta">Zero</span></td></tr>
+          <tr><td><b>Parcerias (Decisão 6)</b> — o único essencial que não é código, intocado</td><td><span class="selo falta">Zero</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="caixa acento">
+      <p><strong>A tese do plano inteiro:</strong> "o app mais incrível do mundo" neste produto não é o que tem mais features — é o que tem o acervo mais denso e mais verdadeiro da sua cidade. O Historypin tinha a tecnologia e morreu de mapa vazio. Por isso os horizontes vão de <em>prova → alicerce → mundo compartilhado → gente</em>, e a mágica (AR real) vem por último, quando houver o que ancorar nela.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ H0 ══════════════════════════════════════════════════════ -->
+<section id="h0">
+  <div class="envolt">
+    <div class="chapa lascada">
+      <div class="moldura">
+        <span class="marcador">Horizonte 0 · esta semana</span>
+        <h2 class="placa">A prova</h2>
+      </div>
+    </div>
+
+    <blockquote class="relato">
+      Não quero o app pronto — quero validar que a experiência funciona e que as pessoas entendem e se emocionam com ela.
+      <footer>Helena Braga · o objetivo declarado do projeto, ainda não cumprido</footer>
+    </blockquote>
+
+    <div class="prosa">
+      <p>É a única linha do escopo original ainda aberta, e é o portão de todo o resto: cada horizonte seguinte fica mais barato se vier depois dela, porque para de se apoiar em suposição. Custa duas tardes e zero código novo.</p>
+    </div>
+
+    <h3>Preparar <span class="tipo">código</span></h3>
+    <div class="progresso" data-fase="h0a"><span class="trilho"><b class="cheio"></b></span><span><b class="feito">0</b> de <span class="total">0</span></span></div>
+    <ul class="tarefas" data-fase="h0a">
+      <li><input type="checkbox" id="a1"><label for="a1">"Recomeçar como visitante" no perfil: apaga acervo, identidade, pareceres e rascunho do aparelho — sem isso, o segundo participante herda o estado do primeiro</label></li>
+      <li><input type="checkbox" id="a2"><label for="a2">Conferir o APK no sol de verdade uma vez, antes de pôr na mão de alguém</label></li>
+    </ul>
+
+    <h3>O teste em si <span class="tipo gente">gente</span></h3>
+    <div class="progresso" data-fase="h0b"><span class="trilho"><b class="cheio"></b></span><span><b class="feito">0</b> de <span class="total">0</span></span></div>
+    <ul class="tarefas" data-fase="h0b">
+      <li><input type="checkbox" id="b1"><label for="b1">Recrutar 3 a 5 pessoas — pelo menos uma com 60+, pelo menos uma que nunca ouviu falar do projeto</label></li>
+      <li><input type="checkbox" id="b2"><label for="b2">No centro, com o APK, quatro tarefas: <em>descobrir</em> o que foi o Mercado · <em>caminhar</em> até uma memória próxima · <em>contar</em> uma memória com áudio · <em>revisar</em> uma da fila</label></li>
+      <li><input type="checkbox" id="b3"><label for="b3">Protocolo do silêncio: você não explica nada; pede para a pessoa pensar alto e anota onde ela trava, o que ela chama pelo nome errado, quando ela desiste</label></li>
+      <li><input type="checkbox" id="b4"><label for="b4">Anotar por tarefa: completou sozinha? em quanto tempo? onde hesitou? uma frase dita pela pessoa</label></li>
+      <li><input type="checkbox" id="b5"><label for="b5">Síntese em 24h, com cada achado classificado: <b>bloqueia</b> · <b>atrapalha</b> · <b>detalhe</b> — isso vira o backlog real do H1</label></li>
+      <li><input type="checkbox" id="b6"><label for="b6">De quebra: fotografar a Igreja de São Benedito no caminho — a única sem foto livre no acervo</label></li>
+    </ul>
+
+    <div class="portao">
+      <div>
+        <span class="mono">Portão de saída</span>
+        <p>3+ pessoas testaram na rua e a síntese existe com severidades. <strong>Nenhuma feature nova antes disso</strong> — cada tela construída sem teste aumenta a dívida de suposição.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ H1 ══════════════════════════════════════════════════════ -->
+<section id="h1">
+  <div class="envolt">
+    <div class="chapa">
+      <div class="moldura">
+        <span class="marcador">Horizonte 1 · 1–2 semanas</span>
+        <h2 class="placa">O alicerce</h2>
+      </div>
+    </div>
+
+    <div class="prosa">
+      <p>Transformar "funciona comigo" em "aguenta qualquer um". Primeiro o que o teste apontou; depois a robustez que a Decisão 7 pede e que nenhum teste feliz revela.</p>
+    </div>
+
+    <div class="progresso" data-fase="h1"><span class="trilho"><b class="cheio"></b></span><span><b class="feito">0</b> de <span class="total">0</span></span></div>
+    <ul class="tarefas" data-fase="h1">
+      <li><input type="checkbox" id="c1"><label for="c1"><b>Capacidade reservada:</b> tudo que o teste marcou como "bloqueia" e "atrapalha" — é a tarefa mais importante do horizonte e não dá para listá-la antes do H0</label></li>
+      <li><input type="checkbox" id="c2"><label for="c2">Error boundary com a cara da placa: erro de runtime vira "algo saiu do lugar" com botão de voltar, não tela branca</label></li>
+      <li><input type="checkbox" id="c3"><label for="c3">GPS ruim e sem rede (Decisão 7): guardar a última posição boa, dizer "sem sinal — mostrando o que está no aparelho", nunca travar esperando</label></li>
+      <li><input type="checkbox" id="c4"><label for="c4">Estados de carregamento onde hoje há salto seco (mapa inicial, geocodificação, fotos)</label></li>
+      <li><input type="checkbox" id="c5"><label for="c5">Passada completa de TalkBack em cada tela — os rótulos existem; falta ouvi-los em sequência</label></li>
+      <li><input type="checkbox" id="c6"><label for="c6">Miniatura de vídeo na ficha e no formulário (expo-video-thumbnails, junto do próximo lote nativo)</label></li>
+      <li><input type="checkbox" id="c7"><label for="c7">Testes automatizados das funções puras — <span class="mono">nomeCurto</span>, <span class="mono">agrupar</span>, <span class="mono">decadasDo</span>, <span class="mono">matchesQuery</span> — todas já quebraram uma vez; deixá-las quebrar de novo em silêncio é escolha</label></li>
+      <li><input type="checkbox" id="c8"><label for="c8">CI no GitHub: tipos, lint, contraste, bundle e <span class="mono">npm ci --dry-run</span> rodando em cada push — os portões que hoje dependem de lembrar</label></li>
+    </ul>
+
+    <div class="portao">
+      <div>
+        <span class="mono">Portão de saída</span>
+        <p>Modo avião + GPS desligado + erro forçado: o app degrada com dignidade nos três. CI verde no repositório.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ H2 ══════════════════════════════════════════════════════ -->
+<section id="h2">
+  <div class="envolt">
+    <div class="chapa lascada">
+      <div class="moldura">
+        <span class="marcador">Horizonte 2 · 3–6 semanas</span>
+        <h2 class="placa">O mundo compartilhado</h2>
+      </div>
+    </div>
+
+    <div class="prosa">
+      <p>A maior transformação que resta: uma memória contada num aparelho aparecendo em outro. É o que faz "a comunidade modera" deixar de ser ressalva na tela — e é o degrau em que o protótipo vira produto.</p>
+      <p>A arquitetura local já foi desenhada esperando por isto: o comentário no store do acervo diz, desde o primeiro dia, <em>"quando o backend entrar, este store vira a fila de envio offline"</em>. Chegou a hora dele.</p>
+    </div>
+
+    <div class="rolagem">
+      <table>
+        <thead><tr><th>Decisão</th><th>Recomendação</th><th>Por quê</th></tr></thead>
+        <tbody>
+          <tr><td><b>Plataforma</b></td><td>Supabase</td><td>Postgres (consulta geográfica de verdade), storage para mídia, auth Google/Apple pronta, e Row-Level Security que expressa as regras da moderação no banco — "ninguém revisa a própria memória" vira política, não convenção. Custo zero até centenas de usuários.</td></tr>
+          <tr><td><b>Sincronização</b></td><td>Local primeiro</td><td>O aparelho continua sendo a verdade imediata (Decisão 7: sinal instável). Criar funciona offline; a fila sobe quando há rede. Nada de spinner bloqueando quem está na calçada.</td></tr>
+          <tr><td><b>Moderação real</b></td><td>2 pareceres concordantes</td><td>Sai a ressalva "uma revisão já publica". Reputação v0 = contador de pareceres que a comunidade confirmou.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="progresso" data-fase="h2"><span class="trilho"><b class="cheio"></b></span><span><b class="feito">0</b> de <span class="total">0</span></span></div>
+    <ul class="tarefas" data-fase="h2">
+      <li><input type="checkbox" id="d1"><label for="d1">Esquema no Postgres espelhando os tipos que já existem: pontos, memórias, pareceres, denúncias, coleções</label></li>
+      <li><input type="checkbox" id="d2"><label for="d2">Consulta por área visível do mapa, não catálogo inteiro</label></li>
+      <li><input type="checkbox" id="d3"><label for="d3">Entrada com Google/Apple — a tela de assinatura finalmente ganha os botões que hoje seriam mentira</label></li>
+      <li><input type="checkbox" id="d4"><label for="d4">Upload de mídia com compressão no aparelho e envio em segundo plano</label></li>
+      <li><input type="checkbox" id="d5"><label for="d5">Fila offline de envio, com estado visível ("2 memórias esperando sinal")</label></li>
+      <li><input type="checkbox" id="d6"><label for="d6">Moderação server-side: N=2, autor nunca revisa a si mesmo por política do banco</label></li>
+      <li><input type="checkbox" id="d7"><label for="d7">LGPD antes de qualquer estranho usar: política de privacidade, consentimento no envio, apagar minha conta e tudo dela <span class="tipo gente">gente</span></label></li>
+      <li><input type="checkbox" id="d8"><label for="d8">Ambientes separados (desenvolvimento/produção) e Play Store em faixa interna</label></li>
+    </ul>
+
+    <div class="portao">
+      <div>
+        <span class="mono">Portão de saída</span>
+        <p>Dois celulares, duas pessoas: uma conta uma memória, a outra a revisa e aprova, e ela aparece no mapa das duas. No dia em que isso acontecer, o FoiAqui existe.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ H3 ══════════════════════════════════════════════════════ -->
+<section id="h3">
+  <div class="envolt">
+    <div class="chapa">
+      <div class="moldura">
+        <span class="marcador">Horizonte 3 · 2–3 meses</span>
+        <h2 class="placa">A cidade inteira</h2>
+      </div>
+    </div>
+
+    <div class="prosa">
+      <p>A Decisão 6 é o único essencial que nunca foi tocado — e não é código: <strong>parcerias fechadas antes do lançamento público</strong>. O Historypin só tem densidade onde teve parceiro. É aqui que o app fica incrível de verdade, porque é aqui que ele enche de histórias que ninguém mais tem.</p>
+      <p>E São José facilita: as fontes do acervo semeado já apontam os aliados naturais.</p>
+    </div>
+
+    <div class="rolagem">
+      <table>
+        <thead><tr><th>Quem procurar</th><th>Por que eles</th></tr></thead>
+        <tbody>
+          <tr><td><b>Pró-Memória (Câmara de SJC)</b></td><td>Metade do acervo semeado já cita o material deles. A conversa começa com "olha o que fizemos com o que vocês publicaram".</td></tr>
+          <tr><td><b>Fundação Cultural Cassiano Ricardo</b></td><td>Fica <em>dentro</em> do conjunto da Tecelagem Parahyba — um dos pontos do app. Gere o Museu do Folclore.</td></tr>
+          <tr><td><b>Uma escola (8º ano)</b></td><td>"Projeto escolar" é tema de trilha desde o primeiro mock. Professor de história + 30 alunos + avós = acervo vivo.</td></tr>
+          <tr><td><b>Arquivo Público do Estado / IPHAN local</b></td><td>Fotos históricas licenciáveis — o que transforma o slider passado↔presente de 1 par em dezenas.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="progresso" data-fase="h3"><span class="trilho"><b class="cheio"></b></span><span><b class="feito">0</b> de <span class="total">0</span></span></div>
+    <ul class="tarefas" data-fase="h3">
+      <li><input type="checkbox" id="e1"><label for="e1">Kit de abordagem: o dossiê que já existe + APK instalável + uma página de "o que pedimos, o que oferecemos" <span class="tipo conteudo">conteúdo</span></label></li>
+      <li><input type="checkbox" id="e2"><label for="e2">Primeira reunião com a Pró-Memória ou a FCCR <span class="tipo gente">gente</span></label></li>
+      <li><input type="checkbox" id="e3"><label for="e3">Conta institucional com selo próprio e upload em lote — o que resolve o mapa vazio</label></li>
+      <li><input type="checkbox" id="e4"><label for="e4">Mutirão de memória: um sábado no Mercado, idosos contando e estudantes gravando — o fluxo de áudio foi desenhado exatamente para isto <span class="tipo gente">gente</span></label></li>
+      <li><input type="checkbox" id="e5"><label for="e5">Trilha do centro completa: as 6 paradas com memória de verdade, testada a pé <span class="tipo conteudo">conteúdo</span></label></li>
+      <li><input type="checkbox" id="e6"><label for="e6">QR code em ponto físico abrindo a memória do lugar — a placa de verdade apontando para a placa digital</label></li>
+      <li><input type="checkbox" id="e7"><label for="e7">Memória da semana e destaque de autor (Decisão 12: reconhecimento, nunca placar)</label></li>
+    </ul>
+
+    <h3>Metas do horizonte — pequenas e honestas</h3>
+    <div class="metas">
+      <div class="meta"><b>100</b><span>memórias reais publicadas</span></div>
+      <div class="meta"><b>30</b><span>contribuidores distintos</span></div>
+      <div class="meta"><b>1</b><span>parceria assinada</span></div>
+      <div class="meta"><b>&lt;48h</b><span>até a primeira revisão</span></div>
+    </div>
+
+    <blockquote class="relato">
+      Se o acervo cresce e as pessoas retornam, está funcionando.
+      <footer>Helena Braga · a métrica de sucesso, dita por ela</footer>
+    </blockquote>
+  </div>
+</section>
+
+<!-- ═══ H4 ══════════════════════════════════════════════════════ -->
+<section id="h4">
+  <div class="envolt">
+    <div class="chapa lascada">
+      <div class="moldura">
+        <span class="marcador">Horizonte 4 · depois, com dados</span>
+        <h2 class="placa">A mágica</h2>
+      </div>
+    </div>
+
+    <div class="prosa">
+      <p>A promessa de origem — apontar a câmera e ver a memória <em>no prédio</em> — continua guardada pelas Decisões 8 e 9: o Historypin apostou nela cedo demais e morreu disso. Ela abre quando o H3 provar densidade e retorno, e nunca antes.</p>
+      <p>Quando abrir, o caminho técnico certo já tem nome: a <strong>Geospatial API do ARCore</strong> ancora conteúdo em coordenadas do mundo usando a própria localização visual do Street View — é literalmente a tecnologia para "pendurar a placa na fachada", muito acima de marcador por bússola. Usa a mesma chave Google que o mapa já usa.</p>
+    </div>
+
+    <ul class="limpa">
+      <li><strong>Placa ancorada na fachada</strong>, não flutuando na direção — com a regra dos 45 segundos que o app já tem.</li>
+      <li><strong>Foto antiga sobreposta à vista atual</strong>, alinhada — o slider passado↔presente saindo da ficha para a rua.</li>
+      <li><strong>Trilhas guiadas com narração</strong>: caminhar ouvindo, o celular no bolso, aviso ao chegar na parada.</li>
+      <li><strong>Efeméride do dia</strong>: "há exatamente 100 anos, aqui abriu o Mercado" — o campo de ano obrigatório (Decisão 3) pagando dividendo.</li>
+    </ul>
+
+    <div class="portao">
+      <div>
+        <span class="mono">Portão de entrada</span>
+        <p>Este horizonte só começa com as metas do H3 batidas. Se os dados disserem que ninguém sente falta da AR, ele não começa — e isso também é o plano funcionando.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ NUNCA ═══════════════════════════════════════════════════ -->
+<section id="nunca">
+  <div class="envolt">
+    <div class="chapa">
+      <div class="moldura">
+        <span class="marcador">Anti-metas</span>
+        <h2 class="placa">O que nunca vamos fazer</h2>
+      </div>
+    </div>
+
+    <div class="prosa">
+      <p>Um plano ambicioso precisa dizer onde a ambição não entra. Estas vêm da pesquisa e da identidade — quebrá-las descaracteriza o produto mais que qualquer bug.</p>
+    </div>
+
+    <ul class="limpa nunca">
+      <li><strong>Ranking por volume.</strong> Decisão 12: enche o acervo de conteúdo raso. Reconhecimento nomeia papel, nunca posição.</li>
+      <li><strong>Feed infinito.</strong> O FoiAqui se navega pelo chão, não pelo polegar. O mapa é a interface.</li>
+      <li><strong>Notificação de engajamento.</strong> "Você não abre o app há 3 dias" não existe aqui. Aviso é sobre a SUA memória: aprovada, revisada, guardada por alguém.</li>
+      <li><strong>Paywall no acervo.</strong> Palavra da PO: memória urbana não fica atrás de assinatura. O modelo cobra de instituição, nunca da vizinha.</li>
+      <li><strong>Analytics invasivo.</strong> As métricas da Helena se medem no servidor próprio, agregadas. Nenhum SDK de rastreamento de terceiros.</li>
+      <li><strong>Interface que mente.</strong> A regra que atravessou o projeto inteiro segue valendo: botão que existe funciona, número que aparece é contado, o que não existe está escrito.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══ RISCOS ══════════════════════════════════════════════════ -->
+<section id="riscos">
+  <div class="envolt">
+    <div class="chapa">
+      <div class="moldura">
+        <span class="marcador">Vigiar</span>
+        <h2 class="placa">Riscos, e as três decisões da semana</h2>
+      </div>
+    </div>
+
+    <div class="rolagem">
+      <table>
+        <thead><tr><th>Risco</th><th>Por que é real</th><th>Guarda</th></tr></thead>
+        <tbody>
+          <tr><td><b>Mapa vazio</b></td><td>O medo nº 1 da PO, e o que matou o Historypin.</td><td>H3 vem antes de qualquer lançamento aberto; conta institucional e upload em lote existem antes do público.</td></tr>
+          <tr><td><b>Construir sem testar</b></td><td>O padrão confortável — e cada tela sem teste é suposição empilhada.</td><td>O portão do H0 tranca os horizontes seguintes. Este documento é o guarda.</td></tr>
+          <tr><td><b>Conteúdo falso ou ofensivo</b></td><td>Lugar real + conteúdo aberto atrai disputa desde o dia 1.</td><td>Critérios públicos, recusa justificada e denúncia já existem; N=2 e reputação entram no H2.</td></tr>
+          <tr><td><b>LGPD</b></td><td>Nome + localização + relato pessoal = dado pessoal de verdade.</td><td>Item de portão do H2: sem política, consentimento e apagar-tudo, estranho não entra.</td></tr>
+          <tr><td><b>Custo de API</b></td><td>Google Maps cobra por uso acima da faixa grátis.</td><td>Faixas por SKU dão ~10 mil carregamentos/mês; alerta de cobrança no console antes do H3 abrir o público.</td></tr>
+          <tr><td><b>Uma pessoa só</b></td><td>Projeto de uma pessoa para quando a pessoa para.</td><td>Documentação já é a mais forte do projeto; CI no H1 tira os portões da memória humana.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Para decidir agora — três perguntas, nenhuma de código</h3>
+    <ul class="limpa">
+      <li><strong>Quem são as 3–5 pessoas do teste, e em que dia?</strong> É a única coisa entre o app e o H0. Uma delas com 60+.</li>
+      <li><strong>Supabase está aprovado como plataforma do H2?</strong> Custo zero para começar; a alternativa (Firebase) tranca mais no Google.</li>
+      <li><strong>Qual porta institucional abrir primeiro — Pró-Memória ou FCCR?</strong> Uma reunião marcada muda o H3 de plano para agenda.</li>
+    </ul>
+  </div>
+</section>
+
+<footer class="pe">
+  <div class="envolt">
+    <p><strong>Rota do FoiAqui</strong> — plano vivo, reescrito quando a realidade muda (esta versão substitui a de 29/08, cujas fases 0–2 e metade das 3–4 foram concluídas). Fontes: FoiAqui-UX.xlsx, CLAUDE.md, o dossiê do projeto e o código. As tarefas marcadas ficam guardadas só neste navegador.</p>
+  </div>
+</footer>
+
+<script>
+  // Progresso por bloco, guardado localmente. Conveniência de leitura —
+  // se o armazenamento falhar (aba privada), a página segue como documento.
+  (function () {
+    var KEY = 'foiaqui-rota-v2';
+    var caixas = Array.prototype.slice.call(document.querySelectorAll('ul.tarefas input'));
+    function ler() { try { return JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { return {}; } }
+    function gravar(s) { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) {} }
+    var estado = ler();
+    caixas.forEach(function (b) { if (estado[b.id]) b.checked = true; });
+    function atualizar() {
+      document.querySelectorAll('.progresso').forEach(function (p) {
+        var fase = p.getAttribute('data-fase');
+        var inputs = document.querySelectorAll('ul.tarefas[data-fase="' + fase + '"] input');
+        var total = inputs.length, feito = 0;
+        inputs.forEach(function (i) { if (i.checked) feito++; });
+        p.querySelector('.feito').textContent = feito;
+        p.querySelector('.total').textContent = total;
+        p.querySelector('.cheio').style.width = total ? (feito / total * 100) + '%' : '0%';
+      });
+    }
+    caixas.forEach(function (b) {
+      b.addEventListener('change', function () {
+        estado[b.id] = b.checked;
+        if (!b.checked) delete estado[b.id];
+        gravar(estado); atualizar();
+      });
+    });
+    atualizar();
+  })();
+</script>
