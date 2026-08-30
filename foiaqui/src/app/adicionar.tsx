@@ -25,7 +25,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Chip } from '@/components/Chip';
 import { Icon } from '@/components/Icon';
-import { Body, Mono, Plaque } from '@/components/Type';
+import { Body, Mono, Plaque, Story } from '@/components/Type';
 import type { Position } from '@/data/location';
 import { mapStyle } from '@/data/mapStyle';
 import { criterios } from '@/data/criterios';
@@ -42,6 +42,30 @@ import type { Memory } from '@/types';
 const TAGS = ['Cinema', 'Lazer', 'Centro', 'Demolido', 'Família', 'Arte urbana', 'Escola'];
 
 const STEPS = ['Mídia', 'História', 'Local', 'Época'] as const;
+
+/**
+ * As perguntas do modo entrevista.
+ *
+ * O lado que CRIA é o mais difícil do produto, e o pior momento dele é a tela
+ * em branco: a pessoa tem a memória inteira na cabeça e não sabe por onde
+ * entrar. Pergunta concreta e sensorial destrava — é técnica de historiador
+ * oral, não invenção: ninguém responde "o que aconteceu aqui?", todo mundo
+ * responde "que cheiro tinha?".
+ *
+ * Nenhuma delas escreve nada pela pessoa. A pergunta é isca, não modelo.
+ */
+const PERGUNTAS = [
+  'Quem te levou lá pela primeira vez?',
+  'Que barulho tinha? E que cheiro?',
+  'O que vendiam, e quanto custava?',
+  'Quem trabalhava lá? Você lembra de algum nome?',
+  'O que você vestia quando ia?',
+  'O que mudou no dia em que fechou?',
+  'Quem mais lembra disso com você?',
+  'Se as paredes falassem, qual seria a primeira fofoca?',
+  'O que você fazia lá que hoje não se faz mais?',
+  'Qual era o caminho até lá — e por onde não se podia ir?',
+] as const;
 
 /** A época escolhida vira um ano concreto, que é o que a placa mostra. */
 const ANO_DA_ERA: Record<string, string> = {
@@ -125,6 +149,8 @@ export default function AdicionarScreen() {
   const player = useAudioPlayer(audioSource(audio?.uri));
   const playing = useAudioPlayerStatus(player).playing;
   const [story, setStory] = useState(guardado.story);
+  // modo entrevista: qual pergunta está servindo de isca agora
+  const [pergunta, setPergunta] = useState(0);
   const [era, setEra] = useState<string | null>(guardado.era);
   /** Ano exato, quando a pessoa sabe. Vazio significa "só a década". */
   const [ano, setAno] = useState(guardado.ano ?? '');
@@ -565,6 +591,27 @@ export default function AdicionarScreen() {
                   ? 'Escreva pelo menos uma frase.'
                   : `${story.trim().length} caracteres`}
               </Body>
+
+              {/*
+                O modo entrevista: uma pergunta concreta como isca para quem
+                congela na tela em branco. Ela não escreve nada pela pessoa —
+                só muda a pergunta na cabeça de "o que eu escrevo?" para
+                "quem me levou lá?", que qualquer um responde.
+              */}
+              <View style={styles.entrevista}>
+                <Body style={styles.entrevistaTitulo}>Travou? Responda só isto:</Body>
+                <Story style={styles.entrevistaPergunta}>
+                  {PERGUNTAS[pergunta % PERGUNTAS.length]}
+                </Story>
+                <Pressable
+                  style={styles.entrevistaOutra}
+                  onPress={() => setPergunta((p) => p + 1)}
+                  accessibilityRole="button"
+                  accessibilityLabel="Fazer outra pergunta">
+                  <Icon name="sparkle" size={14} color={colors.ferrugem} strokeWidth={2.2} />
+                  <Body style={styles.entrevistaOutraText}>Outra pergunta</Body>
+                </Pressable>
+              </View>
             </>
           ) : null}
 
@@ -901,6 +948,27 @@ const styles = StyleSheet.create({
     color: colors.grafite,
     textAlignVertical: 'top',
   },
+  entrevista: {
+    marginTop: space.lg,
+    padding: space.lg,
+    backgroundColor: colors.cal2,
+    borderLeftWidth: 3,
+    borderLeftColor: colors.ferrugem,
+    gap: 6,
+  },
+  entrevistaTitulo: { fontSize: 12, color: colors.grafiteDim },
+  // Newsreader: é pergunta de gente para gente, não rótulo de interface
+  entrevistaPergunta: { fontSize: 18, lineHeight: 24, color: colors.grafite },
+  entrevistaOutra: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    minHeight: HIT - 8,
+    alignSelf: 'flex-start',
+    paddingRight: space.md,
+  },
+  entrevistaOutraText: { fontSize: 13.5, fontWeight: '600', color: colors.ferrugem },
+
   counter: { fontSize: 12, color: colors.grafiteDim, marginTop: space.sm },
 
   locMap: {
