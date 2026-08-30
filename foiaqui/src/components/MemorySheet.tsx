@@ -461,12 +461,35 @@ export function MemorySheet() {
                 nativeControls
               />
             ) : comparavel ? (
-              <RevealSlider
-                pastLabel={shown.year}
-                pastUri={shown.pastImageUri}
-                presentUri={shown.presentImageUri}
-                height={240}
-              />
+              <View style={{ height: 240 }}>
+                <RevealSlider
+                  pastLabel={shown.year}
+                  pastUri={shown.pastImageUri}
+                  presentUri={shown.presentImageUri}
+                  height={240}
+                />
+                {/*
+                  A lupa como alvo próprio, sobreposto ao slider.
+                  Tocar a foto inteira não serve aqui: a área é do arraste do
+                  divisor, e um toque que compete com ele estraga os dois
+                  gestos. Um botão pequeno no canto não disputa nada — e sem
+                  ele a comparação era o único lugar do app onde a foto não
+                  ampliava, justamente onde há mais o que olhar.
+                */}
+                <Pressable
+                  style={styles.ampliar}
+                  onPress={() =>
+                    setLupa({
+                      fonte: (shown.pastImageUri ?? shown.presentImageUri)!,
+                      legenda: shown.pastImageUri ? shown.year : 'Hoje',
+                    })
+                  }
+                  hitSlop={8}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Ver grande a foto de ${shown.year}`}>
+                  <Icon name="search" size={13} color={colors.sobreEsmalte} strokeWidth={2.2} />
+                </Pressable>
+              </View>
             ) : (
               /*
                 Uma foto só não é comparação. Mostrar o divisor aqui faria a

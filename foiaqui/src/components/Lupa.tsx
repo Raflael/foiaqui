@@ -1,6 +1,10 @@
 import { Image } from 'expo-image';
 import { Modal, Pressable, StyleSheet, View } from 'react-native';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import {
+  Gesture,
+  GestureDetector,
+  GestureHandlerRootView,
+} from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -109,7 +113,14 @@ export function Lupa({
       animationType="fade"
       onRequestClose={onFechar}
       statusBarTranslucent>
-      <View style={styles.fundo}>
+      {/*
+        Raiz de gestos própria dentro do Modal.
+        O Modal do React Native monta numa árvore de views separada, fora do
+        GestureHandlerRootView do app — sem esta segunda raiz, pinça e arraste
+        simplesmente não chegam, e o visor abre morto. Foi exatamente o que
+        aconteceu no aparelho.
+      */}
+      <GestureHandlerRootView style={styles.fundo}>
         <GestureDetector gesture={gesto}>
           <Animated.View style={[StyleSheet.absoluteFill, estilo]}>
             <Image source={fonteDaImagem(fonte)} style={StyleSheet.absoluteFill} contentFit="contain" />
@@ -131,7 +142,7 @@ export function Lupa({
           {legenda ? <Mono style={styles.legenda}>{legenda}</Mono> : null}
           <Mono style={styles.dica}>pinça ou toque duplo para aproximar</Mono>
         </View>
-      </View>
+      </GestureHandlerRootView>
     </Modal>
   );
 }
