@@ -1,9 +1,19 @@
+import { useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import { Glass } from '@/components/Glass';
+import { Icon } from '@/components/Icon';
 import { Body, Mono } from '@/components/Type';
 import type { Decada } from '@/data/decadas';
+import { useMotionEnabled } from '@/hooks/useMotion';
 import { colors, HIT, space } from '@/theme';
+
+/**
+ * Ritmo da varredura. Mais lento que parece necessário, de propósito: cada
+ * passo reabre a janela de captura dos marcadores no Android (~1,2 s), e um
+ * ritmo menor que ela deixaria pins em branco no meio da viagem.
+ */
+const PASSO_MS = 1700;
 
 /** altura da barrinha: nunca zero, para a década vazia continuar clicável */
 const BARRA_MIN = 5;
@@ -43,9 +53,73 @@ export function Timeline({
   onSelecionar: (inicio: number | null) => void;
 }) {
   const maior = Math.max(1, ...decadas.map((d) => d.total));
+  const motion = useMotionEnabled();
+
+  /**
+   * A viagem no tempo com um toque: aperta o play e o mapa varre as décadas
+   * sozinho, da mais antiga até hoje, e volta para "tudo" no fim.
+   *
+   * As décadas vazias FICAM no percurso — a pausa num ano sem nada é o mapa
+   * dizendo "aqui ninguém contou ainda", que é a informação mais valiosa da
+   * régua. Pular direto de 1920 para 1950 esconderia trinta anos de silêncio.
+   *
+   * Some quando a pessoa pediu menos movimento: varredura automática é
+   * exatamente o tipo de animação que o reduce-motion existe para desligar.
+   * E qualquer toque manual numa década interrompe — a mão ganha da máquina.
+   */
+  const [tocando, setTocando] = useState(false);
+  const passo = useRef(0);
+
+  useEffect(() => {
+    if (!tocando) return;
+    const t = setInterval(() => {
+      if (passo.current >= decadas.length) {
+        setTocando(false);
+        onSelecionar(null);
+        return;
+      }
+      onSelecionar(decadas[passo.current].inicio);
+      passo.current += 1;
+    }, PASSO_MS);
+    return () => clearInterval(t);
+  }, [tocando, decadas, onSelecionar]);
+
+  const alternar = () => {
+    if (tocando) {
+      setTocando(false);
+      return;
+    }
+    passo.current = 0;
+    onSelecionar(decadas[0]?.inicio ?? null);
+    passo.current = 1;
+    setTocando(true);
+  };
+
+  const pararSeManual = (fn: () => void) => () => {
+    setTocando(false);
+    fn();
+  };
 
   return (
     <Glass style={styles.faixa} intensity={20}>
+      <View style={styles.linhaComPlay}>
+      {motion ? (
+        <Pressable
+          style={[styles.play, tocando && styles.playAtivo]}
+          onPress={alternar}
+          accessibilityRole="button"
+          accessibilityState={{ selected: tocando }}
+          accessibilityLabel={
+            tocando ? 'Parar a viagem pelas décadas' : 'Percorrer as décadas automaticamente'
+          }>
+          <Icon
+            name={tocando ? 'pause' : 'play'}
+            size={15}
+            color={colors.sobreFerrugem}
+            filled
+          />
+        </Pressable>
+      ) : null}
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -55,7 +129,7 @@ export function Timeline({
           ativo={selecionada === null}
           vazia={false}
           altura={BARRA_MAX}
-          onPress={() => onSelecionar(null)}
+          onPress={pararSeManual(() => onSelecionar(null))}
           rotuloAcessivel="Todas as épocas"
         />
 
@@ -70,7 +144,7 @@ export function Timeline({
                 ? BARRA_MIN
                 : BARRA_MIN + ((BARRA_MAX - BARRA_MIN) * d.total) / maior
             }
-            onPress={() => onSelecionar(selecionada === d.inicio ? null : d.inicio)}
+            onPress={pararSeManual(() => onSelecionar(selecionada === d.inicio ? null : d.inicio))}
             rotuloAcessivel={
               d.total === 0
                 ? `${d.rotuloLongo}, nenhuma memória ainda`
@@ -79,6 +153,7 @@ export function Timeline({
           />
         ))}
       </ScrollView>
+      </View>
     </Glass>
   );
 }
@@ -125,6 +200,18 @@ function Poste({
 
 const styles = StyleSheet.create({
   faixa: { overflow: 'hidden' },
+  linhaComPlay: { flexDirection: 'row', alignItems: 'center' },
+  // círculo porque é corpo: botão de tocar, como o do áudio (regra da identidade)
+  play: {
+    width: HIT - 4,
+    height: HIT - 4,
+    borderRadius: (HIT - 4) / 2,
+    marginLeft: space.sm,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.ferrugem,
+  },
+  playAtivo: { backgroundColor: colors.esmalte },
   trilho: { paddingHorizontal: space.sm },
 
   poste: {
