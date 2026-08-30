@@ -28,6 +28,8 @@ import { Icon } from '@/components/Icon';
 import { Body, Mono, Plaque, Story } from '@/components/Type';
 import type { Position } from '@/data/location';
 import { mapStyle } from '@/data/mapStyle';
+import * as VideoThumbnails from 'expo-video-thumbnails';
+
 import { criterios } from '@/data/criterios';
 import { pontoPor } from '@/data/pontos';
 import { eras, nomeCurto } from '@/data/memories';
@@ -122,6 +124,26 @@ export default function AdicionarScreen() {
   const [audio, setAudio] = useState<{ uri: string; seconds: number } | null>(guardado.audio);
   const [mediaErro, setMediaErro] = useState<string | null>(null);
 
+  // gera a miniatura quando entra um vídeo; limpa quando entra foto
+  useEffect(() => {
+    let vivo = true;
+    if (media?.type !== 'video') {
+      setCapaVideo(null);
+      return;
+    }
+    VideoThumbnails.getThumbnailAsync(media.uri, { time: 1000 })
+      .then((r) => {
+        if (vivo) setCapaVideo(r.uri);
+      })
+      // miniatura é conveniência: se o codec não deixar, o passo segue sem ela
+      .catch(() => {
+        if (vivo) setCapaVideo(null);
+      });
+    return () => {
+      vivo = false;
+    };
+  }, [media]);
+
   const { position, source } = useCurrentPosition();
   const adicionarAoAcervo = useAcervo((s) => s.adicionar);
   const locMapRef = useRef<MapView>(null);
@@ -151,6 +173,15 @@ export default function AdicionarScreen() {
   const [story, setStory] = useState(guardado.story);
   // modo entrevista: qual pergunta está servindo de isca agora
   const [pergunta, setPergunta] = useState(0);
+
+  /**
+   * A miniatura do vídeo escolhido.
+   *
+   * Sem ela o passo da mídia mostra um retângulo preto e a pessoa não tem
+   * como saber se gravou o que queria — ela precisaria publicar para
+   * descobrir. Um quadro do primeiro segundo responde na hora.
+   */
+  const [capaVideo, setCapaVideo] = useState<string | null>(null);
   const [era, setEra] = useState<string | null>(guardado.era);
   /** Ano exato, quando a pessoa sabe. Vazio significa "só a década". */
   const [ano, setAno] = useState(guardado.ano ?? '');
@@ -435,7 +466,16 @@ export default function AdicionarScreen() {
 
               {media ? (
                 <View>
-                  <Image source={{ uri: media.uri }} style={styles.photoFilled} contentFit="cover" />
+                  {/*
+                    Vídeo mostra a miniatura, não o próprio arquivo: <Image>
+                    apontando para um .mp4 desenha um retângulo preto, e a
+                    pessoa fica sem saber se gravou o que queria.
+                  */}
+                  <Image
+                    source={{ uri: media.type === 'video' ? (capaVideo ?? media.uri) : media.uri }}
+                    style={styles.photoFilled}
+                    contentFit="cover"
+                  />
                   {media.type === 'video' ? (
                     <View style={styles.videoBadge}>
                       <Icon name="play" size={12} color={colors.sobreEsmalte} filled />
