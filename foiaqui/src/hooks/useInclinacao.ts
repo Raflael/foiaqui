@@ -1,5 +1,11 @@
 import { DeviceMotion } from 'expo-sensors';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+
+/** Quanto de cada leitura nova entra na média. Baixo = mais firme, mais lento. */
+const SUAVIZACAO = 0.12;
+
+/** Só re-renderiza quando o ângulo muda mais que isto, em graus. */
+const ZONA_MORTA = 0.6;
 
 /**
  * Para onde o celular aponta na vertical, em graus.
@@ -10,21 +16,29 @@ import { useEffect, useState } from 'react';
  *
  * **Por que a gravidade e não `rotation.beta`.** O DeviceMotion entrega os dois:
  * ângulos de Euler (`rotation`) e o vetor de aceleração com gravidade. Os
- * ângulos são o caminho óbvio e o errado: a convenção de sinal e o zero de
- * `beta` mudam entre Android e iOS, então acertar exigiria calibrar no
- * aparelho e torcer para a outra plataforma combinar. O vetor de gravidade não
- * tem essa ambiguidade — ele aponta para o centro da Terra, e o resto é
- * trigonometria.
+ * ângulos são o caminho óbvio e o errado — a convenção de sinal e o zero de
+ * `beta` mudam entre plataformas. O vetor de gravidade aponta para o centro da
+ * Terra em qualquer aparelho, e o resto é trigonometria.
  *
- * No referencial do aparelho, `y` sobe pela tela e `z` sai da tela na direção
- * de quem olha. Com o celular na vertical, a gravidade está toda em `-y` e
- * `z` é zero. Inclinando para olhar o céu, a tela vira para cima e a gravidade
- * ganha componente em `-z`; olhando o chão, ganha em `+z`. Logo o ângulo em
- * relação ao horizonte é `atan2(-z, |(x, y)|)`, positivo para cima — e isso
- * vale em qualquer plataforma, porque é física e não convenção de API.
+ * **O sinal do eixo z foi medido, não deduzido.** A dedução dizia que olhar
+ * para baixo daria `z` negativo; no aparelho é o contrário — a implementação
+ * segue a convenção em que o aparelho deitado com a tela para cima (câmera
+ * para o chão) lê `z` positivo. Isso valeu um relato de campo: a tela mandava
+ * "abaixe o celular" para quem já estava apontando para o próprio pé. Fica
+ * registrado porque é exatamente o tipo de coisa que a documentação não diz e
+ * que a próxima pessoa reinventaria errado.
+ *
+ * **Suavização não é enfeite.** O acelerômetro oscila um ou dois graus a cada
+ * leitura mesmo com o braço parado. Sem média, o horizonte treme, e cards
+ * perto da borda da tela entram e saem de vista a dez vezes por segundo — foi
+ * o "piscando" relatado. A média móvel firma o valor e a zona morta corta o
+ * re-render: sem ela a tela inteira redesenha dez vezes por segundo enquanto a
+ * câmera já está consumindo o aparelho.
  */
 export function useInclinacao(ativo: boolean): number | null {
   const [graus, setGraus] = useState<number | null>(null);
+  const media = useRef<number | null>(null);
+  const publicado = useRef<number | null>(null);
 
   useEffect(() => {
     if (!ativo) return;
@@ -35,15 +49,28 @@ export function useInclinacao(ativo: boolean): number | null {
       try {
         if (!(await DeviceMotion.isAvailableAsync())) return;
         if (!vivo) return;
-        // 100 ms: rápido o bastante para acompanhar o braço, devagar o bastante
-        // para não fritar bateria numa tela que já usa câmera e GPS
-        DeviceMotion.setUpdateInterval(100);
+        // 60 ms: acompanha o braço sem virar enxurrada de eventos
+        DeviceMotion.setUpdateInterval(60);
         sub = DeviceMotion.addListener(({ accelerationIncludingGravity: g }) => {
           if (!vivo || !g) return;
+
           const horizontal = Math.hypot(g.x, g.y);
-          // aparelho em queda livre ou leitura degenerada: não inventa ângulo
+          // queda livre ou leitura degenerada: não inventa ângulo
           if (horizontal < 0.5 && Math.abs(g.z) < 0.5) return;
-          setGraus((Math.atan2(-g.z, horizontal) * 180) / Math.PI);
+
+          const bruto = (Math.atan2(g.z, horizontal) * 180) / Math.PI;
+          media.current =
+            media.current === null
+              ? bruto
+              : media.current + SUAVIZACAO * (bruto - media.current);
+
+          if (
+            publicado.current === null ||
+            Math.abs(media.current - publicado.current) > ZONA_MORTA
+          ) {
+            publicado.current = media.current;
+            setGraus(media.current);
+          }
         });
       } catch {
         if (vivo) setGraus(null);

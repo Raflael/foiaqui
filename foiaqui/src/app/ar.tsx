@@ -120,9 +120,17 @@ export default function ARScreen() {
       // sem bússola não há "frente": mostra o mais perto, nos cantos
       return comDistancia.slice(0, CARDS_NA_CENA).map((c) => ({ ...c, x: null, angulo: 0 }));
     }
+    /*
+     * Seleciona num campo 25% mais largo que o visível e posiciona no campo
+     * real. Assim a memória que está na borda entra na cena com o card já
+     * meio fora da tela e DESLIZA para dentro conforme você gira — em vez de
+     * surgir do nada exatamente no limite. Fronteira binária num valor que
+     * vem de sensor é receita de piscar: basta o ruído cruzar o limiar.
+     */
+    const FOV_SELECAO = CAMERA_FOV * 1.25;
     return comDistancia
       .map((c) => ({ ...c, angulo: relativeAngle(bearingTo(position, c.m.coords), heading) }))
-      .filter((c) => Math.abs(c.angulo) <= CAMERA_FOV / 2)
+      .filter((c) => Math.abs(c.angulo) <= FOV_SELECAO / 2)
       .slice(0, CARDS_NA_CENA)
       .map((c) => ({ ...c, x: 0.5 + c.angulo / CAMERA_FOV }));
   })();
@@ -167,7 +175,8 @@ export default function ARScreen() {
       return { ...c, top, escala: 1 - 0.26 * t };
     })
     // apontou para o céu ou para o chão: o que saiu da tela sai mesmo
-    .filter((c) => c.top > insets.top - 40 && c.top < alturaTela - 120);
+    // banda generosa pelo mesmo motivo: o card sai pela borda, não evapora
+    .filter((c) => c.top > insets.top - 130 && c.top < alturaTela - 40);
 
   /** O que a fita mostra: as mais próximas, com a direção de cada uma. */
   const naFita =

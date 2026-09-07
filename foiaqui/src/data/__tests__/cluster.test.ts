@@ -1,4 +1,5 @@
 import { agrupar, type Regiao } from '@/data/cluster';
+import { relativeAngle } from '@/data/location';
 import { pontoPor } from '@/data/pontos';
 import type { Memory } from '@/types';
 
@@ -140,5 +141,33 @@ describe('agrupar · casos de borda', () => {
       expect(total).toHaveLength(memorias.length);
       expect(new Set(total.map((m) => m.id)).size).toBe(memorias.length);
     }
+  });
+});
+
+describe('relativeAngle · a virada do norte', () => {
+  /*
+   * A AR e a suavização da bússola dependem disto, e é onde uma implementação
+   * ingênua quebra: entre 359° e 1° a diferença é 2°, não 358°. Errar aqui faz
+   * a bússola apontar para o sul exatamente quando a pessoa olha para o norte.
+   */
+  it('atravessa o norte pelo menor arco', () => {
+    expect(relativeAngle(1, 359)).toBe(2);
+    expect(relativeAngle(359, 1)).toBe(-2);
+    expect(relativeAngle(0, 350)).toBe(10);
+    expect(relativeAngle(350, 0)).toBe(-10);
+  });
+
+  it('mantém o resultado sempre entre -180 e 180', () => {
+    for (let b = 0; b < 360; b += 7) {
+      for (let h = 0; h < 360; h += 11) {
+        const a = relativeAngle(b, h);
+        expect(a).toBeGreaterThan(-181);
+        expect(a).toBeLessThanOrEqual(180);
+      }
+    }
+  });
+
+  it('mesma direção é zero', () => {
+    expect(relativeAngle(90, 90)).toBe(0);
   });
 });
