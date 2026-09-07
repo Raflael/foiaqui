@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { DitarRelato } from '@/components/BotaoVoz';
 import { Icon } from '@/components/Icon';
 import { Body, Eyebrow, Mono, Plaque } from '@/components/Type';
 import { eraDoAno, rotuloLongo } from '@/data/decadas';
@@ -212,6 +213,8 @@ export default function FotoAntigaScreen() {
           maxLength={140}
           accessibilityLabel="Uma frase dizendo o que a foto mostra"
         />
+
+        <DitarRelato valor={legenda} onTexto={setLegenda} />
 
         <Pressable
           style={[styles.enviar, !podeEnviar && styles.enviarOff]}

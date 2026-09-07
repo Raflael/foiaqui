@@ -23,6 +23,7 @@ import {
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { DitarRelato } from '@/components/BotaoVoz';
 import { Chip } from '@/components/Chip';
 import { Icon } from '@/components/Icon';
 import { Body, Mono, Plaque, Story } from '@/components/Type';
@@ -790,6 +791,8 @@ export default function AdicionarScreen() {
                   ? 'Escreva pelo menos uma frase.'
                   : `${story.trim().length} caracteres`}
               </Body>
+
+              <DitarRelato valor={story} onTexto={setStory} />
 
               {/*
                 Quem viveu nem sempre é quem digita. Sem este campo o app

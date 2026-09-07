@@ -1,4 +1,5 @@
 import { LinearGradient } from 'expo-linear-gradient';
+import { useKeepAwake } from 'expo-keep-awake';
 import * as Speech from 'expo-speech';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
@@ -53,6 +54,17 @@ export default function TrilhaScreen() {
   // o modo caminhada: onde a pessoa já disse "cheguei"
   const chegadas = useCaminhada((s) => s.chegadas[id ?? ''] ?? []);
   const marcar = useCaminhada((s) => s.marcar);
+
+  /*
+   * Tela acesa enquanto a trilha está aberta.
+   *
+   * A caminhada narrada dura dez, vinte minutos de rua, e entre uma parada e
+   * outra ninguém toca no aparelho. Com o tempo limite padrão, a tela apaga a
+   * cada trinta segundos e a pessoa desbloqueia o celular a cada esquina —
+   * atrito bobo que transforma o roteiro guiado em incômodo. É a mesma
+   * Decisão 7: o app é usado em pé, na rua, com a mão ocupada.
+   */
+  useKeepAwake();
   const desmarcar = useCaminhada((s) => s.desmarcar);
   const recomecar = useCaminhada((s) => s.recomecar);
   const proxima = paradas.find((m) => !chegadas.includes(m.id));
