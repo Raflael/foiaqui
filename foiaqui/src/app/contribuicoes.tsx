@@ -6,6 +6,7 @@ import { Icon } from '@/components/Icon';
 import { Body, Eyebrow, Mono, Plaque } from '@/components/Type';
 import { criterioPor } from '@/data/criterios';
 import { geojsonDasMemorias } from '@/data/exportar';
+import { useAcervoHidratado } from '@/hooks/useHidratado';
 import { useAcervo } from '@/store/acervo';
 import { useModeracao } from '@/store/moderacao';
 import { alpha, colors, HIT, space } from '@/theme';
@@ -27,6 +28,7 @@ import type { Memory } from '@/types';
 export default function ContribuicoesScreen() {
   const insets = useSafeAreaInsets();
   const criadas = useAcervo((s) => s.criadas);
+  const hidratado = useAcervoHidratado();
   const remover = useAcervo((s) => s.remover);
   const pareceres = useModeracao((s) => s.pareceres);
 
@@ -70,7 +72,12 @@ export default function ContribuicoesScreen() {
           paddingBottom: insets.bottom + space.xxl,
         }}
         showsVerticalScrollIndicator={false}>
-        {criadas.length === 0 ? (
+        {!hidratado ? (
+          <View style={styles.vazio}>
+            <Icon name="clock" size={28} color={colors.grafiteDim} strokeWidth={1.8} />
+            <Body style={styles.vazioText}>Abrindo o que está guardado no aparelho…</Body>
+          </View>
+        ) : criadas.length === 0 ? (
           <View style={styles.vazio}>
             <Icon name="film" size={32} color={colors.grafiteDim} strokeWidth={1.7} />
             <Body style={styles.vazioText}>

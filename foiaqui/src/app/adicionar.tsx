@@ -28,6 +28,7 @@ import { Icon } from '@/components/Icon';
 import { Body, Mono, Plaque, Story } from '@/components/Type';
 import type { Position } from '@/data/location';
 import { mapStyle } from '@/data/mapStyle';
+import { comPrazo } from '@/data/rede';
 import * as VideoThumbnails from 'expo-video-thumbnails';
 
 import { criterios } from '@/data/criterios';
@@ -202,6 +203,7 @@ export default function AdicionarScreen() {
     pontoDeOrigem ? { lat: pontoDeOrigem.coords.lat, lng: pontoDeOrigem.coords.lng } : guardado.local,
   );
   const [endereco, setEndereco] = useState<string | null>(pontoDeOrigem?.endereco ?? null);
+  const [enderecoFalhou, setEnderecoFalhou] = useState(false);
   // o local nasce onde a pessoa está; ela ajusta se a memória for logo ali adiante
   const alvo = local ?? position;
 
@@ -400,17 +402,26 @@ export default function AdicionarScreen() {
     if (step !== 2) return;
     let vivo = true;
     setEndereco(null);
+    setEnderecoFalhou(false);
     (async () => {
       try {
-        const [r] = await Location.reverseGeocodeAsync({
-          latitude: alvo.lat,
-          longitude: alvo.lng,
-        });
+        /*
+         * Com prazo. A geocodificação pende sob sinal ruim em vez de recusar,
+         * e sem prazo a tela ficava dizendo "Procurando o endereço…" para
+         * sempre — prometendo um trabalho que já tinha parado.
+         */
+        const [r] = await comPrazo(
+          Location.reverseGeocodeAsync({ latitude: alvo.lat, longitude: alvo.lng }),
+        );
         if (!vivo) return;
         const rua = [r?.street, r?.streetNumber].filter(Boolean).join(', ');
-        setEndereco([rua, r?.district, r?.city].filter(Boolean).join(' · ') || null);
+        const texto = [rua, r?.district, r?.city].filter(Boolean).join(' · ');
+        if (texto) setEndereco(texto);
+        else setEnderecoFalhou(true);
       } catch {
-        if (vivo) setEndereco(null);
+        if (!vivo) return;
+        setEndereco(null);
+        setEnderecoFalhou(true);
       }
     })();
     return () => {
@@ -855,7 +866,10 @@ export default function AdicionarScreen() {
               <View style={styles.locTag}>
                 <Mono style={styles.locGps}>AQUI</Mono>
                 <Body style={styles.locText} numberOfLines={2}>
-                  {endereco ?? 'Procurando o endereço…'}
+                  {endereco ??
+                    (enderecoFalhou
+                      ? 'Sem o nome da rua — o ponto no mapa continua valendo.'
+                      : 'Procurando o endereço…')}
                 </Body>
               </View>
 

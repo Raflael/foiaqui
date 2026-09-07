@@ -8,10 +8,20 @@ import { Icon } from '@/components/Icon';
 import { Body, Eyebrow, Mono, Plaque } from '@/components/Type';
 import { fotosPerto, type FotoDoCommons } from '@/data/commons';
 import { fallbackPosition } from '@/data/location';
+import { ErroDeRede, type MotivoDeFalha } from '@/data/rede';
 import { useImportada } from '@/store/importada';
 import { colors, HIT, space } from '@/theme';
 
 type Estado = 'carregando' | 'pronto' | 'vazio' | 'erro';
+
+/** O que dizer quando a consulta não voltou. Cada motivo pede uma frase diferente. */
+const RECADO: Record<MotivoDeFalha, string> = {
+  demorou:
+    'A consulta demorou demais e eu desisti de esperar. Costuma ser sinal fraco — vale tentar de novo.',
+  'sem-conexao':
+    'O aparelho não conseguiu alcançar o acervo. Sem internet, esta busca não funciona — mas todo o resto do app, sim.',
+  recusado: 'O acervo respondeu com erro. Não é você: é o servidor do Wikimedia agora.',
+};
 
 /**
  * Fotos livres já catalogadas perto daqui.
@@ -34,6 +44,8 @@ export default function AcervoLivreScreen() {
   const guardar = useImportada((s) => s.guardar);
 
   const [estado, setEstado] = useState<Estado>('carregando');
+  const [motivo, setMotivo] = useState<MotivoDeFalha>('sem-conexao');
+  const [tentativa, setTentativa] = useState(0);
   const [fotos, setFotos] = useState<FotoDoCommons[]>([]);
 
   const ponto = {
@@ -50,15 +62,17 @@ export default function AcervoLivreScreen() {
         setFotos(r);
         setEstado(r.length ? 'pronto' : 'vazio');
       })
-      .catch(() => {
-        if (vivo) setEstado('erro');
+      .catch((e) => {
+        if (!vivo) return;
+        setMotivo(e instanceof ErroDeRede ? e.motivo : 'sem-conexao');
+        setEstado('erro');
       });
     return () => {
       vivo = false;
     };
     // a busca depende só do ponto recebido pela rota
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lat, lng]);
+  }, [lat, lng, tentativa]);
 
   const escolher = (f: FotoDoCommons) => {
     guardar({ uri: f.imagem, credito: f.credito, titulo: f.titulo });
@@ -99,11 +113,30 @@ export default function AcervoLivreScreen() {
         ) : null}
 
         {estado === 'erro' ? (
-          <View style={styles.aviso}>
-            <Icon name="flag" size={18} color={colors.ferrugem} strokeWidth={2.2} />
-            <Body style={styles.avisoText}>
-              Não deu para consultar o acervo agora — pode ser o sinal. Sua memória não precisa
-              disto: siga com foto sua ou sem foto.
+          <View style={styles.falha}>
+            <View style={styles.falhaTopo}>
+              <Icon name="flag" size={18} color={colors.ferrugem} strokeWidth={2.2} />
+              <Body style={styles.falhaText}>{RECADO[motivo]}</Body>
+            </View>
+            <View style={styles.falhaAcoes}>
+              <Pressable
+                style={styles.tentar}
+                onPress={() => setTentativa((n) => n + 1)}
+                accessibilityRole="button"
+                accessibilityLabel="Tentar buscar de novo">
+                <Body style={styles.tentarText}>Tentar de novo</Body>
+              </Pressable>
+              <Pressable
+                style={styles.seguir}
+                onPress={() => router.back()}
+                accessibilityRole="button"
+                accessibilityLabel="Voltar e seguir sem foto do acervo">
+                <Body style={styles.seguirText}>Seguir sem isto</Body>
+              </Pressable>
+            </View>
+            <Body style={styles.falhaNota}>
+              Sua memória não depende desta busca: dá para enviar com foto sua, ou sem foto
+              nenhuma.
             </Body>
           </View>
         ) : null}
@@ -200,6 +233,29 @@ const styles = StyleSheet.create({
   },
   avisoMono: { fontSize: 12.5, color: colors.grafiteDim },
   avisoText: { flex: 1, fontSize: 13, lineHeight: 19, color: colors.grafiteDim },
+
+  falha: { gap: space.md, marginTop: space.lg, padding: space.md, backgroundColor: colors.cal2 },
+  falhaTopo: { flexDirection: 'row', gap: space.sm, alignItems: 'flex-start' },
+  falhaText: { flex: 1, fontSize: 13.5, lineHeight: 20, color: colors.grafite },
+  falhaAcoes: { flexDirection: 'row', gap: space.sm },
+  tentar: {
+    flex: 1,
+    minHeight: HIT,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.ferrugem,
+  },
+  tentarText: { fontSize: 14.5, fontWeight: '600', color: colors.sobreFerrugem },
+  seguir: {
+    flex: 1,
+    minHeight: HIT,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1.5,
+    borderColor: colors.esmalte,
+  },
+  seguirText: { fontSize: 14.5, fontWeight: '600', color: colors.esmalte },
+  falhaNota: { fontSize: 11.5, lineHeight: 17, color: colors.grafiteDim },
 
   item: {
     flexDirection: 'row',

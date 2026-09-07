@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Icon } from '@/components/Icon';
 import { MemoryRow } from '@/components/MemoryCard';
 import { Body, Eyebrow, Mono, Plaque } from '@/components/Type';
+import { useSalvosHidratado } from '@/hooks/useHidratado';
 import { useMemorias } from '@/store/acervo';
 import { useColecoes } from '@/store/colecoes';
 import { useSaved } from '@/store/saved';
@@ -43,6 +44,8 @@ export default function SalvosScreen() {
     .map((id) => memories.find((m) => m.id === id))
     .filter((m) => m !== undefined);
 
+  const hidratado = useSalvosHidratado();
+
   const organizadas = new Set(colecoes.flatMap((c) => c.memoriaIds));
   const soltas = salvas.filter((m) => !organizadas.has(m.id));
 
@@ -68,7 +71,12 @@ export default function SalvosScreen() {
         <Plaque style={styles.title}>Salvos e coleções</Plaque>
       </View>
 
-      {salvas.length === 0 && colecoes.length === 0 ? (
+      {!hidratado ? (
+        <View style={styles.vazio}>
+          <Icon name="clock" size={30} color={colors.calLine} strokeWidth={1.8} />
+          <Body style={styles.vazioText}>Abrindo o que está guardado no aparelho…</Body>
+        </View>
+      ) : salvas.length === 0 && colecoes.length === 0 ? (
         <View style={styles.vazio}>
           <Icon name="bookmark" size={34} color={colors.calLine} strokeWidth={1.8} />
           <Body style={styles.vazioText}>

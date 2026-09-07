@@ -1,4 +1,5 @@
 import type { Position } from '@/data/location';
+import { buscaComPrazo } from '@/data/rede';
 
 export interface FotoDoCommons {
   id: string;
@@ -54,10 +55,10 @@ export async function fotosPerto(
     '&ggsnamespace=6&prop=imageinfo&iiprop=url%7Cextmetadata' +
     '&iiurlwidth=400&format=json&origin=*';
 
-  const resposta = await fetch(url, {
+  // prazo, não espera indefinida: ver o porquê em `data/rede.ts`
+  const resposta = await buscaComPrazo(url, {
     headers: { 'User-Agent': 'FoiAqui/1.0 (prototipo academico de memoria urbana)' },
   });
-  if (!resposta.ok) throw new Error('commons ' + resposta.status);
 
   const json = (await resposta.json()) as {
     query?: { pages?: Record<string, unknown> };
