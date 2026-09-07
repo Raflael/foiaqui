@@ -1,4 +1,4 @@
-import { rotuloLongo } from '@/data/decadas';
+import { ANTES, rotuloLongo } from '@/data/decadas';
 import { distanceTo, NEARBY_M, type Position } from '@/data/location';
 import type { Memory } from '@/types';
 
@@ -27,7 +27,7 @@ export const memories: Memory[] = [
     marker: 'Aqui começou',
     period: '1865',
     year: '1865',
-    era: 'Século XIX',
+    era: 'Antes de 1900',
     place: 'Rua Sete de Setembro, Centro',
     coords: { lat: -23.1807493, lng: -45.8859454 },
     story:
@@ -163,7 +163,7 @@ export const memories: Memory[] = [
     marker: 'Aqui está',
     period: '1876',
     year: '1876',
-    era: 'Século XIX',
+    era: 'Antes de 1900',
     place: 'Praça Afonso Pena, 267, Centro',
     coords: { lat: -23.1861851, lng: -45.886922 },
     story:
@@ -433,7 +433,7 @@ export const mapFilters: MapFilter[] = [
 export const eras: string[] = (() => {
   const atual = new Date().getFullYear();
   const ultimaDecada = Math.floor(atual / 10) * 10;
-  const lista = ['Antes de 1900'];
+  const lista = [ANTES];
   for (let d = 1900; d <= ultimaDecada; d += 10) lista.push(rotuloLongo(d));
   lista.push('Atual');
   return lista;

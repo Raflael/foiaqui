@@ -344,15 +344,15 @@ módulo nativo novo (busca por voz, notificação de proximidade, widget,
 transcrição de áudio) — vale agrupar numa build só.
 
 Dívidas conhecidas:
-- Zero testes automatizados. As funções puras (`nomeCurto`, `agrupar`,
-  `decadasDo`, `matchesQuery`) são todas testáveis e todas já quebraram.
+- Só as funções puras têm teste (41 casos, `jest-expo`). Componente e tela,
+  nenhum — não há `@testing-library/react-native` instalado.
 - Hook depois de retorno antecipado derrubou o APK uma vez; a regra
   `react-hooks/rules-of-hooks` do lint pega — por isso o lint é portão.
 - Sem tratamento de rede instável (parte da Decisão 7 ainda aberta).
 
-**Antes de commitar:** `npx tsc --noEmit`, `npx expo lint`, `npm run contraste`
-(falha se algum par reprovar em AA) e um `npx expo export --platform android`
-para garantir que o bundle fecha.
+**Antes de commitar:** `npx tsc --noEmit`, `npx expo lint`, `npm test`,
+`npm run contraste` (falha se algum par reprovar em AA) e um
+`npx expo export --platform android` para garantir que o bundle fecha.
 
 O `lint` entrou na lista depois de um crash que só aparecia em release: um
 hook chamado depois de um retorno antecipado. O typecheck passa, o bundle

@@ -7,7 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Icon } from '@/components/Icon';
 import { Body, Eyebrow, Mono, Plaque } from '@/components/Type';
-import { rotuloLongo } from '@/data/decadas';
+import { eraDoAno, rotuloLongo } from '@/data/decadas';
 import { pontoPor } from '@/data/pontos';
 import { useAcervo, useMemoria } from '@/store/acervo';
 import { autorDe, usePerfil } from '@/store/perfil';
@@ -75,7 +75,7 @@ export default function FotoAntigaScreen() {
       marker: 'Aqui era assim',
       period: ano,
       year: ano,
-      era: rotuloLongo(Math.floor(+ano / 10) * 10),
+      era: eraDoAno(+ano),
       place: ponto?.endereco ?? origem?.place ?? lugar,
       coords: { lat: coords.lat, lng: coords.lng },
       story: legenda.trim(),

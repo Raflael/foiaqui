@@ -34,6 +34,26 @@ export const rotuloLongo = (inicio: number) =>
 export const rotuloCurto = (inicio: number) =>
   inicio % 100 === 0 ? String(inicio) : String(inicio).slice(2);
 
+/** O balde de tudo que é anterior à régua de décadas. */
+export const ANTES = 'Antes de 1900';
+
+/**
+ * O rótulo de época de um ano — a única tradução ano → era do app.
+ *
+ * Existia espalhada: a lista de opções montava "Antes de 1900" num arquivo, o
+ * acervo semeado escrevia "Século XIX" à mão em outro, e quem gerava era a
+ * partir do ano chamava `rotuloLongo` direto. Essa terceira via era um bug:
+ * `rotuloLongo(1870)` devolve "Anos 70", igualzinho a 1970. Uma foto de 1876
+ * entrava no acervo etiquetada como anos setenta.
+ *
+ * Com uma função só, o balde pré-1900 e a colisão de século deixam de depender
+ * de quem chamou.
+ */
+export function eraDoAno(ano: number): string {
+  if (ano < 1900) return ANTES;
+  return rotuloLongo(Math.floor(ano / 10) * 10);
+}
+
 /**
  * A linha do tempo do acervo (Decisão 11).
  *

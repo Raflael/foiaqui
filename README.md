@@ -384,6 +384,7 @@ Deep link direto para uma tela: `foiaqui://perfil`, `foiaqui://trilha/centro`,
 ```bash
 npx tsc --noEmit          # tipos
 npx expo lint             # a regra dos hooks é portão, e o motivo está abaixo
+npm test                  # 41 casos nas funções puras (jest-expo)
 npm run contraste         # WCAG AA, 29 pares
 npx expo export --platform android --output-dir .bundle-check   # o bundle fecha?
 ```
