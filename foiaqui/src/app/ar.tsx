@@ -27,6 +27,7 @@ import {
 } from '@/data/location';
 import { useCurrentPosition } from '@/hooks/useCurrentPosition';
 import { useHeading } from '@/hooks/useHeading';
+import { useInclinacao } from '@/hooks/useInclinacao';
 import { useMotionEnabled } from '@/hooks/useMotion';
 import { useMemorias } from '@/store/acervo';
 import { useSheet } from '@/store/sheet';
@@ -61,6 +62,37 @@ export default function ARScreen() {
   const memorias = useMemorias();
 
   const heading = useHeading(true);
+  const inclinacao = useInclinacao(true);
+  const { width: larguraTela, height: alturaTela } = useWindowDimensions();
+
+  /**
+   * Onde está o horizonte na tela, em pixels a partir do topo.
+   *
+   * As memórias do acervo estão no chão, e coisa no chão a mais de trinta
+   * metros aparece essencialmente na linha do horizonte — a diferença de
+   * altura aparente entre o Mercado a 200 m e a Matriz a 400 m é menor que um
+   * pixel. Então o que a inclinação move não é cada card: é o horizonte
+   * inteiro, e os cards vão junto.
+   *
+   * É por isso que abaixar o celular empurra as memórias para cima da tela e
+   * apontar para o céu as tira de vista — o que o corpo espera, e o que
+   * faltava para a cena parecer um lugar em vez de um cartaz.
+   *
+   * O campo vertical sai do horizontal pela geometria da lente
+   * (`tan(v/2) = tan(h/2) · altura/largura`), não por um número chutado: assim
+   * a conta se ajusta sozinha a telas de proporção diferente. O limite superior
+   * existe porque o preview da câmera é recortado para preencher a tela, e sem
+   * ele um aparelho muito alto renderizaria um horizonte que quase não se mexe.
+   *
+   * Sem sensor, o horizonte fica onde sempre esteve e a tela funciona como antes.
+   */
+  const grau = Math.PI / 180;
+  const FOV_VERTICAL = Math.min(
+    100,
+    (2 * Math.atan(Math.tan((CAMERA_FOV / 2) * grau) * (alturaTela / larguraTela))) / grau,
+  );
+  const horizonte =
+    inclinacao === null ? null : alturaTela / 2 + (inclinacao / FOV_VERTICAL) * alturaTela;
 
   /** Todas as memórias com a distância real até você, calculada uma vez. */
   const comDistancia = memorias
@@ -111,20 +143,31 @@ export default function ARScreen() {
    *    inclicável. Agora a segunda desce o suficiente para as duas serem
    *    tocáveis — alvo sobreposto não é alvo.
    */
-  const cartoes = naCena.map((c, i, todos) => {
-    const t = Math.min(Math.max((c.metros - 40) / 560, 0), 1);
-    let top = insets.top + 96 + Math.min(c.metros / 12, 120);
+  const cartoes = naCena
+    .map((c, i, todos) => {
+      const t = Math.min(Math.max((c.metros - 40) / 560, 0), 1);
 
-    // empurra para baixo se algum card anterior estiver quase no mesmo x
-    if (c.x !== null) {
-      for (let j = 0; j < i; j++) {
-        const outro = todos[j];
-        if (outro.x !== null && Math.abs(outro.x - c.x) < 0.28) top += 96;
+      // com sensor, o card mora perto do horizonte real; sem ele, na altura
+      // fixa de antes — o que está longe flutua um pouco mais alto
+      const base =
+        horizonte === null
+          ? insets.top + 96 + Math.min(c.metros / 12, 120)
+          : horizonte - 150 - Math.min(c.metros / 24, 60);
+
+      let top = base;
+
+      // empurra para baixo se algum card anterior estiver quase no mesmo x
+      if (c.x !== null) {
+        for (let j = 0; j < i; j++) {
+          const outro = todos[j];
+          if (outro.x !== null && Math.abs(outro.x - c.x) < 0.28) top += 96;
+        }
       }
-    }
 
-    return { ...c, top, escala: 1 - 0.26 * t };
-  });
+      return { ...c, top, escala: 1 - 0.26 * t };
+    })
+    // apontou para o céu ou para o chão: o que saiu da tela sai mesmo
+    .filter((c) => c.top > insets.top - 40 && c.top < alturaTela - 120);
 
   /** O que a fita mostra: as mais próximas, com a direção de cada uma. */
   const naFita =
@@ -135,7 +178,13 @@ export default function ARScreen() {
           return { id: c.m.id, angulo, dentro: Math.abs(angulo) <= CAMERA_FOV / 2 };
         });
 
+  /*
+   * Vazio por dois motivos diferentes, e a frase certa depende de qual é.
+   * "Gire à direita" para quem está de costas para a memória não ajuda quem
+   * está apontando para o próprio sapato.
+   */
   const foraDeVista = heading !== null && naCena.length === 0;
+  const foraPorInclinacao = naCena.length > 0 && cartoes.length === 0;
   const maisProxima = comDistancia[0]?.m;
 
   const [listOpen, setListOpen] = useState(false);
@@ -201,6 +250,16 @@ export default function ARScreen() {
             {naFita.length === 1 ? '1 memória em volta' : `${naFita.length} memórias em volta`}
           </Mono>
         </View>
+      ) : null}
+
+      {foraPorInclinacao ? (
+        <Glass tone="dark" style={[styles.bussola, { top: insets.top + 110 }]}>
+          <Icon name="sparkle" size={16} color={colors.ferrugemSobreEscuro} />
+          <Body style={styles.bussolaText}>
+            {(inclinacao ?? 0) > 0 ? "Abaixe o celular" : "Levante o celular"} — a memória está
+            na altura da rua.
+          </Body>
+        </Glass>
       ) : null}
 
       {/* nada no campo de visão: dizer para onde virar é mais útil que tela vazia */}

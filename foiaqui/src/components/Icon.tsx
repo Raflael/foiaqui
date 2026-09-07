@@ -109,6 +109,12 @@ const glyphs = {
       <Circle cx={12} cy={12} r={9} />
     </>
   ),
+  mic: (
+    <>
+      <Path d="M12 3a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3z" />
+      <Path d="M5 11a7 7 0 0 0 14 0M12 18v3" />
+    </>
+  ),
   x: <Path d="M6 6l12 12M18 6L6 18" />,
   list: <Path d="M4 7h16M4 12h16M4 17h10" />,
   accessibility: (

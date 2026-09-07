@@ -60,7 +60,10 @@
       [
         "expo-location",
         {
-          "locationWhenInUsePermission": "O FoiAqui mostra as memórias do lugar onde você está. Sua localização não é guardada nem compartilhada."
+          "locationWhenInUsePermission": "O FoiAqui mostra as memórias do lugar onde você está. Sua localização não é guardada nem compartilhada.",
+          "isAndroidBackgroundLocationEnabled": true,
+          "isAndroidForegroundServiceEnabled": true,
+          "locationAlwaysAndWhenInUsePermission": "O FoiAqui avisa quando você passa perto de uma memória, mesmo com o celular no bolso. Este aviso é opcional e se liga no seu perfil."
         }
       ],
       [
@@ -72,7 +75,15 @@
       ],
       "expo-image",
       "expo-video",
-      "expo-sharing"
+      "expo-sharing",
+      "expo-speech-recognition",
+      [
+        "expo-sensors",
+        {
+          "motionPermission": "O FoiAqui usa a inclinação do aparelho para posicionar as memórias na altura certa da rua."
+        }
+      ],
+      "expo-notifications"
     ],
     "experiments": {
       "typedRoutes": true,

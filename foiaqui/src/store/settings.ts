@@ -11,9 +11,16 @@ interface SettingsState {
   simpleMode: boolean;
   /** A dica da câmera no mapa já foi dispensada. */
   coachDismissed: boolean;
+  /**
+   * Avisar quando passar perto de uma memória (`data/proximidade.ts`).
+   * Nasce desligado: é a única coisa do app que pede localização em segundo
+   * plano, e essa permissão não se pede antes de a pessoa querer.
+   */
+  avisarPerto: boolean;
   toggleLargeText: () => void;
   toggleSimpleMode: () => void;
   dismissCoach: () => void;
+  setAvisarPerto: (v: boolean) => void;
 }
 
 /**
@@ -32,9 +39,11 @@ export const useSettings = create<SettingsState>()(
       largeText: false,
       simpleMode: false,
       coachDismissed: false,
+      avisarPerto: false,
       toggleLargeText: () => set((s) => ({ largeText: !s.largeText })),
       toggleSimpleMode: () => set((s) => ({ simpleMode: !s.simpleMode })),
       dismissCoach: () => set({ coachDismissed: true }),
+      setAvisarPerto: (v) => set({ avisarPerto: v }),
     }),
     {
       name: 'foiaqui-settings',

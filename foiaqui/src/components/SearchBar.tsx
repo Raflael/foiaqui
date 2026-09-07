@@ -1,5 +1,6 @@
 import { Pressable, StyleSheet, TextInput } from 'react-native';
 
+import { BotaoVoz } from '@/components/BotaoVoz';
 import { Glass } from '@/components/Glass';
 import { Icon, type IconName } from '@/components/Icon';
 import { useTypeScale } from '@/store/settings';
@@ -47,6 +48,8 @@ export function SearchBar({
         clearButtonMode="never"
         accessibilityLabel={placeholder}
       />
+
+      <BotaoVoz onTexto={onChangeText} />
 
       {value.length > 0 ? (
         <Pressable

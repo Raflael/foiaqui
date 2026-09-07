@@ -15,6 +15,7 @@ import { useModeracao } from '@/store/moderacao';
 import { useRascunho } from '@/store/rascunho';
 import { useFila, useRevisoes } from '@/store/moderacao';
 import { useSaved } from '@/store/saved';
+import { desligarAviso, ligarAviso } from '@/data/proximidade';
 import { useSettings } from '@/store/settings';
 import { alpha, colors, HIT, radius, space, TABBAR_HEIGHT } from '@/theme';
 
@@ -23,6 +24,41 @@ export default function PerfilScreen() {
   const [a11yOpen, setA11yOpen] = useState(false);
 
   const { largeText, simpleMode, toggleLargeText, toggleSimpleMode } = useSettings();
+  const avisarPerto = useSettings((s) => s.avisarPerto);
+  const setAvisarPerto = useSettings((s) => s.setAvisarPerto);
+
+  /**
+   * Ligar o aviso é uma negociação com o sistema, não um booleano.
+   *
+   * A permissão de segundo plano pode ser recusada em três lugares diferentes,
+   * e o interruptor precisa VOLTAR quando isso acontece — interruptor que fica
+   * ligado sem o aviso funcionar é a pior mentira possível numa tela de
+   * ajustes. Cada recusa tem sua frase: dizer "não deu" sem dizer onde
+   * consertar não ajuda ninguém.
+   */
+  const alternarAviso = async () => {
+    if (avisarPerto) {
+      await desligarAviso();
+      setAvisarPerto(false);
+      return;
+    }
+    const r = await ligarAviso();
+    if (r === 'ok') {
+      setAvisarPerto(true);
+      return;
+    }
+    setAvisarPerto(false);
+    Alert.alert(
+      'O aviso não foi ligado',
+      r === 'sem-segundo-plano'
+        ? 'O Android pede que você escolha "Permitir o tempo todo" na tela de permissões de localização. Sem isso, o aviso não chega com o app fechado.'
+        : r === 'sem-localizacao'
+          ? 'Sem acesso à localização não dá para saber quando você passa perto de uma memória.'
+          : r === 'sem-notificacao'
+            ? 'O aviso precisa de permissão para enviar notificações.'
+            : 'Não deu para ligar o aviso neste aparelho.',
+    );
+  };
 
   /**
    * Tudo aqui vem do uso real. Antes eram números fixos — 27 memórias, 1,4 mil
@@ -202,6 +238,16 @@ export default function PerfilScreen() {
               hint="Desliga animações e aumenta o contraste"
               value={simpleMode}
               onChange={toggleSimpleMode}
+            />
+            <Toggle
+              label="Avisar quando eu passar perto"
+              hint={
+                avisarPerto
+                  ? 'Ligado — o app avisa mesmo com o celular no bolso'
+                  : 'Precisa de localização "o tempo todo". Só isso; nada é enviado a lugar nenhum.'
+              }
+              value={avisarPerto}
+              onChange={alternarAviso}
             />
           </View>
         ) : null}
