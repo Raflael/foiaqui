@@ -60,44 +60,83 @@ export default function ARScreen() {
   const { position } = useCurrentPosition();
   const memorias = useMemorias();
 
-  /**
-   * As memórias mais próximas de onde você está, e não duas cravadas no código.
-   *
-   * A posição dos cards na tela ainda é fixa — ancoragem geoespacial de verdade
-   * é v3 no roadmap. Mas o CONTEÚDO já é o certo: o que está perto, com a
-   * distância real. Um card dizendo "40 m" para algo a 400 km era a pior
-   * mentira que restava no app.
-   */
-  const proximas = [...memorias]
-    .sort((a, b) => distanceTo(a, position) - distanceTo(b, position))
-    .slice(0, CARDS_NA_CENA);
-
   const heading = useHeading(true);
 
+  /** Todas as memórias com a distância real até você, calculada uma vez. */
+  const comDistancia = memorias
+    .map((m) => ({ m, metros: distanceTo(m, position) }))
+    .sort((a, b) => a.metros - b.metros);
+
   /**
-   * Onde cada memória cai na tela, a partir da bússola.
+   * O que está na sua frente — nesta ordem, e a ordem é o conserto.
    *
-   * Antes os cards ficavam em dois cantos fixos: apontar o celular para
-   * qualquer lado mostrava a mesma coisa, o que fazia a tela ser cenografia
-   * e não ferramenta. Agora o azimute da memória é comparado com a direção
-   * da câmera, e quem está fora do campo de visão simplesmente não aparece.
+   * Antes a tela pegava as três memórias mais próximas do mundo e SÓ DEPOIS
+   * filtrava pelo campo de visão. Num lugar cercado de pontos, virar o corpo
+   * para o quinto mais próximo não mostrava nada: ele tinha sido descartado
+   * antes de a bússola opinar. A pessoa apontava o celular para o Mercado,
+   * sabendo que ele estava ali, e via tela vazia — o jeito mais rápido de
+   * concluir que "a AR não funciona".
    *
-   * Não é ARKit — não há leitura de superfície nem oclusão por prédio, e a
-   * altura na tela é derivada da distância, não medida. Mas gira o corpo e a
-   * memória se move, que é o que a pessoa espera ao levantar o celular.
+   * Agora o campo de visão filtra primeiro e a distância desempata depois:
+   * o que aparece é sempre o mais próximo DAQUILO QUE VOCÊ ESTÁ OLHANDO.
+   *
+   * Continua não sendo ARKit: não há leitura de superfície nem oclusão por
+   * prédio, e a altura na tela é derivada da distância, não medida.
    */
-  const naCena = proximas
-    .map((m) => {
-      const metros = distanceTo(m, position);
-      if (heading === null) return { m, metros, x: null as number | null, angulo: 0 };
-      const angulo = relativeAngle(bearingTo(position, m.coords), heading);
-      const dentro = Math.abs(angulo) <= CAMERA_FOV / 2;
-      return { m, metros, x: dentro ? 0.5 + angulo / CAMERA_FOV : null, angulo };
-    })
-    .filter((c) => heading === null || c.x !== null);
+  const naCena = (() => {
+    if (heading === null) {
+      // sem bússola não há "frente": mostra o mais perto, nos cantos
+      return comDistancia.slice(0, CARDS_NA_CENA).map((c) => ({ ...c, x: null, angulo: 0 }));
+    }
+    return comDistancia
+      .map((c) => ({ ...c, angulo: relativeAngle(bearingTo(position, c.m.coords), heading) }))
+      .filter((c) => Math.abs(c.angulo) <= CAMERA_FOV / 2)
+      .slice(0, CARDS_NA_CENA)
+      .map((c) => ({ ...c, x: 0.5 + c.angulo / CAMERA_FOV }));
+  })();
+
+
+  /**
+   * Onde cada card fica, com profundidade e sem empilhar.
+   *
+   * Três coisas que a tela não fazia:
+   *
+   * 1. **Escala pela distância.** Um card a 30 m e outro a 800 m tinham o
+   *    mesmo tamanho, e tamanho é a pista de profundidade mais forte que
+   *    existe. Sem ela a cena é uma colagem, não um lugar.
+   * 2. **Altura pela distância** — isso já havia: o que está longe flutua
+   *    mais alto, como no horizonte.
+   * 3. **Separação quando os azimutes coincidem.** Duas memórias quase na
+   *    mesma direção caíam uma em cima da outra e a de baixo ficava
+   *    inclicável. Agora a segunda desce o suficiente para as duas serem
+   *    tocáveis — alvo sobreposto não é alvo.
+   */
+  const cartoes = naCena.map((c, i, todos) => {
+    const t = Math.min(Math.max((c.metros - 40) / 560, 0), 1);
+    let top = insets.top + 96 + Math.min(c.metros / 12, 120);
+
+    // empurra para baixo se algum card anterior estiver quase no mesmo x
+    if (c.x !== null) {
+      for (let j = 0; j < i; j++) {
+        const outro = todos[j];
+        if (outro.x !== null && Math.abs(outro.x - c.x) < 0.28) top += 96;
+      }
+    }
+
+    return { ...c, top, escala: 1 - 0.26 * t };
+  });
+
+  /** O que a fita mostra: as mais próximas, com a direção de cada uma. */
+  const naFita =
+    heading === null
+      ? []
+      : comDistancia.slice(0, NA_FITA).map((c) => {
+          const angulo = relativeAngle(bearingTo(position, c.m.coords), heading);
+          return { id: c.m.id, angulo, dentro: Math.abs(angulo) <= CAMERA_FOV / 2 };
+        });
 
   const foraDeVista = heading !== null && naCena.length === 0;
-  const maisProxima = proximas[0];
+  const maisProxima = comDistancia[0]?.m;
 
   const [listOpen, setListOpen] = useState(false);
   const idle = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -140,7 +179,7 @@ export default function ARScreen() {
       </View>
 
       {/* cards ancorados nos "prédios" */}
-{naCena.map((c, i) => (
+{cartoes.map((c, i) => (
         <ARCard
           key={c.m.id}
           memory={c.m}
@@ -148,12 +187,21 @@ export default function ARScreen() {
           // sem bússola, cai no canto; com bússola, na direção real
           x={c.x}
           fallbackLeft={i % 2 === 0}
-          // o que está mais longe flutua mais alto, como no horizonte
-          top={insets.top + 96 + Math.min(c.metros / 12, 120)}
+          top={c.top}
+          escala={c.escala}
           delay={i * 900}
           onPress={reveal}
         />
       ))}
+
+      {naFita.length > 0 ? (
+        <View style={[styles.fitaCaixa, { top: insets.top + 64 }]}>
+          <BussolaFita itens={naFita} fov={CAMERA_FOV} />
+          <Mono style={styles.fitaLegenda}>
+            {naFita.length === 1 ? '1 memória em volta' : `${naFita.length} memórias em volta`}
+          </Mono>
+        </View>
+      ) : null}
 
       {/* nada no campo de visão: dizer para onde virar é mais útil que tela vazia */}
       {foraDeVista && maisProxima ? (
@@ -259,12 +307,70 @@ export default function ARScreen() {
 }
 
 /** Card de memória flutuando sobre a cena, com fio e ponto de ancoragem. */
+
+/** Quantas memórias a fita considera. Mais que isso vira poeira na régua. */
+const NA_FITA = 8;
+
+/**
+ * A fita da bússola: onde estão as memórias em volta, mesmo as que você não vê.
+ *
+ * A tela dizia apenas "gire à direita para encontrar X" — uma seta para uma
+ * memória, e silêncio sobre todas as outras. Quem levanta o celular na rua não
+ * está procurando uma coisa específica: está perguntando "tem o quê aqui?".
+ *
+ * A fita responde isso continuamente. Cada traço é uma memória na direção real
+ * dela; o que está dentro do campo de visão acende em ferrugem, o que está
+ * fora fica pálido e encosta na borda com uma seta. Girar o corpo faz os
+ * traços deslizarem — que é o gesto que ensina o resto da tela sem texto.
+ *
+ * Janela de 180°: metade do horizonte por vez. Mostrar 360° comprimiria tudo
+ * num amontoado onde dois traços a 40° de distância pareceriam vizinhos.
+ */
+function BussolaFita({
+  itens,
+  fov,
+}: {
+  itens: { id: string; angulo: number; dentro: boolean }[];
+  fov: number;
+}) {
+  const JANELA = 180;
+
+  return (
+    <View style={styles.fita} pointerEvents="none">
+      {/* a faixa do que a câmera alcança, para o traço aceso ter contexto */}
+      <View
+        style={[
+          styles.fitaCampo,
+          { left: `${50 - (fov / JANELA) * 50}%`, width: `${(fov / JANELA) * 100}%` },
+        ]}
+      />
+      <View style={styles.fitaCentro} />
+
+      {itens.map(({ id, angulo, dentro }) => {
+        const preso = Math.max(-JANELA / 2, Math.min(JANELA / 2, angulo));
+        const naBorda = Math.abs(angulo) > JANELA / 2;
+        return (
+          <View
+            key={id}
+            style={[
+              styles.fitaTraco,
+              dentro && styles.fitaTracoAceso,
+              naBorda && styles.fitaTracoBorda,
+              { left: `${50 + (preso / JANELA) * 100}%` },
+            ]}
+          />
+        );
+      })}
+    </View>
+  );
+}
 function ARCard({
   memory,
   distance,
   x,
   fallbackLeft,
   top,
+  escala,
   delay,
   onPress,
 }: {
@@ -274,6 +380,8 @@ function ARCard({
   x: number | null;
   fallbackLeft: boolean;
   top: number;
+  /** 1 perto, menor conforme afasta — a pista de profundidade */
+  escala: number;
   delay: number;
   onPress: (id: string) => void;
 }) {
@@ -292,7 +400,7 @@ function ARCard({
   }, [motion, delay, float]);
 
   const floatStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: -6 * float.value }],
+    transform: [{ translateY: -6 * float.value }, { scale: escala }],
   }));
 
   const posicao =
@@ -435,6 +543,35 @@ function ScanLine() {
 }
 
 const styles = StyleSheet.create({
+  fitaCaixa: { position: 'absolute', left: space.xl, right: space.xl, alignItems: 'center', gap: 5 },
+  fita: {
+    width: '100%',
+    height: 22,
+    justifyContent: 'center',
+    backgroundColor: alpha.veu,
+    overflow: 'hidden',
+  },
+  fitaCampo: { position: 'absolute', top: 0, bottom: 0, backgroundColor: alpha.chrome },
+  fitaCentro: {
+    position: 'absolute',
+    left: '50%',
+    top: 0,
+    bottom: 0,
+    width: 1,
+    marginLeft: -0.5,
+    backgroundColor: colors.sobreEsmalteDim,
+  },
+  fitaTraco: {
+    position: 'absolute',
+    top: 5,
+    width: 2.5,
+    height: 12,
+    marginLeft: -1.25,
+    backgroundColor: colors.sobreEsmalteDim,
+  },
+  fitaTracoAceso: { top: 2, height: 18, width: 3.5, marginLeft: -1.75, backgroundColor: colors.ferrugemSobreEscuro },
+  fitaTracoBorda: { opacity: 0.45, height: 8, top: 7 },
+  fitaLegenda: { fontSize: 10.5, letterSpacing: 0.6, color: colors.sobreEsmalteDim },
   screen: { flex: 1, backgroundColor: colors.esmalteFundo },
   fallbackBuildings: { position: 'absolute', left: 0, right: 0, bottom: 0, height: '60%' },
 
