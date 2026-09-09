@@ -149,6 +149,124 @@
   }
   .fonte p { font-size: .85rem; line-height: 1.5; margin: 0; color: var(--ink-dim); max-width: none; }
   .fonte code { font-family: var(--mono); font-size: .8rem; color: var(--accent); }
+  /* ── 2.3 jornada ───────────────────────────────────────────────── */
+  table.jornada { min-width: 900px; font-size: .85rem; }
+  table.jornada th, table.jornada td {
+    border: 1px solid var(--line);
+    vertical-align: top;
+    padding: 10px 12px;
+  }
+  table.jornada thead th {
+    background: var(--plaque);
+    color: var(--on-plaque);
+    border-color: var(--plaque);
+    text-align: left;
+    width: 22%;
+  }
+  table.jornada thead th.j-canto {
+    width: 12%;
+    background: var(--ink);
+    border-color: var(--ink);
+  }
+  .j-etapa {
+    display: block;
+    font-family: var(--plate);
+    font-size: 1.1rem;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+  }
+  .j-sub {
+    display: block;
+    font-family: var(--ui);
+    font-size: .72rem;
+    font-weight: 400;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--on-plaque-d);
+    margin-top: 3px;
+  }
+  th.j-linha {
+    font-family: var(--mono);
+    font-size: .68rem;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    background: var(--surface2);
+    white-space: nowrap;
+  }
+  table.jornada ul { margin: 0; padding-left: 16px; }
+  table.jornada li { margin-bottom: 4px; line-height: 1.4; }
+  ul.j-pensa li { font-family: var(--story); font-size: .95rem; }
+  tr.j-dores td { background: var(--surface); }
+  tr.j-dores li { color: var(--accent); font-weight: 600; }
+  tr.j-dores th.j-linha { color: var(--accent); }
+  td.j-sente { font-family: var(--story); font-size: .95rem; line-height: 1.4; }
+  ul.j-contato li { font-family: var(--mono); font-size: .74rem; color: var(--ink-dim); }
+
+  .j-painel {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: flex-start;
+    margin-top: 14px;
+    padding: 18px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+  }
+  .j-rosto { width: 96px; height: 96px; flex-shrink: 0; }
+  .j-painel > div { flex: 1 1 320px; min-width: 0; }
+  .j-rotulo {
+    font-family: var(--mono);
+    font-size: .66rem;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    margin: 0 0 8px;
+  }
+  .j-painel .objetivos { margin: 0 0 18px; }
+  .j-painel .objetivos li { font-size: .9rem; }
+  .j-sucesso {
+    font-family: var(--story);
+    font-size: 1.02rem;
+    line-height: 1.45;
+    margin: 0;
+    border-left: 3px solid var(--ok);
+    padding-left: 12px;
+  }
+
+  /* ── 2.4 dores × specs ─────────────────────────────────────────── */
+  table.specs { min-width: 860px; }
+  table.specs td { font-size: .86rem; line-height: 1.45; }
+  table.specs th:nth-child(1), table.specs td:nth-child(1) { width: 24%; }
+  table.specs th:nth-child(4), table.specs td:nth-child(4) { width: 13%; }
+  .s-dor { font-weight: 700; margin: 0 0 5px; font-size: .9rem; max-width: none; }
+  .s-quem {
+    font-family: var(--mono);
+    font-size: .66rem;
+    letter-spacing: .05em;
+    color: var(--ink-dim);
+    margin: 0;
+    max-width: none;
+  }
+  .s-quem span {
+    border: 1px solid currentColor;
+    padding: 1px 5px;
+    text-transform: uppercase;
+    font-size: .62rem;
+  }
+  .estado {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: .64rem;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    padding: 4px 7px;
+    line-height: 1.25;
+  }
+  .e-feito { background: var(--ok); color: #F4F3EE; }
+  .e-parcial { background: var(--surface2); color: var(--ink); border: 1px solid var(--ink-dim); }
+  .e-fazer { background: var(--accent); color: var(--on-accent); }
+
   /* ── mapa de empatia, no formato do material da disciplina ──────────
      Quatro quadrantes cortados por um X, rosto no centro, Dores e
      Necessidades em caixas separadas embaixo. */
@@ -466,6 +584,87 @@
     </div>
     </div>
   </div>
+
+  <h2>Mapa da jornada</h2>
+  <p class="sub">2.3 · as dores de cada estágio são as mesmas do mapa de empatia</p>
+  
+  <div class="scroll">
+    <table class="jornada">
+      <thead>
+        <tr>
+          <th class="j-canto">Estágios</th>
+          <th><span class="j-etapa">Onboarding</span><span class="j-sub">Chega pelo link de alguém da família</span></th>
+          <th><span class="j-etapa">Adoção</span><span class="j-sub">Reconhece o lugar e percebe o buraco</span></th>
+          <th><span class="j-etapa">Escalada</span><span class="j-sub">Contribui pela primeira vez</span></th>
+          <th><span class="j-etapa">Renovação</span><span class="j-sub">Vê o resultado e volta com a segunda</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th class="j-linha">Fazendo</th>
+          <td><ul><li>Abre o link que a prima mandou no grupo da família</li><li>Procura direto o parque onde leva o filho</li></ul></td>
+          <td><ul><li>Lê o que já existe sobre o parque</li><li>Abre o feed do ponto e vê quantas pessoas contaram</li><li>Percebe que falta justamente o que ele sabe</li></ul></td>
+          <td><ul><li>Toca em "tenho uma foto de como era aqui"</li><li>Fotografa a foto de papel do álbum da mãe</li><li>Põe o ano e uma frase; não escreve relato nenhum</li><li>Envia e vê que entrou na fila de revisão</li></ul></td>
+          <td><ul><li>Recebe que a memória foi aprovada e está no mapa</li><li>Mostra para a mãe o nome dele embaixo da foto dela</li><li>Abre o álbum atrás de outra foto</li></ul></td>
+        </tr>
+        <tr>
+          <th class="j-linha">Pensando</th>
+          <td><ul class="j-pensa"><li>"Isso é coisa séria ou é mais uma rede social?"</li></ul></td>
+          <td><ul class="j-pensa"><li>"Falta a parte do sanatório"</li><li>"Mas quem ia querer saber do meu bisavô?"</li></ul></td>
+          <td><ul class="j-pensa"><li>"Vou ter que escrever um texto?"</li><li>"A foto tá no álbum, não no celular"</li></ul></td>
+          <td><ul class="j-pensa"><li>"Alguém viu isso?"</li><li>"Valeu a pena?"</li></ul></td>
+        </tr>
+        <tr class="j-dores">
+          <th class="j-linha">Dores</th>
+          <td><ul><li>Desconfia de plataforma sem gente séria</li></ul></td>
+          <td><ul><li>Acha que o que ele tem não interessa a ninguém</li><li>Nunca lhe passou pela cabeça que pudesse publicar</li></ul></td>
+          <td><ul><li>Escrever relato dá trabalho</li><li>A foto é de papel</li></ul></td>
+          <td><ul><li>Não saber se interessou a alguém</li></ul></td>
+        </tr>
+        <tr>
+          <th class="j-linha">Sentindo</th>
+          <td class="j-sente">Reserva — já viu muito app de memória virar bagunça</td>
+          <td class="j-sente">Reconhecimento, e uma coceira de corrigir o que está incompleto</td>
+          <td class="j-sente">Alívio: era mais fácil do que ele imaginava</td>
+          <td class="j-sente">Orgulho discreto — e disposição para a segunda contribuição</td>
+        </tr>
+        <tr>
+          <th class="j-linha">Pontos de contato</th>
+          <td><ul class="j-contato"><li>Link no WhatsApp da família</li><li>Placa com QR no parque</li></ul></td>
+          <td><ul class="j-contato"><li>Feed do ponto</li><li>Fonte declarada</li><li>Contagem de memórias do lugar</li></ul></td>
+          <td><ul class="j-contato"><li>Botão "tenho uma foto de como era aqui"</li><li>Câmera</li><li>Critérios públicos de revisão</li><li>Fila de moderação</li></ul></td>
+          <td><ul class="j-contato"><li>Aviso de aprovação</li><li>Perfil com contribuições</li><li>A memória publicada</li></ul></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="j-painel">
+    <svg class="j-rosto" viewBox="0 0 120 120" role="img" aria-label="Retrato de Tiago">
+    <defs><clipPath id="rc-tiago"><circle cx="60" cy="60" r="57"/></clipPath></defs>
+    <g clip-path="url(#rc-tiago)">
+      <circle cx="60" cy="60" r="57" fill="#DFDCD1"/>
+      <path d="M60 86c-24 0-40 15-42 36h84c-2-21-18-36-42-36z" fill="#2E6E68"/>
+      <rect x="52" y="70" width="16" height="22" rx="8" fill="#9C6844"/>
+      <ellipse cx="60" cy="54" rx="21" ry="24" fill="#B37C55"/>
+      <path d="M39 50c1-13 10-21 21-21s20 8 21 21c1-4 1-9 0-13-2-9-10-15-21-15s-19 6-21 15c-1 4-1 9 0 13z" fill="#241C14"/>
+      <path d="M43 62c0 12 7 20 17 20s17-8 17-20c1 8-1 16-6 21-3 3-7 5-11 5s-8-2-11-5c-5-5-7-13-6-21z" fill="#241C14"/>
+      <ellipse cx="52" cy="53" rx="2.6" ry="3" fill="#241C14"/>
+      <ellipse cx="68" cy="53" rx="2.6" ry="3" fill="#241C14"/>
+      <path d="M46 46c3-2 8-2 10 1M64 47c2-3 7-3 10-1" stroke="#241C14" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+      <path d="M60 57v5c0 1-1 2-2 2" stroke="#7C4F32" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+      <path d="M54 69c3 2 9 2 12 0" stroke="#5E3A24" stroke-width="2" fill="none" stroke-linecap="round"/>
+    </g>
+    <circle cx="60" cy="60" r="57" fill="none" stroke="#F4F3EE" stroke-width="2.5"/>
+    </svg>
+    <div>
+      <p class="j-rotulo">Objetivos de Tiago</p>
+      <ol class="objetivos"><li>Ver a história que ele conta de boca <strong>existir num lugar</strong>, ligada ao ponto onde aconteceu — e não depender de ele estar presente para ser contada.</li><li>Descobrir que aquilo interessa a outras pessoas, o que é a permissão que hoje falta.</li><li>Contribuir sem que isso vire projeto: um envio de dois minutos, não uma tarde de digitalização.</li></ol>
+      <p class="j-rotulo">Sucesso desejado</p>
+      <p class="j-sucesso">Ver a história que ele conta de boca há anos existir no lugar dela, com o nome dele embaixo — e ter levado dois minutos para isso.</p>
+    </div>
+  </div>
+
 
   <p class="foot">FoiAqui · Define 2.1 e 2.2 · n = 10 · coleta de 7 a 9 de setembro de 2026 · amostra por conveniência</p>
 </div>

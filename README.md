@@ -288,6 +288,45 @@ centro, Dores e Necessidades em caixas à parte.
 
 <img src=".github/personas/mapa-neuza.svg" width="100%" alt="Mapa de empatia de Neuza">
 
+### O que a pesquisa mandou construir
+
+O quadro de **dores × especificações** (2.4) tem treze linhas, e cada uma começa
+numa dor que já está num mapa de empatia — nenhuma foi inventada para preencher
+tabela. A divisão que importa:
+
+| | |
+|--:|:--|
+| **5** | dores que o protótipo **já atende** — resolvidas por dedução, antes da pesquisa, e agora confirmadas |
+| **3** | atendidas **pela metade** |
+| **5** | que **só apareceram com a pesquisa** |
+
+E as cinco novas são quase todas da mesma família — **garantia, autoria e convite**.
+Nenhuma é de facilidade de uso:
+
+- dizer **quem vai ver**, na própria tela do envio
+- prometer que **dá para apagar depois**, antes de a pessoa decidir
+- deixar escolher **como assinar**: nome, apelido ou anônimo
+- mostrar que a memória **interessou a alguém** — quantos leram, quantos guardaram
+- acolher a **memória de quem chegou depois**, que hoje não tem lugar no acervo
+
+<details>
+<summary><b>As jornadas — e a que não se completa</b></summary>
+
+<br>
+
+Cada persona tem seu mapa da jornada (2.3) nos quatro estágios do material:
+onboarding, adoção, escalada e renovação. As dores de cada estágio são
+literalmente as mesmas do mapa de empatia — é o item 1 do checklist final do
+professor, e é onde a maioria dos trabalhos se contradiz.
+
+A jornada da **Neuza é a que mais ensina, e é a única que não completa**: ela
+chega até a tela de enviar, lê até o botão, e fecha o app. Documentar onde
+alguém desiste vale mais que desenhar um caminho feliz que ninguém percorreu.
+
+</details>
+
+<br>
+
 <details>
 <summary><b>Como estas páginas e imagens são geradas</b></summary>
 

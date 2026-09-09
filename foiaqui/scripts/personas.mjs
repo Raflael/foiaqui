@@ -358,6 +358,335 @@ const notas = {
   },
 };
 
+/* ───────────────────────  2.3 · MAPA DA JORNADA  ───────────────────────
+ *
+ * Os quatro estágios são os do material (onboarding, adoção, escalada,
+ * renovação). Ficaram os nomes dele e mudou o conteúdo — trocar a régua da
+ * disciplina para uma régua própria é o tipo de liberdade que só atrapalha a
+ * correção.
+ *
+ * As dores de cada estágio saem LITERALMENTE das dores do mapa de empatia. É
+ * o item 1 do checklist final: dor que aparece no mapa e some na jornada é
+ * incoerência, e é a primeira coisa que uma correção atenta procura.
+ */
+const jornadas = {
+  camila: {
+    sucesso:
+      'Descobrir, em pé na calçada e em menos de um minuto, o que aconteceu no prédio por onde ela passa todo dia — e ter o que mostrar aos outros depois.',
+    estagios: [
+      {
+        nome: 'Onboarding',
+        sub: 'Descobre e abre pela primeira vez',
+        fazendo: [
+          'Vê uma placa com QR na fachada de um casarão fechado',
+          'Aponta a câmera do celular para o código, em pé, no sol',
+          'O app abre direto no mapa, já com o lugar sob o dedo',
+        ],
+        pensando: ['"Vai pedir cadastro?"', '"Isso aqui carrega no meu 4G?"'],
+        dores: ['Cadastro antes de ver qualquer coisa', 'Demorar pra carregar'],
+        sentindo: 'Curiosidade com desconfiança — pronta para fechar ao primeiro obstáculo',
+        contatos: ['Placa com QR na rua', 'Story de um conhecido', 'Busca na loja de apps'],
+      },
+      {
+        nome: 'Adoção',
+        sub: 'Acha a primeira memória e entende o produto',
+        fazendo: [
+          'Lê a ficha do lugar e arrasta o slider passado↔presente',
+          'Ouve o áudio de quem viveu ali',
+          'Toca em "mais histórias deste lugar" e passa para a seguinte',
+        ],
+        pensando: ['"Era isso que tinha aqui!"', '"Isso é verdade mesmo ou alguém inventou?"'],
+        dores: ['Não confiar se é verdade', 'Muito texto pra ler no sol'],
+        sentindo: 'Surpresa, e o começo de um vínculo com a rua onde ela sempre andou',
+        contatos: ['Mapa', 'Ficha da memória', 'Slider', 'Áudio', 'Fonte declarada'],
+      },
+      {
+        nome: 'Escalada',
+        sub: 'Leva para outros lugares e começa a devolver',
+        fazendo: [
+          'Abre o app em outro bairro e na casa dos avós',
+          'Salva memórias e junta numa coleção',
+          'Compartilha uma memória como imagem no story',
+          'Manda a primeira foto que tinha no celular',
+        ],
+        pensando: ['"Aqui não tem nada"', '"Será que o que eu tenho serve?"'],
+        dores: ['Abrir e não ter nada perto de mim', 'Nunca me passou pela cabeça contribuir'],
+        sentindo: 'Pertencimento, e vontade de mostrar que sabe algo da própria cidade',
+        contatos: ['Câmera AR', 'Trilhas', 'Salvos e coleções', 'Compartilhar como imagem'],
+      },
+      {
+        nome: 'Renovação',
+        sub: 'Volta semanas depois',
+        fazendo: [
+          'Recebe o aviso de que está perto de uma memória',
+          'Confere a linha do tempo do lugar de sempre',
+          'Vê se apareceu coisa nova onde ela já tinha olhado',
+        ],
+        pensando: ['"Já vi tudo que tinha"', '"Ninguém contou mais nada?"'],
+        dores: ['Acervo que não cresce', 'Abrir e não ter nada perto de mim'],
+        sentindo: 'Frustração se está igual; curiosidade renovada se cresceu',
+        contatos: ['Aviso de proximidade', 'Linha do tempo', 'Feed do ponto'],
+      },
+    ],
+  },
+
+  tiago: {
+    sucesso:
+      'Ver a história que ele conta de boca há anos existir no lugar dela, com o nome dele embaixo — e ter levado dois minutos para isso.',
+    estagios: [
+      {
+        nome: 'Onboarding',
+        sub: 'Chega pelo link de alguém da família',
+        fazendo: [
+          'Abre o link que a prima mandou no grupo da família',
+          'Procura direto o parque onde leva o filho',
+        ],
+        pensando: ['"Isso é coisa séria ou é mais uma rede social?"'],
+        dores: ['Desconfia de plataforma sem gente séria'],
+        sentindo: 'Reserva — já viu muito app de memória virar bagunça',
+        contatos: ['Link no WhatsApp da família', 'Placa com QR no parque'],
+      },
+      {
+        nome: 'Adoção',
+        sub: 'Reconhece o lugar e percebe o buraco',
+        fazendo: [
+          'Lê o que já existe sobre o parque',
+          'Abre o feed do ponto e vê quantas pessoas contaram',
+          'Percebe que falta justamente o que ele sabe',
+        ],
+        pensando: ['"Falta a parte do sanatório"', '"Mas quem ia querer saber do meu bisavô?"'],
+        dores: [
+          'Acha que o que ele tem não interessa a ninguém',
+          'Nunca lhe passou pela cabeça que pudesse publicar',
+        ],
+        sentindo: 'Reconhecimento, e uma coceira de corrigir o que está incompleto',
+        contatos: ['Feed do ponto', 'Fonte declarada', 'Contagem de memórias do lugar'],
+      },
+      {
+        nome: 'Escalada',
+        sub: 'Contribui pela primeira vez',
+        fazendo: [
+          'Toca em "tenho uma foto de como era aqui"',
+          'Fotografa a foto de papel do álbum da mãe',
+          'Põe o ano e uma frase; não escreve relato nenhum',
+          'Envia e vê que entrou na fila de revisão',
+        ],
+        pensando: ['"Vou ter que escrever um texto?"', '"A foto tá no álbum, não no celular"'],
+        dores: ['Escrever relato dá trabalho', 'A foto é de papel'],
+        sentindo: 'Alívio: era mais fácil do que ele imaginava',
+        contatos: [
+          'Botão "tenho uma foto de como era aqui"',
+          'Câmera',
+          'Critérios públicos de revisão',
+          'Fila de moderação',
+        ],
+      },
+      {
+        nome: 'Renovação',
+        sub: 'Vê o resultado e volta com a segunda',
+        fazendo: [
+          'Recebe que a memória foi aprovada e está no mapa',
+          'Mostra para a mãe o nome dele embaixo da foto dela',
+          'Abre o álbum atrás de outra foto',
+        ],
+        pensando: ['"Alguém viu isso?"', '"Valeu a pena?"'],
+        dores: ['Não saber se interessou a alguém'],
+        sentindo: 'Orgulho discreto — e disposição para a segunda contribuição',
+        contatos: ['Aviso de aprovação', 'Perfil com contribuições', 'A memória publicada'],
+      },
+    ],
+  },
+
+  neuza: {
+    sucesso:
+      'Ver "como era isto aqui quando eu cheguei" tratado como memória legítima — e poder contar a dela sabendo exatamente quem vai ver e podendo voltar atrás.',
+    estagios: [
+      {
+        nome: 'Onboarding',
+        sub: 'O filho mostra',
+        fazendo: [
+          'O filho abre o app no celular dele e mostra',
+          'Ela pega o próprio aparelho e instala',
+        ],
+        pensando: ['"Vai pedir meus dados logo de cara?"'],
+        dores: ['Cadastro logo na entrada'],
+        sentindo: 'Interesse — é a cidade dela há trinta e um anos',
+        contatos: ['O filho', 'Loja de aplicativos'],
+      },
+      {
+        nome: 'Adoção',
+        sub: 'Procura o que é dela e não encontra',
+        fazendo: [
+          'Procura o bairro onde morou ao chegar',
+          'Acha o centro, cheio; o bairro dela, vazio',
+          'Lê memórias de gente que nasceu aqui',
+        ],
+        pensando: ['"Tudo isso é de quem nasceu na cidade"', '"A minha começa tarde demais"'],
+        dores: ['Sente que sua memória vale menos por não ser de nascença'],
+        sentindo: 'Reconhecimento parcial, com um incômodo que ela não nomeia',
+        contatos: ['Mapa', 'Busca', 'Linha do tempo'],
+      },
+      {
+        nome: 'Escalada',
+        sub: 'Chega até a tela de enviar — e para',
+        fazendo: [
+          'Abre o formulário para contar como era o lugar quando chegou',
+          'Lê a tela até o botão de enviar',
+          'Fecha o app sem enviar',
+        ],
+        pensando: [
+          '"Quem é que vai ver isso?"',
+          '"E se usarem de um jeito errado?"',
+          '"Depois eu consigo apagar?"',
+        ],
+        dores: ['Não sabe quem vai ver', 'Não confia no uso', 'Não dá pra desfazer'],
+        sentindo: 'Recuo. Não é dificuldade: é falta de garantia',
+        contatos: ['Formulário de envio', 'Critérios de moderação', 'Perfil'],
+      },
+      {
+        nome: 'Renovação',
+        sub: 'Continua olhando, nunca contribuindo',
+        fazendo: [
+          'Abre de vez em quando para ver se apareceu coisa nova',
+          'Manda um print para a irmã no Nordeste',
+        ],
+        pensando: ['"Continua sem nada de quando eu cheguei"'],
+        dores: ['Memória de quem chegou depois não tem lugar no acervo'],
+        sentindo: 'Resignação — o app é dos outros',
+        contatos: ['Mapa', 'Compartilhar como imagem'],
+      },
+    ],
+  },
+};
+
+/* ─────────────────  2.4 · PAIN POINTS × SPECS  ─────────────────
+ *
+ * Toda linha começa numa dor que já está no mapa de empatia — nenhuma dor
+ * nova é inventada aqui. A coluna de estado é o que torna o quadro útil ao
+ * desenvolvimento: separa o que o protótipo já faz do que a pesquisa mandou
+ * fazer, e é essa segunda lista que vira trabalho.
+ */
+const doresSpecs = [
+  {
+    dor: 'Procurei a história de um lugar e não achei',
+    quem: ['camila'],
+    evidencia: '5 de 10',
+    funcional:
+      'Mapa com busca por lugar, época e tema; ficha ancorada na coordenada exata; câmera que mostra o que está na direção apontada',
+    conteudo:
+      'Catálogo georreferenciado com foto, relato, data, autor e fonte pública declarada em cada memória',
+    estado: 'feito',
+  },
+  {
+    dor: 'Cadastro antes de ver qualquer coisa',
+    quem: ['camila', 'neuza'],
+    evidencia: '4 de 10',
+    funcional:
+      'Abrir direto no mapa, sem porta de entrada; identidade pedida só na hora de publicar, nunca antes',
+    conteudo: 'Explicação do que fica no aparelho e do que vira público, no momento em que importa',
+    estado: 'feito',
+  },
+  {
+    dor: 'Se for pago, eu fecho',
+    quem: ['camila'],
+    evidencia: '6 de 10 — a barreira mais citada',
+    funcional:
+      'Base gratuita permanente; receita por licença a instituições, patrocínio cultural e trilhas curadas — nunca por acesso ao acervo',
+    conteudo: 'Dizer com todas as letras o que nunca será cobrado',
+    estado: 'parcial',
+  },
+  {
+    dor: 'Muito texto pra ler, em pé no sol',
+    quem: ['camila', 'neuza'],
+    evidencia: '4 de 10',
+    funcional:
+      'Ficha em camadas — chapa, relato, detalhe; fonte grande; modo simples; ouvir em voz alta',
+    conteudo: 'Primeira linha do relato entregando o essencial, antes de qualquer aprofundamento',
+    estado: 'feito',
+  },
+  {
+    dor: 'Abrir e não ter nada perto de mim',
+    quem: ['camila'],
+    evidencia: '2 de 10',
+    funcional:
+      'Pin-fantasma nos lugares sem memória; lista por distância; convite explícito de "seja a primeira pessoa"',
+    conteudo: 'Nome e situação atual do lugar, mesmo quando ninguém contou nada dele ainda',
+    estado: 'feito',
+  },
+  {
+    dor: 'Nunca me passou pela cabeça que eu pudesse contar',
+    quem: ['tiago', 'camila'],
+    evidencia: '5 de 7 — a dor central',
+    funcional:
+      'Convite no lugar e na hora: placa com QR na fachada, aviso ao passar perto, pedido no fim do feed do ponto',
+    conteudo:
+      'Exemplos concretos do que conta como memória — uma foto, um causo, o que mudou — porque a maioria não sabe que o que tem serve',
+    estado: 'parcial',
+  },
+  {
+    dor: 'Acho que o que eu tenho não interessa a ninguém',
+    quem: ['tiago'],
+    evidencia: '1 de 7, e é o caso mais completo da amostra',
+    funcional:
+      'Mostrar quantas pessoas leram e salvaram cada memória; destacar contribuições da semana sem criar ranking',
+    conteudo: 'Contagem de leitura e de quem guardou, visível para quem enviou',
+    estado: 'a fazer',
+  },
+  {
+    dor: 'A foto está no álbum de papel, não no celular',
+    quem: ['tiago'],
+    evidencia: '1 de 10 tem acervo em papel; 3 não sabem o que têm',
+    funcional: 'Fotografar a foto antiga direto do álbum; envio que aceita só a imagem e o ano',
+    conteudo: 'Orientação curta de como fotografar foto de papel sem reflexo e sem cortar a borda',
+    estado: 'parcial',
+  },
+  {
+    dor: 'Não sei quem vai ver o que eu enviar',
+    quem: ['neuza'],
+    evidencia: '3 de 10, e as duas pessoas de 50 a 64 anos',
+    funcional:
+      'Dizer na própria tela de envio quem vê, quando aparece e quem revisa; prévia de como a memória fica publicada',
+    conteudo: 'Frase clara sobre visibilidade e moderação, acima do botão de enviar',
+    estado: 'a fazer',
+  },
+  {
+    dor: 'E se usarem de um jeito errado? Não dá pra desfazer',
+    quem: ['neuza'],
+    evidencia: '1 de 7 declarou medo; 1 pediu poder apagar',
+    funcional:
+      'Apagar e corrigir a qualquer momento — o que já existe — prometido no momento do envio, não escondido nos ajustes',
+    conteudo: 'Promessa de que dá para apagar depois, dita antes de a pessoa decidir',
+    estado: 'parcial',
+  },
+  {
+    dor: 'Meu nome vai aparecer? Eu quero que apareça?',
+    quem: ['neuza', 'camila'],
+    evidencia: 'a amostra se divide: 1 quer anonimato, 1 quer crédito',
+    funcional: 'Escolha de assinatura por memória: nome, apelido ou anônimo',
+    conteudo: 'O que cada opção significa na prática, dita em uma linha',
+    estado: 'a fazer',
+  },
+  {
+    dor: 'Cheguei depois — a minha memória vale menos?',
+    quem: ['neuza'],
+    evidencia: '6 de 10 nasceram em outra cidade',
+    funcional:
+      'Convite específico para memória de chegada; filtro e marcação que a distinga da memória de origem',
+    conteudo:
+      '"Como era isto aqui quando eu cheguei" como categoria própria do acervo, com exemplos semeados',
+    estado: 'a fazer',
+  },
+  {
+    dor: 'Não sei se tenho foto antiga guardada',
+    quem: ['tiago', 'camila'],
+    evidencia: '3 de 10 — mais que os que disseram não ter',
+    funcional:
+      'Convite que manda olhar, não que manda enviar: lembrete de procurar na caixa antes de pedir a foto',
+    conteudo: 'Exemplos do tipo de foto que serve — fachada, rua, festa, obra, cotidiano',
+    estado: 'a fazer',
+  },
+];
+
 /* ─────────────────────────────  ACHADOS  ───────────────────────────── */
 
 const achados = [
@@ -582,6 +911,124 @@ const css = `
   }
   .fonte p { font-size: .85rem; line-height: 1.5; margin: 0; color: var(--ink-dim); max-width: none; }
   .fonte code { font-family: var(--mono); font-size: .8rem; color: var(--accent); }
+  /* ── 2.3 jornada ───────────────────────────────────────────────── */
+  table.jornada { min-width: 900px; font-size: .85rem; }
+  table.jornada th, table.jornada td {
+    border: 1px solid var(--line);
+    vertical-align: top;
+    padding: 10px 12px;
+  }
+  table.jornada thead th {
+    background: var(--plaque);
+    color: var(--on-plaque);
+    border-color: var(--plaque);
+    text-align: left;
+    width: 22%;
+  }
+  table.jornada thead th.j-canto {
+    width: 12%;
+    background: var(--ink);
+    border-color: var(--ink);
+  }
+  .j-etapa {
+    display: block;
+    font-family: var(--plate);
+    font-size: 1.1rem;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+  }
+  .j-sub {
+    display: block;
+    font-family: var(--ui);
+    font-size: .72rem;
+    font-weight: 400;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--on-plaque-d);
+    margin-top: 3px;
+  }
+  th.j-linha {
+    font-family: var(--mono);
+    font-size: .68rem;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    background: var(--surface2);
+    white-space: nowrap;
+  }
+  table.jornada ul { margin: 0; padding-left: 16px; }
+  table.jornada li { margin-bottom: 4px; line-height: 1.4; }
+  ul.j-pensa li { font-family: var(--story); font-size: .95rem; }
+  tr.j-dores td { background: var(--surface); }
+  tr.j-dores li { color: var(--accent); font-weight: 600; }
+  tr.j-dores th.j-linha { color: var(--accent); }
+  td.j-sente { font-family: var(--story); font-size: .95rem; line-height: 1.4; }
+  ul.j-contato li { font-family: var(--mono); font-size: .74rem; color: var(--ink-dim); }
+
+  .j-painel {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: flex-start;
+    margin-top: 14px;
+    padding: 18px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+  }
+  .j-rosto { width: 96px; height: 96px; flex-shrink: 0; }
+  .j-painel > div { flex: 1 1 320px; min-width: 0; }
+  .j-rotulo {
+    font-family: var(--mono);
+    font-size: .66rem;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    margin: 0 0 8px;
+  }
+  .j-painel .objetivos { margin: 0 0 18px; }
+  .j-painel .objetivos li { font-size: .9rem; }
+  .j-sucesso {
+    font-family: var(--story);
+    font-size: 1.02rem;
+    line-height: 1.45;
+    margin: 0;
+    border-left: 3px solid var(--ok);
+    padding-left: 12px;
+  }
+
+  /* ── 2.4 dores × specs ─────────────────────────────────────────── */
+  table.specs { min-width: 860px; }
+  table.specs td { font-size: .86rem; line-height: 1.45; }
+  table.specs th:nth-child(1), table.specs td:nth-child(1) { width: 24%; }
+  table.specs th:nth-child(4), table.specs td:nth-child(4) { width: 13%; }
+  .s-dor { font-weight: 700; margin: 0 0 5px; font-size: .9rem; max-width: none; }
+  .s-quem {
+    font-family: var(--mono);
+    font-size: .66rem;
+    letter-spacing: .05em;
+    color: var(--ink-dim);
+    margin: 0;
+    max-width: none;
+  }
+  .s-quem span {
+    border: 1px solid currentColor;
+    padding: 1px 5px;
+    text-transform: uppercase;
+    font-size: .62rem;
+  }
+  .estado {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: .64rem;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    padding: 4px 7px;
+    line-height: 1.25;
+  }
+  .e-feito { background: var(--ok); color: #F4F3EE; }
+  .e-parcial { background: var(--surface2); color: var(--ink); border: 1px solid var(--ink-dim); }
+  .e-fazer { background: var(--accent); color: var(--on-accent); }
+
   /* ── mapa de empatia, no formato do material da disciplina ──────────
      Quatro quadrantes cortados por um X, rosto no centro, Dores e
      Necessidades em caixas separadas embaixo. */
@@ -833,6 +1280,109 @@ ${caixaBaixo('nec', 'Necessidades', n.necessidades)}
   </div>`;
 };
 
+const lista = (itens) => itens.map((i) => `<li>${i}</li>`).join('');
+
+/**
+ * A jornada no formato do material: painel da persona à esquerda, os quatro
+ * estágios em colunas, e as linhas fazendo / pensando (dores) / sentindo /
+ * pontos de contato.
+ */
+function jornadaHTML(p) {
+  const j = jornadas[p.id];
+  return `
+  <div class="scroll">
+    <table class="jornada">
+      <thead>
+        <tr>
+          <th class="j-canto">Estágios</th>
+          ${j.estagios
+            .map((e) => `<th><span class="j-etapa">${e.nome}</span><span class="j-sub">${e.sub}</span></th>`)
+            .join('\n          ')}
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th class="j-linha">Fazendo</th>
+          ${j.estagios.map((e) => `<td><ul>${lista(e.fazendo)}</ul></td>`).join('\n          ')}
+        </tr>
+        <tr>
+          <th class="j-linha">Pensando</th>
+          ${j.estagios
+            .map((e) => `<td><ul class="j-pensa">${lista(e.pensando)}</ul></td>`)
+            .join('\n          ')}
+        </tr>
+        <tr class="j-dores">
+          <th class="j-linha">Dores</th>
+          ${j.estagios.map((e) => `<td><ul>${lista(e.dores)}</ul></td>`).join('\n          ')}
+        </tr>
+        <tr>
+          <th class="j-linha">Sentindo</th>
+          ${j.estagios.map((e) => `<td class="j-sente">${e.sentindo}</td>`).join('\n          ')}
+        </tr>
+        <tr>
+          <th class="j-linha">Pontos de contato</th>
+          ${j.estagios
+            .map((e) => `<td><ul class="j-contato">${lista(e.contatos)}</ul></td>`)
+            .join('\n          ')}
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="j-painel">
+    <svg class="j-rosto" viewBox="0 0 120 120" role="img" aria-label="Retrato de ${p.nome}">${retratos[p.id]}
+    </svg>
+    <div>
+      <p class="j-rotulo">Objetivos de ${p.nome}</p>
+      <ol class="objetivos">${lista(p.objetivos)}</ol>
+      <p class="j-rotulo">Sucesso desejado</p>
+      <p class="j-sucesso">${jornadas[p.id].sucesso}</p>
+    </div>
+  </div>`;
+}
+
+const ESTADO = {
+  feito: ['O protótipo já faz', 'e-feito'],
+  parcial: ['Existe, mas incompleto', 'e-parcial'],
+  'a fazer': ['A pesquisa mandou fazer', 'e-fazer'],
+};
+
+/** O quadro de dores e especificações — todas as personas juntas. */
+function doresHTML() {
+  return `
+  <div class="scroll">
+    <table class="specs">
+      <thead>
+        <tr>
+          <th>Dor / pain point</th>
+          <th>Especificação funcional</th>
+          <th>Especificação de conteúdo</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${doresSpecs
+          .map(
+            (d) => `<tr>
+          <td>
+            <p class="s-dor">${d.dor}</p>
+            <p class="s-quem">${d.quem
+              .map((q) => `<span class="${q}">${q[0].toUpperCase() + q.slice(1)}</span>`)
+              .join(' ')} · ${d.evidencia}</p>
+          </td>
+          <td>${d.funcional}</td>
+          <td>${d.conteudo}</td>
+          <td><span class="estado ${ESTADO[d.estado][1]}">${ESTADO[d.estado][0]}</span></td>
+        </tr>`,
+          )
+          .join('\n        ')}
+      </tbody>
+    </table>
+  </div>`;
+}
+
+const contaEstado = (e) => doresSpecs.filter((d) => d.estado === e).length;
+
 const rodape = `<p class="foot">FoiAqui · Define 2.1 e 2.2 · n = 10 · coleta de 7 a 9 de setembro de 2026 · amostra por conveniência</p>`;
 
 /** Uma folha por persona: é o formato de apresentar, uma por vez. */
@@ -853,6 +1403,11 @@ function folhaDaPersona(p) {
   <h2>Mapa de empatia</h2>
   <p class="sub">Os seis campos pedidos no material da disciplina</p>
   ${mapaEmpatia(p)}
+
+  <h2>Mapa da jornada</h2>
+  <p class="sub">2.3 · as dores de cada estágio são as mesmas do mapa de empatia</p>
+  ${jornadaHTML(p)}
+
 
   ${rodape}`,
   );
@@ -951,6 +1506,54 @@ function documento() {
   ${mapaEmpatia(p)}`,
     )
     .join('\n')}
+
+  <h2>Mapa da jornada de cada persona</h2>
+  <p class="sub">2.3 · quatro estágios, e a dor de cada um saindo do mapa de empatia</p>
+
+  <p>
+    Os estágios são os do material — onboarding, adoção, escalada, renovação.
+    Ficaram os nomes dele e mudou o conteúdo: trocar a régua da disciplina por
+    uma régua própria é o tipo de liberdade que só atrapalha a correção.
+  </p>
+  <p>
+    A jornada da Neuza é a que mais ensina, e é a única que <strong>não
+    completa</strong>: ela chega até a tela de enviar e fecha o app. Documentar
+    onde alguém desiste vale mais que desenhar um caminho feliz que ninguém
+    percorreu.
+  </p>
+
+  ${personas
+    .map(
+      (p) => `
+  <h3>Jornada de ${p.nome} · ${p.tipoCurto}</h3>
+  ${jornadaHTML(p)}`,
+    )
+    .join('\n')}
+
+  <h2>Dores e especificações</h2>
+  <p class="sub">2.4 · o que cada dor exige do produto</p>
+
+  <p>
+    Toda linha começa numa dor que já está num mapa de empatia — nenhuma dor
+    nova foi inventada aqui, e é isso que o item 1 do checklist final cobra.
+    A coluna de estado é o que torna o quadro útil ao desenvolvimento: separa o
+    que o protótipo já faz do que a pesquisa mandou fazer.
+  </p>
+
+  <div class="achados">
+    <div class="achado">
+      <span class="num">${contaEstado('feito')}<small>de ${doresSpecs.length}</small></span>
+      <p class="diz">dores que o protótipo <strong>já atende</strong></p>
+      <p class="quer">A maior parte delas foi resolvida antes da pesquisa, por dedução — e a pesquisa confirmou.</p>
+    </div>
+    <div class="achado">
+      <span class="num">${contaEstado('a fazer')}<small>de ${doresSpecs.length}</small></span>
+      <p class="diz">dores que <strong>só apareceram com a pesquisa</strong></p>
+      <p class="quer">Quase todas são da mesma família: garantia, autoria e convite. Nenhuma é de facilidade de uso.</p>
+    </div>
+  </div>
+
+  ${doresHTML()}
 
   <h2>Insights para a equipe</h2>
   <p class="sub">O que estes mapas mandam mudar no produto</p>

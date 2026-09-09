@@ -336,6 +336,24 @@ disparar build: `npm ci --dry-run` (o erro da nuvem custa 15 min e o local,
 5 segundos) — e o log real de um build falho está em
 `eas-cli build:view <id> --json`, campo `logFiles`.
 
+**O Define da disciplina está entregue** (09/09/2026): dez pessoas responderam
+um formulário de campo divulgado no Instagram, e daí saíram três personas, três
+mapas de empatia, três jornadas e o quadro de dores × specs — tudo gerado por
+`npm run personas`, de uma fonte só, para `docs/` e para os SVG do README.
+
+Duas hipóteses do projeto caíram na pesquisa, e valem mais que o resto:
+
+1. **A barreira de quem contribui não era técnica.** Cinco de sete disseram
+   "nunca me passou pela cabeça"; ninguém disse "não sei mexer". A tela de foto
+   sem relato, o ditado e o modo entrevista resolvem um problema que quase
+   ninguém tem — o que falta é o convite.
+2. **As duas pessoas de 50 a 64 anos não enviariam nada.** E pedem garantia, não
+   facilidade: saber quem vê, poder apagar, ser creditada. Cinco das treze linhas
+   do quadro de specs saíram daí, e nenhuma é de usabilidade.
+
+As respostas brutas NÃO entram no repositório (nome, telefone, e-mail); o
+`.gitignore` barra por construção.
+
 **Próximo:** o primeiro teste de usabilidade — é a única linha do escopo da PO
 ainda aberta, e nenhuma decisão daqui foi confrontada com uma pessoa de fora.
 O que sobra de código é: estados de carregamento, comportamento com sinal ruim

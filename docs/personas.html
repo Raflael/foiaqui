@@ -149,6 +149,124 @@
   }
   .fonte p { font-size: .85rem; line-height: 1.5; margin: 0; color: var(--ink-dim); max-width: none; }
   .fonte code { font-family: var(--mono); font-size: .8rem; color: var(--accent); }
+  /* ── 2.3 jornada ───────────────────────────────────────────────── */
+  table.jornada { min-width: 900px; font-size: .85rem; }
+  table.jornada th, table.jornada td {
+    border: 1px solid var(--line);
+    vertical-align: top;
+    padding: 10px 12px;
+  }
+  table.jornada thead th {
+    background: var(--plaque);
+    color: var(--on-plaque);
+    border-color: var(--plaque);
+    text-align: left;
+    width: 22%;
+  }
+  table.jornada thead th.j-canto {
+    width: 12%;
+    background: var(--ink);
+    border-color: var(--ink);
+  }
+  .j-etapa {
+    display: block;
+    font-family: var(--plate);
+    font-size: 1.1rem;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+  }
+  .j-sub {
+    display: block;
+    font-family: var(--ui);
+    font-size: .72rem;
+    font-weight: 400;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--on-plaque-d);
+    margin-top: 3px;
+  }
+  th.j-linha {
+    font-family: var(--mono);
+    font-size: .68rem;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    background: var(--surface2);
+    white-space: nowrap;
+  }
+  table.jornada ul { margin: 0; padding-left: 16px; }
+  table.jornada li { margin-bottom: 4px; line-height: 1.4; }
+  ul.j-pensa li { font-family: var(--story); font-size: .95rem; }
+  tr.j-dores td { background: var(--surface); }
+  tr.j-dores li { color: var(--accent); font-weight: 600; }
+  tr.j-dores th.j-linha { color: var(--accent); }
+  td.j-sente { font-family: var(--story); font-size: .95rem; line-height: 1.4; }
+  ul.j-contato li { font-family: var(--mono); font-size: .74rem; color: var(--ink-dim); }
+
+  .j-painel {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: flex-start;
+    margin-top: 14px;
+    padding: 18px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+  }
+  .j-rosto { width: 96px; height: 96px; flex-shrink: 0; }
+  .j-painel > div { flex: 1 1 320px; min-width: 0; }
+  .j-rotulo {
+    font-family: var(--mono);
+    font-size: .66rem;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    margin: 0 0 8px;
+  }
+  .j-painel .objetivos { margin: 0 0 18px; }
+  .j-painel .objetivos li { font-size: .9rem; }
+  .j-sucesso {
+    font-family: var(--story);
+    font-size: 1.02rem;
+    line-height: 1.45;
+    margin: 0;
+    border-left: 3px solid var(--ok);
+    padding-left: 12px;
+  }
+
+  /* ── 2.4 dores × specs ─────────────────────────────────────────── */
+  table.specs { min-width: 860px; }
+  table.specs td { font-size: .86rem; line-height: 1.45; }
+  table.specs th:nth-child(1), table.specs td:nth-child(1) { width: 24%; }
+  table.specs th:nth-child(4), table.specs td:nth-child(4) { width: 13%; }
+  .s-dor { font-weight: 700; margin: 0 0 5px; font-size: .9rem; max-width: none; }
+  .s-quem {
+    font-family: var(--mono);
+    font-size: .66rem;
+    letter-spacing: .05em;
+    color: var(--ink-dim);
+    margin: 0;
+    max-width: none;
+  }
+  .s-quem span {
+    border: 1px solid currentColor;
+    padding: 1px 5px;
+    text-transform: uppercase;
+    font-size: .62rem;
+  }
+  .estado {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: .64rem;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    padding: 4px 7px;
+    line-height: 1.25;
+  }
+  .e-feito { background: var(--ok); color: #F4F3EE; }
+  .e-parcial { background: var(--surface2); color: var(--ink); border: 1px solid var(--ink-dim); }
+  .e-fazer { background: var(--accent); color: var(--on-accent); }
+
   /* ── mapa de empatia, no formato do material da disciplina ──────────
      Quatro quadrantes cortados por um X, rosto no centro, Dores e
      Necessidades em caixas separadas embaixo. */
@@ -893,6 +1011,422 @@
       </ul>
     </div>
     </div>
+  </div>
+
+  <h2>Mapa da jornada de cada persona</h2>
+  <p class="sub">2.3 · quatro estágios, e a dor de cada um saindo do mapa de empatia</p>
+
+  <p>
+    Os estágios são os do material — onboarding, adoção, escalada, renovação.
+    Ficaram os nomes dele e mudou o conteúdo: trocar a régua da disciplina por
+    uma régua própria é o tipo de liberdade que só atrapalha a correção.
+  </p>
+  <p>
+    A jornada da Neuza é a que mais ensina, e é a única que <strong>não
+    completa</strong>: ela chega até a tela de enviar e fecha o app. Documentar
+    onde alguém desiste vale mais que desenhar um caminho feliz que ninguém
+    percorreu.
+  </p>
+
+  
+  <h3>Jornada de Camila · Quem descobre</h3>
+  
+  <div class="scroll">
+    <table class="jornada">
+      <thead>
+        <tr>
+          <th class="j-canto">Estágios</th>
+          <th><span class="j-etapa">Onboarding</span><span class="j-sub">Descobre e abre pela primeira vez</span></th>
+          <th><span class="j-etapa">Adoção</span><span class="j-sub">Acha a primeira memória e entende o produto</span></th>
+          <th><span class="j-etapa">Escalada</span><span class="j-sub">Leva para outros lugares e começa a devolver</span></th>
+          <th><span class="j-etapa">Renovação</span><span class="j-sub">Volta semanas depois</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th class="j-linha">Fazendo</th>
+          <td><ul><li>Vê uma placa com QR na fachada de um casarão fechado</li><li>Aponta a câmera do celular para o código, em pé, no sol</li><li>O app abre direto no mapa, já com o lugar sob o dedo</li></ul></td>
+          <td><ul><li>Lê a ficha do lugar e arrasta o slider passado↔presente</li><li>Ouve o áudio de quem viveu ali</li><li>Toca em "mais histórias deste lugar" e passa para a seguinte</li></ul></td>
+          <td><ul><li>Abre o app em outro bairro e na casa dos avós</li><li>Salva memórias e junta numa coleção</li><li>Compartilha uma memória como imagem no story</li><li>Manda a primeira foto que tinha no celular</li></ul></td>
+          <td><ul><li>Recebe o aviso de que está perto de uma memória</li><li>Confere a linha do tempo do lugar de sempre</li><li>Vê se apareceu coisa nova onde ela já tinha olhado</li></ul></td>
+        </tr>
+        <tr>
+          <th class="j-linha">Pensando</th>
+          <td><ul class="j-pensa"><li>"Vai pedir cadastro?"</li><li>"Isso aqui carrega no meu 4G?"</li></ul></td>
+          <td><ul class="j-pensa"><li>"Era isso que tinha aqui!"</li><li>"Isso é verdade mesmo ou alguém inventou?"</li></ul></td>
+          <td><ul class="j-pensa"><li>"Aqui não tem nada"</li><li>"Será que o que eu tenho serve?"</li></ul></td>
+          <td><ul class="j-pensa"><li>"Já vi tudo que tinha"</li><li>"Ninguém contou mais nada?"</li></ul></td>
+        </tr>
+        <tr class="j-dores">
+          <th class="j-linha">Dores</th>
+          <td><ul><li>Cadastro antes de ver qualquer coisa</li><li>Demorar pra carregar</li></ul></td>
+          <td><ul><li>Não confiar se é verdade</li><li>Muito texto pra ler no sol</li></ul></td>
+          <td><ul><li>Abrir e não ter nada perto de mim</li><li>Nunca me passou pela cabeça contribuir</li></ul></td>
+          <td><ul><li>Acervo que não cresce</li><li>Abrir e não ter nada perto de mim</li></ul></td>
+        </tr>
+        <tr>
+          <th class="j-linha">Sentindo</th>
+          <td class="j-sente">Curiosidade com desconfiança — pronta para fechar ao primeiro obstáculo</td>
+          <td class="j-sente">Surpresa, e o começo de um vínculo com a rua onde ela sempre andou</td>
+          <td class="j-sente">Pertencimento, e vontade de mostrar que sabe algo da própria cidade</td>
+          <td class="j-sente">Frustração se está igual; curiosidade renovada se cresceu</td>
+        </tr>
+        <tr>
+          <th class="j-linha">Pontos de contato</th>
+          <td><ul class="j-contato"><li>Placa com QR na rua</li><li>Story de um conhecido</li><li>Busca na loja de apps</li></ul></td>
+          <td><ul class="j-contato"><li>Mapa</li><li>Ficha da memória</li><li>Slider</li><li>Áudio</li><li>Fonte declarada</li></ul></td>
+          <td><ul class="j-contato"><li>Câmera AR</li><li>Trilhas</li><li>Salvos e coleções</li><li>Compartilhar como imagem</li></ul></td>
+          <td><ul class="j-contato"><li>Aviso de proximidade</li><li>Linha do tempo</li><li>Feed do ponto</li></ul></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="j-painel">
+    <svg class="j-rosto" viewBox="0 0 120 120" role="img" aria-label="Retrato de Camila">
+    <defs><clipPath id="rc-camila"><circle cx="60" cy="60" r="57"/></clipPath></defs>
+    <g clip-path="url(#rc-camila)">
+      <circle cx="60" cy="60" r="57" fill="#DFDCD1"/>
+      <path d="M60 86c-24 0-40 15-42 36h84c-2-21-18-36-42-36z" fill="#B4471F"/>
+      <rect x="52" y="70" width="16" height="22" rx="8" fill="#B87A55"/>
+      <ellipse cx="60" cy="54" rx="21" ry="24" fill="#CD8E67"/>
+      <path d="M39 52c0-15 9-25 21-25s21 10 21 25c2-6 3-13 1-19-3-11-12-17-22-17s-19 6-22 17c-2 6-1 13 1 19z" fill="#2B2119"/>
+      <path d="M37 46c-3 10-2 22 2 30-6-4-9-14-8-24 1-8 4-14 9-19zM83 46c3 10 2 22-2 30 6-4 9-14 8-24-1-8-4-14-9-19z" fill="#2B2119"/>
+      <ellipse cx="52" cy="54" rx="2.6" ry="3" fill="#2B2119"/>
+      <ellipse cx="68" cy="54" rx="2.6" ry="3" fill="#2B2119"/>
+      <path d="M47 47c3-2 7-2 9 0M64 47c3-2 7-2 9 0" stroke="#2B2119" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M60 58v5c0 1-1 2-2 2" stroke="#8C5B3E" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+      <path d="M54 70c3 3 9 3 12 0" stroke="#8C5B3E" stroke-width="2" fill="none" stroke-linecap="round"/>
+    </g>
+    <circle cx="60" cy="60" r="57" fill="none" stroke="#F4F3EE" stroke-width="2.5"/>
+    </svg>
+    <div>
+      <p class="j-rotulo">Objetivos de Camila</p>
+      <ol class="objetivos"><li>Matar a curiosidade <strong>no momento em que ela aparece</strong>, parada na calçada, sem precisar guardar para pesquisar depois — porque depois ela esquece.</li><li>Entender a cidade onde nasceu com a profundidade que ela sente que falta, sem ter que virar pesquisadora para isso.</li><li>Ter algo interessante para mostrar aos outros: o que ela descobre, ela reposta.</li></ol>
+      <p class="j-rotulo">Sucesso desejado</p>
+      <p class="j-sucesso">Descobrir, em pé na calçada e em menos de um minuto, o que aconteceu no prédio por onde ela passa todo dia — e ter o que mostrar aos outros depois.</p>
+    </div>
+  </div>
+
+  <h3>Jornada de Tiago · Quem guarda</h3>
+  
+  <div class="scroll">
+    <table class="jornada">
+      <thead>
+        <tr>
+          <th class="j-canto">Estágios</th>
+          <th><span class="j-etapa">Onboarding</span><span class="j-sub">Chega pelo link de alguém da família</span></th>
+          <th><span class="j-etapa">Adoção</span><span class="j-sub">Reconhece o lugar e percebe o buraco</span></th>
+          <th><span class="j-etapa">Escalada</span><span class="j-sub">Contribui pela primeira vez</span></th>
+          <th><span class="j-etapa">Renovação</span><span class="j-sub">Vê o resultado e volta com a segunda</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th class="j-linha">Fazendo</th>
+          <td><ul><li>Abre o link que a prima mandou no grupo da família</li><li>Procura direto o parque onde leva o filho</li></ul></td>
+          <td><ul><li>Lê o que já existe sobre o parque</li><li>Abre o feed do ponto e vê quantas pessoas contaram</li><li>Percebe que falta justamente o que ele sabe</li></ul></td>
+          <td><ul><li>Toca em "tenho uma foto de como era aqui"</li><li>Fotografa a foto de papel do álbum da mãe</li><li>Põe o ano e uma frase; não escreve relato nenhum</li><li>Envia e vê que entrou na fila de revisão</li></ul></td>
+          <td><ul><li>Recebe que a memória foi aprovada e está no mapa</li><li>Mostra para a mãe o nome dele embaixo da foto dela</li><li>Abre o álbum atrás de outra foto</li></ul></td>
+        </tr>
+        <tr>
+          <th class="j-linha">Pensando</th>
+          <td><ul class="j-pensa"><li>"Isso é coisa séria ou é mais uma rede social?"</li></ul></td>
+          <td><ul class="j-pensa"><li>"Falta a parte do sanatório"</li><li>"Mas quem ia querer saber do meu bisavô?"</li></ul></td>
+          <td><ul class="j-pensa"><li>"Vou ter que escrever um texto?"</li><li>"A foto tá no álbum, não no celular"</li></ul></td>
+          <td><ul class="j-pensa"><li>"Alguém viu isso?"</li><li>"Valeu a pena?"</li></ul></td>
+        </tr>
+        <tr class="j-dores">
+          <th class="j-linha">Dores</th>
+          <td><ul><li>Desconfia de plataforma sem gente séria</li></ul></td>
+          <td><ul><li>Acha que o que ele tem não interessa a ninguém</li><li>Nunca lhe passou pela cabeça que pudesse publicar</li></ul></td>
+          <td><ul><li>Escrever relato dá trabalho</li><li>A foto é de papel</li></ul></td>
+          <td><ul><li>Não saber se interessou a alguém</li></ul></td>
+        </tr>
+        <tr>
+          <th class="j-linha">Sentindo</th>
+          <td class="j-sente">Reserva — já viu muito app de memória virar bagunça</td>
+          <td class="j-sente">Reconhecimento, e uma coceira de corrigir o que está incompleto</td>
+          <td class="j-sente">Alívio: era mais fácil do que ele imaginava</td>
+          <td class="j-sente">Orgulho discreto — e disposição para a segunda contribuição</td>
+        </tr>
+        <tr>
+          <th class="j-linha">Pontos de contato</th>
+          <td><ul class="j-contato"><li>Link no WhatsApp da família</li><li>Placa com QR no parque</li></ul></td>
+          <td><ul class="j-contato"><li>Feed do ponto</li><li>Fonte declarada</li><li>Contagem de memórias do lugar</li></ul></td>
+          <td><ul class="j-contato"><li>Botão "tenho uma foto de como era aqui"</li><li>Câmera</li><li>Critérios públicos de revisão</li><li>Fila de moderação</li></ul></td>
+          <td><ul class="j-contato"><li>Aviso de aprovação</li><li>Perfil com contribuições</li><li>A memória publicada</li></ul></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="j-painel">
+    <svg class="j-rosto" viewBox="0 0 120 120" role="img" aria-label="Retrato de Tiago">
+    <defs><clipPath id="rc-tiago"><circle cx="60" cy="60" r="57"/></clipPath></defs>
+    <g clip-path="url(#rc-tiago)">
+      <circle cx="60" cy="60" r="57" fill="#DFDCD1"/>
+      <path d="M60 86c-24 0-40 15-42 36h84c-2-21-18-36-42-36z" fill="#2E6E68"/>
+      <rect x="52" y="70" width="16" height="22" rx="8" fill="#9C6844"/>
+      <ellipse cx="60" cy="54" rx="21" ry="24" fill="#B37C55"/>
+      <path d="M39 50c1-13 10-21 21-21s20 8 21 21c1-4 1-9 0-13-2-9-10-15-21-15s-19 6-21 15c-1 4-1 9 0 13z" fill="#241C14"/>
+      <path d="M43 62c0 12 7 20 17 20s17-8 17-20c1 8-1 16-6 21-3 3-7 5-11 5s-8-2-11-5c-5-5-7-13-6-21z" fill="#241C14"/>
+      <ellipse cx="52" cy="53" rx="2.6" ry="3" fill="#241C14"/>
+      <ellipse cx="68" cy="53" rx="2.6" ry="3" fill="#241C14"/>
+      <path d="M46 46c3-2 8-2 10 1M64 47c2-3 7-3 10-1" stroke="#241C14" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+      <path d="M60 57v5c0 1-1 2-2 2" stroke="#7C4F32" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+      <path d="M54 69c3 2 9 2 12 0" stroke="#5E3A24" stroke-width="2" fill="none" stroke-linecap="round"/>
+    </g>
+    <circle cx="60" cy="60" r="57" fill="none" stroke="#F4F3EE" stroke-width="2.5"/>
+    </svg>
+    <div>
+      <p class="j-rotulo">Objetivos de Tiago</p>
+      <ol class="objetivos"><li>Ver a história que ele conta de boca <strong>existir num lugar</strong>, ligada ao ponto onde aconteceu — e não depender de ele estar presente para ser contada.</li><li>Descobrir que aquilo interessa a outras pessoas, o que é a permissão que hoje falta.</li><li>Contribuir sem que isso vire projeto: um envio de dois minutos, não uma tarde de digitalização.</li></ol>
+      <p class="j-rotulo">Sucesso desejado</p>
+      <p class="j-sucesso">Ver a história que ele conta de boca há anos existir no lugar dela, com o nome dele embaixo — e ter levado dois minutos para isso.</p>
+    </div>
+  </div>
+
+  <h3>Jornada de Neuza · Quem chegou depois</h3>
+  
+  <div class="scroll">
+    <table class="jornada">
+      <thead>
+        <tr>
+          <th class="j-canto">Estágios</th>
+          <th><span class="j-etapa">Onboarding</span><span class="j-sub">O filho mostra</span></th>
+          <th><span class="j-etapa">Adoção</span><span class="j-sub">Procura o que é dela e não encontra</span></th>
+          <th><span class="j-etapa">Escalada</span><span class="j-sub">Chega até a tela de enviar — e para</span></th>
+          <th><span class="j-etapa">Renovação</span><span class="j-sub">Continua olhando, nunca contribuindo</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th class="j-linha">Fazendo</th>
+          <td><ul><li>O filho abre o app no celular dele e mostra</li><li>Ela pega o próprio aparelho e instala</li></ul></td>
+          <td><ul><li>Procura o bairro onde morou ao chegar</li><li>Acha o centro, cheio; o bairro dela, vazio</li><li>Lê memórias de gente que nasceu aqui</li></ul></td>
+          <td><ul><li>Abre o formulário para contar como era o lugar quando chegou</li><li>Lê a tela até o botão de enviar</li><li>Fecha o app sem enviar</li></ul></td>
+          <td><ul><li>Abre de vez em quando para ver se apareceu coisa nova</li><li>Manda um print para a irmã no Nordeste</li></ul></td>
+        </tr>
+        <tr>
+          <th class="j-linha">Pensando</th>
+          <td><ul class="j-pensa"><li>"Vai pedir meus dados logo de cara?"</li></ul></td>
+          <td><ul class="j-pensa"><li>"Tudo isso é de quem nasceu na cidade"</li><li>"A minha começa tarde demais"</li></ul></td>
+          <td><ul class="j-pensa"><li>"Quem é que vai ver isso?"</li><li>"E se usarem de um jeito errado?"</li><li>"Depois eu consigo apagar?"</li></ul></td>
+          <td><ul class="j-pensa"><li>"Continua sem nada de quando eu cheguei"</li></ul></td>
+        </tr>
+        <tr class="j-dores">
+          <th class="j-linha">Dores</th>
+          <td><ul><li>Cadastro logo na entrada</li></ul></td>
+          <td><ul><li>Sente que sua memória vale menos por não ser de nascença</li></ul></td>
+          <td><ul><li>Não sabe quem vai ver</li><li>Não confia no uso</li><li>Não dá pra desfazer</li></ul></td>
+          <td><ul><li>Memória de quem chegou depois não tem lugar no acervo</li></ul></td>
+        </tr>
+        <tr>
+          <th class="j-linha">Sentindo</th>
+          <td class="j-sente">Interesse — é a cidade dela há trinta e um anos</td>
+          <td class="j-sente">Reconhecimento parcial, com um incômodo que ela não nomeia</td>
+          <td class="j-sente">Recuo. Não é dificuldade: é falta de garantia</td>
+          <td class="j-sente">Resignação — o app é dos outros</td>
+        </tr>
+        <tr>
+          <th class="j-linha">Pontos de contato</th>
+          <td><ul class="j-contato"><li>O filho</li><li>Loja de aplicativos</li></ul></td>
+          <td><ul class="j-contato"><li>Mapa</li><li>Busca</li><li>Linha do tempo</li></ul></td>
+          <td><ul class="j-contato"><li>Formulário de envio</li><li>Critérios de moderação</li><li>Perfil</li></ul></td>
+          <td><ul class="j-contato"><li>Mapa</li><li>Compartilhar como imagem</li></ul></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="j-painel">
+    <svg class="j-rosto" viewBox="0 0 120 120" role="img" aria-label="Retrato de Neuza">
+    <defs><clipPath id="rc-neuza"><circle cx="60" cy="60" r="57"/></clipPath></defs>
+    <g clip-path="url(#rc-neuza)">
+      <circle cx="60" cy="60" r="57" fill="#DFDCD1"/>
+      <path d="M60 86c-24 0-40 15-42 36h84c-2-21-18-36-42-36z" fill="#14396E"/>
+      <rect x="52" y="70" width="16" height="22" rx="8" fill="#8A5B3C"/>
+      <ellipse cx="60" cy="54" rx="21" ry="24" fill="#A06D48"/>
+      <path d="M38 54c-1-16 9-27 22-27s23 11 22 27c2-7 2-15 0-21-3-10-12-16-22-16s-19 6-22 16c-2 6-2 14 0 21z" fill="#8E8C88"/>
+      <path d="M38 52c4-6 10-9 15-9-6 3-11 8-13 14zM82 52c-4-6-10-9-15-9 6 3 11 8 13 14z" fill="#C9C7C2"/>
+      <path d="M78 34c7 2 11 8 11 15 0 5-2 9-5 12 2-9 0-19-6-27z" fill="#8E8C88"/>
+      <ellipse cx="52" cy="55" rx="2.5" ry="2.8" fill="#241C14"/>
+      <ellipse cx="68" cy="55" rx="2.5" ry="2.8" fill="#241C14"/>
+      <g fill="none" stroke="#1A1D23" stroke-width="1.8">
+        <circle cx="52" cy="55" r="7.5"/>
+        <circle cx="68" cy="55" r="7.5"/>
+        <path d="M59.5 55h1M44.5 54l-4-1M75.5 54l4-1"/>
+      </g>
+      <path d="M45 45c3-2 7-2 9 0M66 45c3-2 7-2 9 0" stroke="#6E6B66" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M60 60v4c0 1-1 2-2 2" stroke="#6E452C" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+      <path d="M54 71c3 2 9 2 12 0" stroke="#6E452C" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M44 63c2 2 4 3 5 3M71 63c-2 2-4 3-5 3" stroke="#8A5B3C" stroke-width="1.3" fill="none" stroke-linecap="round" opacity=".7"/>
+    </g>
+    <circle cx="60" cy="60" r="57" fill="none" stroke="#F4F3EE" stroke-width="2.5"/>
+    </svg>
+    <div>
+      <p class="j-rotulo">Objetivos de Neuza</p>
+      <ol class="objetivos"><li>Entender a cidade que ela ajudou a construir e sobre a qual ninguém lhe conta nada.</li><li>Ter certeza, antes de qualquer envio, de <strong>quem vai ver</strong> e de que ela pode voltar atrás.</li><li>Ser reconhecida como autora do que contar — não anonimizada, nem apropriada.</li></ol>
+      <p class="j-rotulo">Sucesso desejado</p>
+      <p class="j-sucesso">Ver "como era isto aqui quando eu cheguei" tratado como memória legítima — e poder contar a dela sabendo exatamente quem vai ver e podendo voltar atrás.</p>
+    </div>
+  </div>
+
+  <h2>Dores e especificações</h2>
+  <p class="sub">2.4 · o que cada dor exige do produto</p>
+
+  <p>
+    Toda linha começa numa dor que já está num mapa de empatia — nenhuma dor
+    nova foi inventada aqui, e é isso que o item 1 do checklist final cobra.
+    A coluna de estado é o que torna o quadro útil ao desenvolvimento: separa o
+    que o protótipo já faz do que a pesquisa mandou fazer.
+  </p>
+
+  <div class="achados">
+    <div class="achado">
+      <span class="num">4<small>de 13</small></span>
+      <p class="diz">dores que o protótipo <strong>já atende</strong></p>
+      <p class="quer">A maior parte delas foi resolvida antes da pesquisa, por dedução — e a pesquisa confirmou.</p>
+    </div>
+    <div class="achado">
+      <span class="num">5<small>de 13</small></span>
+      <p class="diz">dores que <strong>só apareceram com a pesquisa</strong></p>
+      <p class="quer">Quase todas são da mesma família: garantia, autoria e convite. Nenhuma é de facilidade de uso.</p>
+    </div>
+  </div>
+
+  
+  <div class="scroll">
+    <table class="specs">
+      <thead>
+        <tr>
+          <th>Dor / pain point</th>
+          <th>Especificação funcional</th>
+          <th>Especificação de conteúdo</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <p class="s-dor">Procurei a história de um lugar e não achei</p>
+            <p class="s-quem"><span class="camila">Camila</span> · 5 de 10</p>
+          </td>
+          <td>Mapa com busca por lugar, época e tema; ficha ancorada na coordenada exata; câmera que mostra o que está na direção apontada</td>
+          <td>Catálogo georreferenciado com foto, relato, data, autor e fonte pública declarada em cada memória</td>
+          <td><span class="estado e-feito">O protótipo já faz</span></td>
+        </tr>
+        <tr>
+          <td>
+            <p class="s-dor">Cadastro antes de ver qualquer coisa</p>
+            <p class="s-quem"><span class="camila">Camila</span> <span class="neuza">Neuza</span> · 4 de 10</p>
+          </td>
+          <td>Abrir direto no mapa, sem porta de entrada; identidade pedida só na hora de publicar, nunca antes</td>
+          <td>Explicação do que fica no aparelho e do que vira público, no momento em que importa</td>
+          <td><span class="estado e-feito">O protótipo já faz</span></td>
+        </tr>
+        <tr>
+          <td>
+            <p class="s-dor">Se for pago, eu fecho</p>
+            <p class="s-quem"><span class="camila">Camila</span> · 6 de 10 — a barreira mais citada</p>
+          </td>
+          <td>Base gratuita permanente; receita por licença a instituições, patrocínio cultural e trilhas curadas — nunca por acesso ao acervo</td>
+          <td>Dizer com todas as letras o que nunca será cobrado</td>
+          <td><span class="estado e-parcial">Existe, mas incompleto</span></td>
+        </tr>
+        <tr>
+          <td>
+            <p class="s-dor">Muito texto pra ler, em pé no sol</p>
+            <p class="s-quem"><span class="camila">Camila</span> <span class="neuza">Neuza</span> · 4 de 10</p>
+          </td>
+          <td>Ficha em camadas — chapa, relato, detalhe; fonte grande; modo simples; ouvir em voz alta</td>
+          <td>Primeira linha do relato entregando o essencial, antes de qualquer aprofundamento</td>
+          <td><span class="estado e-feito">O protótipo já faz</span></td>
+        </tr>
+        <tr>
+          <td>
+            <p class="s-dor">Abrir e não ter nada perto de mim</p>
+            <p class="s-quem"><span class="camila">Camila</span> · 2 de 10</p>
+          </td>
+          <td>Pin-fantasma nos lugares sem memória; lista por distância; convite explícito de "seja a primeira pessoa"</td>
+          <td>Nome e situação atual do lugar, mesmo quando ninguém contou nada dele ainda</td>
+          <td><span class="estado e-feito">O protótipo já faz</span></td>
+        </tr>
+        <tr>
+          <td>
+            <p class="s-dor">Nunca me passou pela cabeça que eu pudesse contar</p>
+            <p class="s-quem"><span class="tiago">Tiago</span> <span class="camila">Camila</span> · 5 de 7 — a dor central</p>
+          </td>
+          <td>Convite no lugar e na hora: placa com QR na fachada, aviso ao passar perto, pedido no fim do feed do ponto</td>
+          <td>Exemplos concretos do que conta como memória — uma foto, um causo, o que mudou — porque a maioria não sabe que o que tem serve</td>
+          <td><span class="estado e-parcial">Existe, mas incompleto</span></td>
+        </tr>
+        <tr>
+          <td>
+            <p class="s-dor">Acho que o que eu tenho não interessa a ninguém</p>
+            <p class="s-quem"><span class="tiago">Tiago</span> · 1 de 7, e é o caso mais completo da amostra</p>
+          </td>
+          <td>Mostrar quantas pessoas leram e salvaram cada memória; destacar contribuições da semana sem criar ranking</td>
+          <td>Contagem de leitura e de quem guardou, visível para quem enviou</td>
+          <td><span class="estado e-fazer">A pesquisa mandou fazer</span></td>
+        </tr>
+        <tr>
+          <td>
+            <p class="s-dor">A foto está no álbum de papel, não no celular</p>
+            <p class="s-quem"><span class="tiago">Tiago</span> · 1 de 10 tem acervo em papel; 3 não sabem o que têm</p>
+          </td>
+          <td>Fotografar a foto antiga direto do álbum; envio que aceita só a imagem e o ano</td>
+          <td>Orientação curta de como fotografar foto de papel sem reflexo e sem cortar a borda</td>
+          <td><span class="estado e-parcial">Existe, mas incompleto</span></td>
+        </tr>
+        <tr>
+          <td>
+            <p class="s-dor">Não sei quem vai ver o que eu enviar</p>
+            <p class="s-quem"><span class="neuza">Neuza</span> · 3 de 10, e as duas pessoas de 50 a 64 anos</p>
+          </td>
+          <td>Dizer na própria tela de envio quem vê, quando aparece e quem revisa; prévia de como a memória fica publicada</td>
+          <td>Frase clara sobre visibilidade e moderação, acima do botão de enviar</td>
+          <td><span class="estado e-fazer">A pesquisa mandou fazer</span></td>
+        </tr>
+        <tr>
+          <td>
+            <p class="s-dor">E se usarem de um jeito errado? Não dá pra desfazer</p>
+            <p class="s-quem"><span class="neuza">Neuza</span> · 1 de 7 declarou medo; 1 pediu poder apagar</p>
+          </td>
+          <td>Apagar e corrigir a qualquer momento — o que já existe — prometido no momento do envio, não escondido nos ajustes</td>
+          <td>Promessa de que dá para apagar depois, dita antes de a pessoa decidir</td>
+          <td><span class="estado e-parcial">Existe, mas incompleto</span></td>
+        </tr>
+        <tr>
+          <td>
+            <p class="s-dor">Meu nome vai aparecer? Eu quero que apareça?</p>
+            <p class="s-quem"><span class="neuza">Neuza</span> <span class="camila">Camila</span> · a amostra se divide: 1 quer anonimato, 1 quer crédito</p>
+          </td>
+          <td>Escolha de assinatura por memória: nome, apelido ou anônimo</td>
+          <td>O que cada opção significa na prática, dita em uma linha</td>
+          <td><span class="estado e-fazer">A pesquisa mandou fazer</span></td>
+        </tr>
+        <tr>
+          <td>
+            <p class="s-dor">Cheguei depois — a minha memória vale menos?</p>
+            <p class="s-quem"><span class="neuza">Neuza</span> · 6 de 10 nasceram em outra cidade</p>
+          </td>
+          <td>Convite específico para memória de chegada; filtro e marcação que a distinga da memória de origem</td>
+          <td>"Como era isto aqui quando eu cheguei" como categoria própria do acervo, com exemplos semeados</td>
+          <td><span class="estado e-fazer">A pesquisa mandou fazer</span></td>
+        </tr>
+        <tr>
+          <td>
+            <p class="s-dor">Não sei se tenho foto antiga guardada</p>
+            <p class="s-quem"><span class="tiago">Tiago</span> <span class="camila">Camila</span> · 3 de 10 — mais que os que disseram não ter</p>
+          </td>
+          <td>Convite que manda olhar, não que manda enviar: lembrete de procurar na caixa antes de pedir a foto</td>
+          <td>Exemplos do tipo de foto que serve — fachada, rua, festa, obra, cotidiano</td>
+          <td><span class="estado e-fazer">A pesquisa mandou fazer</span></td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
   <h2>Insights para a equipe</h2>

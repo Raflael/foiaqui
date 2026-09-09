@@ -149,6 +149,124 @@
   }
   .fonte p { font-size: .85rem; line-height: 1.5; margin: 0; color: var(--ink-dim); max-width: none; }
   .fonte code { font-family: var(--mono); font-size: .8rem; color: var(--accent); }
+  /* ── 2.3 jornada ───────────────────────────────────────────────── */
+  table.jornada { min-width: 900px; font-size: .85rem; }
+  table.jornada th, table.jornada td {
+    border: 1px solid var(--line);
+    vertical-align: top;
+    padding: 10px 12px;
+  }
+  table.jornada thead th {
+    background: var(--plaque);
+    color: var(--on-plaque);
+    border-color: var(--plaque);
+    text-align: left;
+    width: 22%;
+  }
+  table.jornada thead th.j-canto {
+    width: 12%;
+    background: var(--ink);
+    border-color: var(--ink);
+  }
+  .j-etapa {
+    display: block;
+    font-family: var(--plate);
+    font-size: 1.1rem;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+  }
+  .j-sub {
+    display: block;
+    font-family: var(--ui);
+    font-size: .72rem;
+    font-weight: 400;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--on-plaque-d);
+    margin-top: 3px;
+  }
+  th.j-linha {
+    font-family: var(--mono);
+    font-size: .68rem;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    background: var(--surface2);
+    white-space: nowrap;
+  }
+  table.jornada ul { margin: 0; padding-left: 16px; }
+  table.jornada li { margin-bottom: 4px; line-height: 1.4; }
+  ul.j-pensa li { font-family: var(--story); font-size: .95rem; }
+  tr.j-dores td { background: var(--surface); }
+  tr.j-dores li { color: var(--accent); font-weight: 600; }
+  tr.j-dores th.j-linha { color: var(--accent); }
+  td.j-sente { font-family: var(--story); font-size: .95rem; line-height: 1.4; }
+  ul.j-contato li { font-family: var(--mono); font-size: .74rem; color: var(--ink-dim); }
+
+  .j-painel {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: flex-start;
+    margin-top: 14px;
+    padding: 18px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+  }
+  .j-rosto { width: 96px; height: 96px; flex-shrink: 0; }
+  .j-painel > div { flex: 1 1 320px; min-width: 0; }
+  .j-rotulo {
+    font-family: var(--mono);
+    font-size: .66rem;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    margin: 0 0 8px;
+  }
+  .j-painel .objetivos { margin: 0 0 18px; }
+  .j-painel .objetivos li { font-size: .9rem; }
+  .j-sucesso {
+    font-family: var(--story);
+    font-size: 1.02rem;
+    line-height: 1.45;
+    margin: 0;
+    border-left: 3px solid var(--ok);
+    padding-left: 12px;
+  }
+
+  /* ── 2.4 dores × specs ─────────────────────────────────────────── */
+  table.specs { min-width: 860px; }
+  table.specs td { font-size: .86rem; line-height: 1.45; }
+  table.specs th:nth-child(1), table.specs td:nth-child(1) { width: 24%; }
+  table.specs th:nth-child(4), table.specs td:nth-child(4) { width: 13%; }
+  .s-dor { font-weight: 700; margin: 0 0 5px; font-size: .9rem; max-width: none; }
+  .s-quem {
+    font-family: var(--mono);
+    font-size: .66rem;
+    letter-spacing: .05em;
+    color: var(--ink-dim);
+    margin: 0;
+    max-width: none;
+  }
+  .s-quem span {
+    border: 1px solid currentColor;
+    padding: 1px 5px;
+    text-transform: uppercase;
+    font-size: .62rem;
+  }
+  .estado {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: .64rem;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    padding: 4px 7px;
+    line-height: 1.25;
+  }
+  .e-feito { background: var(--ok); color: #F4F3EE; }
+  .e-parcial { background: var(--surface2); color: var(--ink); border: 1px solid var(--ink-dim); }
+  .e-fazer { background: var(--accent); color: var(--on-accent); }
+
   /* ── mapa de empatia, no formato do material da disciplina ──────────
      Quatro quadrantes cortados por um X, rosto no centro, Dores e
      Necessidades em caixas separadas embaixo. */
@@ -467,6 +585,87 @@
     </div>
     </div>
   </div>
+
+  <h2>Mapa da jornada</h2>
+  <p class="sub">2.3 · as dores de cada estágio são as mesmas do mapa de empatia</p>
+  
+  <div class="scroll">
+    <table class="jornada">
+      <thead>
+        <tr>
+          <th class="j-canto">Estágios</th>
+          <th><span class="j-etapa">Onboarding</span><span class="j-sub">Descobre e abre pela primeira vez</span></th>
+          <th><span class="j-etapa">Adoção</span><span class="j-sub">Acha a primeira memória e entende o produto</span></th>
+          <th><span class="j-etapa">Escalada</span><span class="j-sub">Leva para outros lugares e começa a devolver</span></th>
+          <th><span class="j-etapa">Renovação</span><span class="j-sub">Volta semanas depois</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th class="j-linha">Fazendo</th>
+          <td><ul><li>Vê uma placa com QR na fachada de um casarão fechado</li><li>Aponta a câmera do celular para o código, em pé, no sol</li><li>O app abre direto no mapa, já com o lugar sob o dedo</li></ul></td>
+          <td><ul><li>Lê a ficha do lugar e arrasta o slider passado↔presente</li><li>Ouve o áudio de quem viveu ali</li><li>Toca em "mais histórias deste lugar" e passa para a seguinte</li></ul></td>
+          <td><ul><li>Abre o app em outro bairro e na casa dos avós</li><li>Salva memórias e junta numa coleção</li><li>Compartilha uma memória como imagem no story</li><li>Manda a primeira foto que tinha no celular</li></ul></td>
+          <td><ul><li>Recebe o aviso de que está perto de uma memória</li><li>Confere a linha do tempo do lugar de sempre</li><li>Vê se apareceu coisa nova onde ela já tinha olhado</li></ul></td>
+        </tr>
+        <tr>
+          <th class="j-linha">Pensando</th>
+          <td><ul class="j-pensa"><li>"Vai pedir cadastro?"</li><li>"Isso aqui carrega no meu 4G?"</li></ul></td>
+          <td><ul class="j-pensa"><li>"Era isso que tinha aqui!"</li><li>"Isso é verdade mesmo ou alguém inventou?"</li></ul></td>
+          <td><ul class="j-pensa"><li>"Aqui não tem nada"</li><li>"Será que o que eu tenho serve?"</li></ul></td>
+          <td><ul class="j-pensa"><li>"Já vi tudo que tinha"</li><li>"Ninguém contou mais nada?"</li></ul></td>
+        </tr>
+        <tr class="j-dores">
+          <th class="j-linha">Dores</th>
+          <td><ul><li>Cadastro antes de ver qualquer coisa</li><li>Demorar pra carregar</li></ul></td>
+          <td><ul><li>Não confiar se é verdade</li><li>Muito texto pra ler no sol</li></ul></td>
+          <td><ul><li>Abrir e não ter nada perto de mim</li><li>Nunca me passou pela cabeça contribuir</li></ul></td>
+          <td><ul><li>Acervo que não cresce</li><li>Abrir e não ter nada perto de mim</li></ul></td>
+        </tr>
+        <tr>
+          <th class="j-linha">Sentindo</th>
+          <td class="j-sente">Curiosidade com desconfiança — pronta para fechar ao primeiro obstáculo</td>
+          <td class="j-sente">Surpresa, e o começo de um vínculo com a rua onde ela sempre andou</td>
+          <td class="j-sente">Pertencimento, e vontade de mostrar que sabe algo da própria cidade</td>
+          <td class="j-sente">Frustração se está igual; curiosidade renovada se cresceu</td>
+        </tr>
+        <tr>
+          <th class="j-linha">Pontos de contato</th>
+          <td><ul class="j-contato"><li>Placa com QR na rua</li><li>Story de um conhecido</li><li>Busca na loja de apps</li></ul></td>
+          <td><ul class="j-contato"><li>Mapa</li><li>Ficha da memória</li><li>Slider</li><li>Áudio</li><li>Fonte declarada</li></ul></td>
+          <td><ul class="j-contato"><li>Câmera AR</li><li>Trilhas</li><li>Salvos e coleções</li><li>Compartilhar como imagem</li></ul></td>
+          <td><ul class="j-contato"><li>Aviso de proximidade</li><li>Linha do tempo</li><li>Feed do ponto</li></ul></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="j-painel">
+    <svg class="j-rosto" viewBox="0 0 120 120" role="img" aria-label="Retrato de Camila">
+    <defs><clipPath id="rc-camila"><circle cx="60" cy="60" r="57"/></clipPath></defs>
+    <g clip-path="url(#rc-camila)">
+      <circle cx="60" cy="60" r="57" fill="#DFDCD1"/>
+      <path d="M60 86c-24 0-40 15-42 36h84c-2-21-18-36-42-36z" fill="#B4471F"/>
+      <rect x="52" y="70" width="16" height="22" rx="8" fill="#B87A55"/>
+      <ellipse cx="60" cy="54" rx="21" ry="24" fill="#CD8E67"/>
+      <path d="M39 52c0-15 9-25 21-25s21 10 21 25c2-6 3-13 1-19-3-11-12-17-22-17s-19 6-22 17c-2 6-1 13 1 19z" fill="#2B2119"/>
+      <path d="M37 46c-3 10-2 22 2 30-6-4-9-14-8-24 1-8 4-14 9-19zM83 46c3 10 2 22-2 30 6-4 9-14 8-24-1-8-4-14-9-19z" fill="#2B2119"/>
+      <ellipse cx="52" cy="54" rx="2.6" ry="3" fill="#2B2119"/>
+      <ellipse cx="68" cy="54" rx="2.6" ry="3" fill="#2B2119"/>
+      <path d="M47 47c3-2 7-2 9 0M64 47c3-2 7-2 9 0" stroke="#2B2119" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M60 58v5c0 1-1 2-2 2" stroke="#8C5B3E" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+      <path d="M54 70c3 3 9 3 12 0" stroke="#8C5B3E" stroke-width="2" fill="none" stroke-linecap="round"/>
+    </g>
+    <circle cx="60" cy="60" r="57" fill="none" stroke="#F4F3EE" stroke-width="2.5"/>
+    </svg>
+    <div>
+      <p class="j-rotulo">Objetivos de Camila</p>
+      <ol class="objetivos"><li>Matar a curiosidade <strong>no momento em que ela aparece</strong>, parada na calçada, sem precisar guardar para pesquisar depois — porque depois ela esquece.</li><li>Entender a cidade onde nasceu com a profundidade que ela sente que falta, sem ter que virar pesquisadora para isso.</li><li>Ter algo interessante para mostrar aos outros: o que ela descobre, ela reposta.</li></ol>
+      <p class="j-rotulo">Sucesso desejado</p>
+      <p class="j-sucesso">Descobrir, em pé na calçada e em menos de um minuto, o que aconteceu no prédio por onde ela passa todo dia — e ter o que mostrar aos outros depois.</p>
+    </div>
+  </div>
+
 
   <p class="foot">FoiAqui · Define 2.1 e 2.2 · n = 10 · coleta de 7 a 9 de setembro de 2026 · amostra por conveniência</p>
 </div>
