@@ -993,6 +993,185 @@ function documento() {
   );
 }
 
+/* ───────────────────────  IMAGENS PARA O README  ───────────────────────
+ *
+ * O GitHub não renderiza HTML com CSS dentro do README, então as páginas
+ * publicadas não servem ali. O que ele renderiza é SVG referenciado como
+ * imagem — o banner do projeto já é assim.
+ *
+ * Por isso o mapa de empatia é remontado aqui em SVG puro, com as caixas
+ * posicionadas por conta própria. Custa uma quebra de linha manual (não há
+ * fluxo de texto em SVG), e paga com uma imagem que abre em qualquer lugar:
+ * README, apresentação de slides, PDF, impressão — sem navegador, sem
+ * captura de tela, sem fonte externa.
+ */
+
+const esc = (s) =>
+  String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+const SANS = 'Helvetica, Arial, sans-serif';
+const COND = "'Arial Narrow', Helvetica, sans-serif";
+
+/**
+ * Quebra o texto em linhas que cabem na largura dada.
+ *
+ * A conta é por contagem de caracteres, não por medida real de fonte: SVG não
+ * mede texto antes de desenhar, e o navegador que mediria é justamente o que
+ * este script evita. O fator 0.53 é a largura média de caractere em Helvetica
+ * — folgado o bastante para não estourar a caixa em nenhuma das notas.
+ */
+function quebra(texto, largura, tamanho = 11.5) {
+  const max = Math.floor(largura / (tamanho * 0.53));
+  const linhas = [];
+  let atual = '';
+  for (const palavra of texto.split(' ')) {
+    const tentativa = atual ? atual + ' ' + palavra : palavra;
+    if (tentativa.length > max && atual) {
+      linhas.push(atual);
+      atual = palavra;
+    } else {
+      atual = tentativa;
+    }
+  }
+  if (atual) linhas.push(atual);
+  return linhas;
+}
+
+const LINHA = 14;
+
+/** Uma nota, com altura calculada a partir do texto que ela recebeu. */
+function nota(texto, x, y, w, faixa) {
+  const linhas = quebra(texto, w - 16);
+  const h = 11 + linhas.length * LINHA + 7;
+  const textos = linhas
+    .map(
+      (l, i) =>
+        `<text x="${x + 8}" y="${y + 19 + i * LINHA}" font-size="11.5" font-family="${SANS}" fill="#1A1D23">${esc(l)}</text>`,
+    )
+    .join('');
+  return {
+    h,
+    svg:
+      `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#F4F3EE" stroke="#CFCABA" stroke-width="1"/>` +
+      `<rect x="${x}" y="${y + h - 3}" width="${w}" height="3" fill="${faixa}"/>` +
+      textos,
+  };
+}
+
+/** Notas empilhadas numa coluna. Devolve o SVG e a altura total ocupada. */
+function coluna(itens, x, y, w, faixa, espaco = 8) {
+  let cursor = y;
+  const partes = [];
+  for (const item of itens) {
+    const n = nota(item, x, cursor, w, faixa);
+    partes.push(n.svg);
+    cursor += n.h + espaco;
+  }
+  return { svg: partes.join(''), altura: cursor - y - espaco };
+}
+
+/** Notas lado a lado, centradas numa faixa horizontal. */
+function fileira(itens, centroX, y, w, faixa, espaco = 12) {
+  const total = itens.length * w + (itens.length - 1) * espaco;
+  let x = centroX - total / 2;
+  const partes = [];
+  let maior = 0;
+  for (const item of itens) {
+    const n = nota(item, x, y, w, faixa);
+    partes.push(n.svg);
+    maior = Math.max(maior, n.h);
+    x += w + espaco;
+  }
+  return { svg: partes.join(''), altura: maior };
+}
+
+const rotulo = (texto, x, y, ancora = 'middle', cor = '#14396E') =>
+  `<text x="${x}" y="${y}" text-anchor="${ancora}" font-family="${COND}" font-size="15" font-weight="700" letter-spacing="1.1" fill="${cor}">${esc(texto)}</text>`;
+
+const AZUL = '#3A6098';
+const FERRUGEM = '#B4471F';
+const VERDE = '#2E6E68';
+
+/**
+ * O mapa de empatia inteiro como um SVG.
+ *
+ * Mesma disposição da página e do material da disciplina: quatro quadrantes
+ * cortados por um X, rosto no centro, Dores e Necessidades embaixo.
+ */
+function mapaSVG(p) {
+  const n = notas[p.id];
+  const L = 940;
+  const meioX = L / 2;
+
+  const topo = fileira(n.pensa, meioX, 46, 190, AZUL);
+  const yMeio = 46 + topo.altura + 34;
+
+  const esq = coluna(n.ouve, 22, yMeio + 26, 205, AZUL);
+  const dir = coluna(n.ve, L - 227, yMeio + 26, 205, AZUL);
+  const alturaMeio = Math.max(esq.altura, dir.altura, 150);
+
+  const yBase = yMeio + 26 + alturaMeio + 30;
+  const base = fileira(n.fala, meioX, yBase + 14, 190, AZUL);
+  const alturaQuadro = yBase + 14 + base.altura + 20;
+
+  const rostoY = yMeio + 26 + alturaMeio / 2 - 58;
+
+  // caixas de baixo, lado a lado
+  const yCaixas = alturaQuadro + 18;
+  const larguraCaixa = (L - 16) / 2;
+  const dores = coluna(n.dores, 36, yCaixas + 46, larguraCaixa - 48, FERRUGEM, 7);
+  const necs = coluna(
+    n.necessidades,
+    larguraCaixa + 52,
+    yCaixas + 46,
+    larguraCaixa - 48,
+    VERDE,
+    7,
+  );
+  const alturaCaixa = Math.max(dores.altura, necs.altura) + 62;
+  const altura = yCaixas + alturaCaixa + 4;
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${L} ${altura}" width="${L}" height="${altura}" role="img" aria-label="Mapa de empatia de ${esc(p.nome)}">
+  <rect width="${L}" height="${altura}" fill="#EAE8E0"/>
+
+  <rect x="2" y="2" width="${L - 4}" height="${alturaQuadro - 2}" fill="none" stroke="#1A1D23" stroke-width="2"/>
+  <g stroke="#CFCABA" stroke-width="1.2" stroke-dasharray="7 5">
+    <line x1="2" y1="2" x2="${L - 2}" y2="${alturaQuadro}"/>
+    <line x1="${L - 2}" y1="2" x2="2" y2="${alturaQuadro}"/>
+  </g>
+
+  ${rotulo('O QUE PENSA E SENTE?', meioX, 30)}
+  ${topo.svg}
+
+  ${rotulo('O QUE OUVE?', 22, yMeio + 12, 'start')}
+  ${esq.svg}
+
+  ${rotulo('O QUE VÊ?', L - 22, yMeio + 12, 'end')}
+  ${dir.svg}
+
+  <svg x="${meioX - 58}" y="${rostoY}" width="116" height="116" viewBox="0 0 120 120">${retratos[p.id]}
+  </svg>
+
+  ${rotulo('O QUE DIZ E FAZ?', meioX, yBase)}
+  ${base.svg}
+
+  <rect x="2" y="${yCaixas}" width="${larguraCaixa - 2}" height="${alturaCaixa}" fill="#EAE8E0" stroke="#1A1D23" stroke-width="2"/>
+  ${rotulo('DORES', 20, yCaixas + 28, 'start', FERRUGEM)}
+  ${dores.svg}
+
+  <rect x="${larguraCaixa + 16}" y="${yCaixas}" width="${larguraCaixa - 18}" height="${alturaCaixa}" fill="#EAE8E0" stroke="#1A1D23" stroke-width="2"/>
+  ${rotulo('NECESSIDADES', larguraCaixa + 34, yCaixas + 28, 'start', VERDE)}
+  ${necs.svg}
+</svg>
+`;
+}
+
+/** O retrato sozinho, para a tabela de personas do README. */
+const retratoSVG = (p) =>
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120" role="img" aria-label="Retrato de ${esc(p.nome)}">${retratos[p.id]}
+</svg>
+`;
+
 /* ─────────────────────────────  SAÍDA  ───────────────────────────── */
 
 mkdirSync(saida, { recursive: true });
@@ -1004,6 +1183,17 @@ for (const p of personas) {
   const arquivo = `persona-${p.id}.html`;
   writeFileSync(saida + arquivo, folhaDaPersona(p), 'utf8');
   console.log('docs/' + arquivo);
+}
+
+
+/* As mesmas personas como imagem, para o README e para slides. */
+const imagens = fileURLToPath(new URL('../../.github/personas/', import.meta.url));
+mkdirSync(imagens, { recursive: true });
+
+for (const p of personas) {
+  writeFileSync(imagens + p.id + '.svg', retratoSVG(p), 'utf8');
+  writeFileSync(imagens + 'mapa-' + p.id + '.svg', mapaSVG(p), 'utf8');
+  console.log('.github/personas/' + p.id + '.svg  ·  mapa-' + p.id + '.svg');
 }
 
 console.log(`\n${personas.length} personas · ${amostra.length} respondentes · 4 páginas`);

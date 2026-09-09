@@ -12,6 +12,7 @@
   <img src="https://img.shields.io/badge/TypeScript-strict-14396E?style=flat-square" alt="TypeScript strict">
   <img src="https://img.shields.io/badge/contraste-29%2F29%20WCAG%20AA-2E6E68?style=flat-square" alt="29 de 29 pares passam no WCAG AA">
   <img src="https://img.shields.io/badge/acervo-12%20mem%C3%B3rias%20reais-B4471F?style=flat-square" alt="12 memórias reais de São José dos Campos">
+  <img src="https://img.shields.io/badge/personas-10%20respostas%20reais-2E6E68?style=flat-square" alt="Personas construídas sobre dez respostas reais">
   <img src="https://img.shields.io/badge/APK-aut%C3%B4nomo-B4471F?style=flat-square" alt="Distribuído como APK autônomo">
 </p>
 
@@ -38,6 +39,8 @@ precisa mostrar onde falta, não só onde já tem.
 📄 **[O dossiê completo do projeto](https://claude.ai/code/artifact/84a310f1-57f1-4027-8204-adce8bcf60bf)** — problema, benchmarking, as 12 decisões, a identidade e o estado real.
 
 🗺️ **[A rota](https://claude.ai/code/artifact/8473c558-4c7a-4a25-9c4b-3b17b52ee4bd)** — o plano em cinco horizontes, do protótipo que existe até a AR de verdade.
+
+👤 **[As personas](https://claude.ai/code/artifact/160fbeec-2229-4c55-a82a-74b06f8d8936)** — três pessoas e três mapas de empatia, montados sobre dez respostas reais.
 
 <br>
 
@@ -201,6 +204,113 @@ acento âmbar, textura de papel, display em Fraunces. Caiu por duas razões:
 2. **Contradizia o uso real.** A pesquisa define o contexto como *"sol na tela,
    mão ocupada, sinal instável"*. Interface escura sob sol direto é pior de ler,
    e a persona principal tem 70 anos. O escuro era poético, não funcional.
+
+</details>
+
+<br>
+
+## Para quem isto é
+
+<table>
+<tr>
+<td width="33%" align="center" valign="top">
+<img src=".github/personas/camila.svg" width="118" alt="Retrato ilustrado de Camila"><br>
+<b>CAMILA, 21</b><br>
+<sub>primária · quem descobre</sub><br><br>
+<sub><i>"O que será que faziam ai dentro?"</i></sub><br><br>
+<sub>Tentou achar a história de um lugar<br>e não achou. Desiste na primeira<br>barreira: conta, cobrança, muito texto.</sub><br><br>
+<a href="https://claude.ai/code/artifact/cb6e1480-9463-4881-bf88-720b10ac77cb">ficha completa</a>
+</td>
+<td width="33%" align="center" valign="top">
+<img src=".github/personas/tiago.svg" width="118" alt="Retrato ilustrado de Tiago"><br>
+<b>TIAGO, 29</b><br>
+<sub>primária · quem guarda</sub><br><br>
+<sub><i>"Não achei que fosse<br>interessar a alguém"</i></sub><br><br>
+<sub>Tem a foto na caixa de sapato e conta<br>a história de boca há anos. Nunca lhe<br>ocorreu que aquilo pudesse ser publicado.</sub><br><br>
+<a href="https://claude.ai/code/artifact/f6ca4feb-a2da-4fdd-8e7a-f97719560bfa">ficha completa</a>
+</td>
+<td width="33%" align="center" valign="top">
+<img src=".github/personas/neuza.svg" width="118" alt="Retrato ilustrado de Neuza"><br>
+<b>NEUZA, 58</b><br>
+<sub>secundária · quem diria não</sub><br><br>
+<sub><i>"A vida tá passando<br>rápido demais"</i></sub><br><br>
+<sub>Chegou de outro estado há três décadas.<br>Não enviaria nada — e o que ela pede<br>não é facilidade, é controle.</sub><br><br>
+<a href="https://claude.ai/code/artifact/8a43c4fb-faea-4f23-8321-0b77f9e4e17e">ficha completa</a>
+</td>
+</tr>
+</table>
+
+Não são invenção. Saíram de **dez respostas reais** a um formulário de 21 perguntas,
+divulgado no Instagram entre 7 e 9 de setembro de 2026 — e cada persona registra
+de quais respondentes ela veio, no
+**[documento de pesquisa completo](https://claude.ai/code/artifact/160fbeec-2229-4c55-a82a-74b06f8d8936)**.
+
+Amostra pequena e por conveniência: dez respostas não sustentam porcentagem, e por
+isso tudo aqui está em contagem. O que elas sustentam é padrão de comportamento —
+que é do que persona precisa.
+
+### O que a pesquisa derrubou
+
+> [!IMPORTANT]
+> **A barreira de quem contribui não era técnica.** Cinco das sete pessoas que
+> nunca mostraram sua foto ou história responderam *"nunca me passou pela cabeça"*.
+> **Ninguém** marcou "não sei mexer direito".
+>
+> Metade deste app foi construída para reduzir esforço de publicação — foto sem
+> relato, ditado, modo entrevista. Isso resolve um problema que quase ninguém tem.
+> O que falta é o **convite**.
+
+> [!WARNING]
+> **As duas pessoas de 50 a 64 anos responderam que não enviariam nada.** As duas.
+>
+> E o que elas pedem não é esforço menor: é *saber quem vai ver*, *poder apagar
+> depois*, *aparecer como autora*. O app permite apagar — mas só descobre isso
+> quem já enviou. A promessa precisa estar na tela do envio, junto do botão.
+
+| | |
+|--:|:--|
+| **8 de 10** | já tentaram descobrir a história de um lugar da sua cidade |
+| **5 de 10** | tentaram e **não acharam** |
+| **2 dos 3** | que acharam chegaram lá **perguntando a alguém mais velho** — um sem usar Google |
+| **6 de 10** | desistiriam se tivessem que **pagar** — acima de criar conta (4) e muito texto (4) |
+| **3 de 10** | **não sabem** se têm foto antiga guardada: não é ausência de acervo, é gaveta nunca aberta |
+| **6 de 10** | nasceram numa cidade e moram em outra — foi o que revelou a terceira persona |
+| **3 de 10** | pediram **espontaneamente uma placa física** na rua. O recurso já existe e estava catalogado como acessório |
+
+### Os mapas de empatia
+
+Formato do material da disciplina: quatro quadrantes cortados por um X, o rosto no
+centro, Dores e Necessidades em caixas à parte.
+
+<img src=".github/personas/mapa-camila.svg" width="100%" alt="Mapa de empatia de Camila">
+
+<img src=".github/personas/mapa-tiago.svg" width="100%" alt="Mapa de empatia de Tiago">
+
+<img src=".github/personas/mapa-neuza.svg" width="100%" alt="Mapa de empatia de Neuza">
+
+<details>
+<summary><b>Como estas páginas e imagens são geradas</b></summary>
+
+<br>
+
+```bash
+cd foiaqui && npm run personas
+```
+
+Sai o documento inteiro, uma folha por persona em `docs/`, e os retratos e mapas
+em SVG dentro de `.github/personas/`. As quatro páginas compartilham CSS, retratos
+e dados: escritas à mão, uma correção do professor viraria quatro edições e três
+chances de esquecer uma.
+
+Os mapas são **SVG montado no script**, não captura de tela — o GitHub não renderiza
+HTML com CSS no README, mas renderiza SVG. Custa uma quebra de linha manual (não há
+fluxo de texto em SVG) e paga com imagem que abre em qualquer lugar: README, slide,
+PDF, impressão.
+
+**As respostas brutas não estão neste repositório.** Têm nome, telefone e e-mail de
+dez pessoas, e o repositório é público — o `.gitignore` barra isso por construção.
+Entra só o anonimizado: falas atribuídas por faixa etária e cidade, e códigos
+`R1…R10` sem chave de identificação.
 
 </details>
 
@@ -418,7 +528,7 @@ CLAUDE.md                 fonte única de verdade do produto e do design
 FoiAqui-UX.xlsx           pesquisa: entrevista com a PO, benchmarking, 12 decisões, BMC
 foiaqui-prototipo.html    protótipo original — referência de FLUXO (aparência superada)
 design/                   as 3 direções de identidade estudadas + o documento da escolhida
-docs/                     o dossiê e a rota (docs/rota.html — o plano em cinco horizontes)
+docs/                     dossiê, rota e as personas (uma folha por persona)
 foiaqui/
   src/theme/              cores, tipografia, espaçamento — nada de hex solto fora daqui
   src/components/         Plaque, MemorySheet, MemoryPin, RevealSlider, Glass, Type...
@@ -426,6 +536,7 @@ foiaqui/
   src/data/               acervo semeado, distância, agrupamento, estilo do mapa
   src/store/              estado global (Zustand); acervo, rascunho e ajustes persistem
   scripts/contraste.mjs   auditoria WCAG AA (portão: falha o processo)
+  scripts/personas.mjs    gera as personas, os mapas de empatia e os SVG do README
   scripts/icone.mjs       gera o ícone do app a partir dos tokens da identidade
   scripts/dossie-pdf.mjs  imprime docs/dossie.html em PDF com as fontes reais
 ```
