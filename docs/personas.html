@@ -149,21 +149,123 @@
   }
   .fonte p { font-size: .85rem; line-height: 1.5; margin: 0; color: var(--ink-dim); max-width: none; }
   .fonte code { font-family: var(--mono); font-size: .8rem; color: var(--accent); }
-  .empatia {
-    display: grid; gap: 1px; background: var(--line);
-    border: 1px solid var(--line); margin: 14px 0 0;
+  /* ── mapa de empatia, no formato do material da disciplina ──────────
+     Quatro quadrantes cortados por um X, rosto no centro, Dores e
+     Necessidades em caixas separadas embaixo. */
+  .mapa-empatia { margin: 16px 0 0; }
+  .mapa {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    grid-template-areas:
+      "topo topo topo"
+      "esq  face dir"
+      "base base base";
+    gap: 10px;
+    align-items: center;
+    padding: 18px;
+    border: 2px solid var(--ink);
+    background: var(--surface);
   }
-  @media (min-width: 640px) { .empatia { grid-template-columns: 1fr 1fr; } }
-  .celula { background: var(--ground); padding: 15px 17px; }
-  .celula h5 {
-    font-family: var(--plate); font-size: 1.05rem; letter-spacing: .05em;
-    text-transform: uppercase; margin: 0 0 8px; color: var(--plaque);
+  .mapa-x {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
   }
-  .celula.dor h5 { color: var(--accent); }
-  .celula.nec h5 { color: var(--ok); }
-  .celula ul { margin: 0; padding-left: 17px; }
-  .celula li { font-size: .9rem; line-height: 1.45; margin-bottom: 5px; }
-  .celula li em { font-family: var(--story); font-style: italic; }
+  .mapa-x line {
+    stroke: var(--line);
+    stroke-width: .35;
+    stroke-dasharray: 2 1.6;
+    vector-effect: non-scaling-stroke;
+  }
+  .quad { position: relative; z-index: 1; min-width: 0; }
+  .q-topo { grid-area: topo; }
+  .q-esq  { grid-area: esq; }
+  .q-dir  { grid-area: dir; }
+  .q-base { grid-area: base; }
+
+  .quad-rotulo {
+    font-family: var(--plate);
+    font-size: 1.05rem;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    text-align: center;
+    color: var(--plaque);
+    margin: 0 0 8px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .quad-rotulo { color: var(--on-plaque-d); }
+  }
+  :root[data-theme="dark"] .quad-rotulo { color: var(--on-plaque-d); }
+
+  .mapa-rosto {
+    grid-area: face;
+    position: relative;
+    z-index: 2;
+    width: 116px;
+    height: 116px;
+    justify-self: center;
+  }
+  .mapa-rosto svg { width: 100%; height: 100%; display: block; }
+
+  .notas {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 7px;
+  }
+  .nota {
+    background: var(--ground);
+    border: 1px solid var(--line);
+    border-bottom: 3px solid var(--plaque-soft);
+    padding: 7px 10px;
+    font-size: .8rem;
+    line-height: 1.3;
+    max-width: 190px;
+    box-shadow: 1px 1px 0 rgba(0, 0, 0, .07);
+  }
+  /* leve desalinho, como bilhete colado à mão — nunca o suficiente para
+     atrapalhar a leitura */
+  .n0 { transform: rotate(-.7deg); }
+  .n1 { transform: rotate(.5deg); }
+  .n2 { transform: rotate(.8deg); }
+  .n3 { transform: rotate(-.4deg); }
+
+  .mapa-baixo { display: grid; gap: 12px; margin-top: 12px; }
+  @media (min-width: 640px) { .mapa-baixo { grid-template-columns: 1fr 1fr; } }
+  .caixa { border: 2px solid var(--ink); background: var(--surface); padding: 14px 16px; }
+  .caixa-rotulo {
+    font-family: var(--plate);
+    font-size: 1.05rem;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    margin: 0 0 10px;
+  }
+  .caixa.dor .caixa-rotulo { color: var(--accent); }
+  .caixa.nec .caixa-rotulo { color: var(--ok); }
+  .caixa.dor .nota { border-bottom-color: var(--accent); }
+  .caixa.nec .nota { border-bottom-color: var(--ok); }
+  .caixa .notas { justify-content: flex-start; }
+
+  /* No celular, quatro triângulos não se leem: o mapa vira coluna, com os
+     mesmos rótulos e a mesma ordem. */
+  @media (max-width: 759px) {
+    .mapa {
+      grid-template-columns: 1fr;
+      grid-template-areas: "face" "topo" "esq" "dir" "base";
+      gap: 18px;
+    }
+    .mapa-x { display: none; }
+    .nota { max-width: none; }
+    .notas { justify-content: flex-start; }
+    .quad-rotulo { text-align: left; }
+  }
+
   .scroll { overflow-x: auto; margin: 18px 0; }
   table { border-collapse: collapse; width: 100%; min-width: 620px; font-size: .88rem; }
   th, td { text-align: left; padding: 9px 11px; border-bottom: 1px solid var(--line); vertical-align: top; }
@@ -376,61 +478,95 @@
 
   <h3>Mapa de empatia · Camila</h3>
   
-  <div class="empatia">
-    <div class="celula ">
-      <h5>Vê</h5>
-      <ul>
-        <li>Fachadas antigas fechadas, com placa de aluguel</li>
-        <li>Placas de rua e monumentos sem nenhuma explicação do que houve ali</li>
-        <li>Resultado de Google que fala do imóvel, nunca do lugar</li>
-        <li>Conteúdo de história em vídeo curto no feed, sobre outras cidades</li>
+  <div class="mapa-empatia">
+    <div class="mapa">
+      <svg class="mapa-x" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+        <line x1="0" y1="0" x2="100" y2="100"/>
+        <line x1="100" y1="0" x2="0" y2="100"/>
+      </svg>
+
+      <div class="quad q-topo">
+        <p class="quad-rotulo">O que pensa e sente?</p>
+        <ul class="notas">
+          <li class="nota n0">O que será que faziam ali?</li>
+          <li class="nota n1">Acho bonito antes de achar histórico</li>
+          <li class="nota n2">A cidade tem camadas que eu não alcanço</li>
+          <li class="nota n3">História é coisa de quem estudou</li>
+        </ul>
+      </div>
+
+      <div class="quad q-esq">
+        <p class="quad-rotulo">O que ouve?</p>
+        <ul class="notas">
+          <li class="nota n0">Professor citando de passagem</li>
+          <li class="nota n1">Jornal local, quando vira notícia</li>
+          <li class="nota n2">Ninguém mais velho por perto pra perguntar</li>
+        </ul>
+      </div>
+      <div class="mapa-rosto">
+        <svg viewBox="0 0 120 120" role="img" aria-label="Retrato de Camila">
+    <defs><clipPath id="rc-camila"><circle cx="60" cy="60" r="57"/></clipPath></defs>
+    <g clip-path="url(#rc-camila)">
+      <circle cx="60" cy="60" r="57" fill="#DFDCD1"/>
+      <path d="M60 86c-24 0-40 15-42 36h84c-2-21-18-36-42-36z" fill="#B4471F"/>
+      <rect x="52" y="70" width="16" height="22" rx="8" fill="#B87A55"/>
+      <ellipse cx="60" cy="54" rx="21" ry="24" fill="#CD8E67"/>
+      <path d="M39 52c0-15 9-25 21-25s21 10 21 25c2-6 3-13 1-19-3-11-12-17-22-17s-19 6-22 17c-2 6-1 13 1 19z" fill="#2B2119"/>
+      <path d="M37 46c-3 10-2 22 2 30-6-4-9-14-8-24 1-8 4-14 9-19zM83 46c3 10 2 22-2 30 6-4 9-14 8-24-1-8-4-14-9-19z" fill="#2B2119"/>
+      <ellipse cx="52" cy="54" rx="2.6" ry="3" fill="#2B2119"/>
+      <ellipse cx="68" cy="54" rx="2.6" ry="3" fill="#2B2119"/>
+      <path d="M47 47c3-2 7-2 9 0M64 47c3-2 7-2 9 0" stroke="#2B2119" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M60 58v5c0 1-1 2-2 2" stroke="#8C5B3E" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+      <path d="M54 70c3 3 9 3 12 0" stroke="#8C5B3E" stroke-width="2" fill="none" stroke-linecap="round"/>
+    </g>
+    <circle cx="60" cy="60" r="57" fill="none" stroke="#F4F3EE" stroke-width="2.5"/>
+        </svg>
+      </div>
+
+      <div class="quad q-dir">
+        <p class="quad-rotulo">O que vê?</p>
+        <ul class="notas">
+          <li class="nota n0">Fachadas fechadas com placa de aluguel</li>
+          <li class="nota n1">Placas de rua sem explicação nenhuma</li>
+          <li class="nota n2">Google que só fala do imóvel</li>
+          <li class="nota n3">Vídeo de história — de outras cidades</li>
+        </ul>
+      </div>
+
+      <div class="quad q-base">
+        <p class="quad-rotulo">O que diz e faz?</p>
+        <ul class="notas">
+          <li class="nota n0">Pesquisa uma vez e desiste</li>
+          <li class="nota n1">Fotografa fachada e posta no story</li>
+          <li class="nota n2">Reposta o que descobre</li>
+          <li class="nota n3">Mandaria o que já tem no celular</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="mapa-baixo">
+
+    <div class="caixa dor">
+      <p class="caixa-rotulo">Dores</p>
+      <ul class="notas">
+        <li class="nota n0">Procurei e não achei</li>
+        <li class="nota n1">Cadastro antes de ver qualquer coisa</li>
+        <li class="nota n2">Se for pago, eu fecho</li>
+        <li class="nota n3">Muito texto pra ler no sol</li>
+        <li class="nota n0">Abrir e não ter nada perto de mim</li>
       </ul>
     </div>
-    <div class="celula ">
-      <h5>Ouve</h5>
-      <ul>
-        <li>Professores citando de passagem que "aqui tinha um cinema"</li>
-        <li>Jornal e TV local, quando o assunto vira notícia de tombamento</li>
-        <li>Quase nada dos mais velhos: não tem com quem puxar esse assunto</li>
+
+    <div class="caixa nec">
+      <p class="caixa-rotulo">Necessidades</p>
+      <ul class="notas">
+        <li class="nota n0">Resposta ali, na hora</li>
+        <li class="nota n1">Uma placa na rua que me convide</li>
+        <li class="nota n2">Tom de conversa, não de verbete</li>
+        <li class="nota n3">Pouco texto, com imagem</li>
+        <li class="nota n0">Poder mostrar aos outros</li>
       </ul>
     </div>
-    <div class="celula ">
-      <h5>Pensa e sente</h5>
-      <ul>
-        <li><em>"O que será que faziam ai dentro?"</em> — a pergunta volta toda vez e nunca é respondida</li>
-        <li>Acha bonito antes de achar histórico: entra pela arquitetura</li>
-        <li>Sente que a cidade tem camadas que ela não alcança</li>
-        <li>Não se sente autorizada a "ser de história" — isso é coisa de quem estudou</li>
-      </ul>
-    </div>
-    <div class="celula ">
-      <h5>Fala e faz</h5>
-      <ul>
-        <li>Pesquisa no Google na hora, uma vez, e desiste se não achar</li>
-        <li>Fotografa fachada bonita e posta no story</li>
-        <li>Reposta o que descobre — é vetor de divulgação, não só leitora</li>
-        <li>Diria que mandaria uma foto ou história que já tem</li>
-      </ul>
-    </div>
-    <div class="celula dor">
-      <h5>Dores</h5>
-      <ul>
-        <li>Procurou e não achou: a informação existe em algum lugar, mas não onde ela procura</li>
-        <li>Cadastro antes de ver qualquer coisa — fecha o app</li>
-        <li>Cobrança: desiste na hora</li>
-        <li>Parede de texto e carregamento lento, em pé na rua com dados limitados</li>
-        <li>Chegar ao app e não ter nada perto dela</li>
-      </ul>
-    </div>
-    <div class="celula nec">
-      <h5>Necessidades</h5>
-      <ul>
-        <li>Resposta imediata, no lugar, sem etapa anterior</li>
-        <li>Alguma coisa <strong>no mundo físico</strong> que a convide — placa, cartaz, QR</li>
-        <li>História contada em tom de conversa, não de verbete</li>
-        <li>Pouco texto por vez, com imagem</li>
-        <li>Poder mostrar aos outros o que encontrou</li>
-      </ul>
     </div>
   </div>
 
@@ -498,61 +634,95 @@
 
   <h3>Mapa de empatia · Tiago</h3>
   
-  <div class="empatia">
-    <div class="celula ">
-      <h5>Vê</h5>
-      <ul>
-        <li>O álbum de papel da mãe, que ninguém abre desde a última mudança</li>
-        <li>Prédios vazios no centro, e gente dormindo na porta deles</li>
-        <li>O parque de hoje sobre o hospital de ontem — os dois ao mesmo tempo</li>
-        <li>Redes sociais cheias de conteúdo, nenhum sobre o que ele sabe</li>
+  <div class="mapa-empatia">
+    <div class="mapa">
+      <svg class="mapa-x" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+        <line x1="0" y1="0" x2="100" y2="100"/>
+        <line x1="100" y1="0" x2="0" y2="100"/>
+      </svg>
+
+      <div class="quad q-topo">
+        <p class="quad-rotulo">O que pensa e sente?</p>
+        <ul class="notas">
+          <li class="nota n0">Não achei que fosse interessar a alguém</li>
+          <li class="nota n1">Orgulho de saber o que os outros não sabem</li>
+          <li class="nota n2">Prédio vazio me incomoda</li>
+          <li class="nota n3">Publicar é pra quem tem público</li>
+        </ul>
+      </div>
+
+      <div class="quad q-esq">
+        <p class="quad-rotulo">O que ouve?</p>
+        <ul class="notas">
+          <li class="nota n0">A família conta quando eu pergunto</li>
+          <li class="nota n1">O tio que sabe das coisas</li>
+          <li class="nota n2">Ninguém pedindo o que eu tenho</li>
+        </ul>
+      </div>
+      <div class="mapa-rosto">
+        <svg viewBox="0 0 120 120" role="img" aria-label="Retrato de Tiago">
+    <defs><clipPath id="rc-tiago"><circle cx="60" cy="60" r="57"/></clipPath></defs>
+    <g clip-path="url(#rc-tiago)">
+      <circle cx="60" cy="60" r="57" fill="#DFDCD1"/>
+      <path d="M60 86c-24 0-40 15-42 36h84c-2-21-18-36-42-36z" fill="#2E6E68"/>
+      <rect x="52" y="70" width="16" height="22" rx="8" fill="#9C6844"/>
+      <ellipse cx="60" cy="54" rx="21" ry="24" fill="#B37C55"/>
+      <path d="M39 50c1-13 10-21 21-21s20 8 21 21c1-4 1-9 0-13-2-9-10-15-21-15s-19 6-21 15c-1 4-1 9 0 13z" fill="#241C14"/>
+      <path d="M43 62c0 12 7 20 17 20s17-8 17-20c1 8-1 16-6 21-3 3-7 5-11 5s-8-2-11-5c-5-5-7-13-6-21z" fill="#241C14"/>
+      <ellipse cx="52" cy="53" rx="2.6" ry="3" fill="#241C14"/>
+      <ellipse cx="68" cy="53" rx="2.6" ry="3" fill="#241C14"/>
+      <path d="M46 46c3-2 8-2 10 1M64 47c2-3 7-3 10-1" stroke="#241C14" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+      <path d="M60 57v5c0 1-1 2-2 2" stroke="#7C4F32" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+      <path d="M54 69c3 2 9 2 12 0" stroke="#5E3A24" stroke-width="2" fill="none" stroke-linecap="round"/>
+    </g>
+    <circle cx="60" cy="60" r="57" fill="none" stroke="#F4F3EE" stroke-width="2.5"/>
+        </svg>
+      </div>
+
+      <div class="quad q-dir">
+        <p class="quad-rotulo">O que vê?</p>
+        <ul class="notas">
+          <li class="nota n0">O álbum da mãe que ninguém abre</li>
+          <li class="nota n1">Prédios vazios e gente na porta</li>
+          <li class="nota n2">O parque que já foi hospital</li>
+          <li class="nota n3">Rede social sem nada do que eu sei</li>
+        </ul>
+      </div>
+
+      <div class="quad q-base">
+        <p class="quad-rotulo">O que diz e faz?</p>
+        <ul class="notas">
+          <li class="nota n0">Conto a história do bisavô sempre</li>
+          <li class="nota n1">Pergunto pros mais velhos</li>
+          <li class="nota n2">Guardo, não digitalizo</li>
+          <li class="nota n3">Mandaria só a foto</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="mapa-baixo">
+
+    <div class="caixa dor">
+      <p class="caixa-rotulo">Dores</p>
+      <ul class="notas">
+        <li class="nota n0">Nunca me passou pela cabeça</li>
+        <li class="nota n1">Acho que não interessa a ninguém</li>
+        <li class="nota n2">A foto é de papel</li>
+        <li class="nota n3">Escrever relato dá trabalho</li>
+        <li class="nota n0">Preciso ver gente séria usando</li>
       </ul>
     </div>
-    <div class="celula ">
-      <h5>Ouve</h5>
-      <ul>
-        <li>A família: é a fonte principal, e a que respondeu quando ele perguntou</li>
-        <li>O tio que sabe das coisas — o "arquivo" que funcionou de verdade</li>
-        <li>Ninguém pedindo o que ele tem: nenhum convite chegou até hoje</li>
+
+    <div class="caixa nec">
+      <p class="caixa-rotulo">Necessidades</p>
+      <ul class="notas">
+        <li class="nota n0">Que alguém me peça</li>
+        <li class="nota n1">Ver que outros já contaram</li>
+        <li class="nota n2">Dois minutos, sem escrever nada</li>
+        <li class="nota n3">Saber quem cuida disso</li>
+        <li class="nota n0">Que fique lá sem eu estar junto</li>
       </ul>
     </div>
-    <div class="celula ">
-      <h5>Pensa e sente</h5>
-      <ul>
-        <li><em>"Não achei que fosse interessar a alguém"</em> — a frase que trava tudo</li>
-        <li>Orgulho discreto de saber o que os outros não sabem do lugar</li>
-        <li>Vê a cidade com incômodo social, não com nostalgia</li>
-        <li>Não se enxerga como alguém que "publica" — publicar é para quem tem público</li>
-      </ul>
-    </div>
-    <div class="celula ">
-      <h5>Fala e faz</h5>
-      <ul>
-        <li>Conta a história do bisavô no sanatório sempre que o parque vem à conversa</li>
-        <li>Pergunta aos mais velhos quando fica curioso — e obtém resposta</li>
-        <li>Guarda, não digitaliza: as fotos seguem em papel</li>
-        <li>Se fosse enviar, preferiria <strong>só mandar a foto, sem escrever nada</strong></li>
-      </ul>
-    </div>
-    <div class="celula dor">
-      <h5>Dores</h5>
-      <ul>
-        <li><strong>Nunca lhe passou pela cabeça</strong> que aquilo pudesse ser publicado — não existe o gesto</li>
-        <li>Acha que o que ele tem não interessa a ninguém</li>
-        <li>A foto está em papel: digitalizar parece trabalho, e não há scanner em casa</li>
-        <li>Escrever um relato é esforço que ele não vai fazer; falar, faz o tempo todo</li>
-        <li>Desconfia de plataforma sem gente séria: precisa ver que o lugar é levado a sério</li>
-      </ul>
-    </div>
-    <div class="celula nec">
-      <h5>Necessidades</h5>
-      <ul>
-        <li>Ser <strong>convidado explicitamente</strong>, no lugar e no momento — o convite é o produto</li>
-        <li>Ver que outras pessoas contaram coisas parecidas, para saber que interessa</li>
-        <li>Caminho de dois minutos: fotografar a foto de papel e mandar, sem redigir nada</li>
-        <li>Prova de seriedade visível: quem mantém, quem revisa, o que acontece depois</li>
-        <li>Que a história fique ligada ao ponto, e não a ele estar presente para contá-la</li>
-      </ul>
     </div>
   </div>
 
@@ -627,60 +797,101 @@
 
   <h3>Mapa de empatia · Neuza</h3>
   
-  <div class="empatia">
-    <div class="celula ">
-      <h5>Vê</h5>
-      <ul>
-        <li>Uma cidade que mudou muito desde que ela chegou, sem registro de como era</li>
-        <li>Nada sobre história local: nem placa, nem jornal, nem post</li>
-        <li>Fotos da família que ficaram a dois mil quilômetros daqui</li>
+  <div class="mapa-empatia">
+    <div class="mapa">
+      <svg class="mapa-x" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+        <line x1="0" y1="0" x2="100" y2="100"/>
+        <line x1="100" y1="0" x2="0" y2="100"/>
+      </svg>
+
+      <div class="quad q-topo">
+        <p class="quad-rotulo">O que pensa e sente?</p>
+        <ul class="notas">
+          <li class="nota n0">A vida tá passando rápido demais</li>
+          <li class="nota n1">Minha memória começa tarde demais</li>
+          <li class="nota n2">Onde é que isso vai parar?</li>
+          <li class="nota n3">O que é meu tem que continuar meu</li>
+        </ul>
+      </div>
+
+      <div class="quad q-esq">
+        <p class="quad-rotulo">O que ouve?</p>
+        <ul class="notas">
+          <li class="nota n0">Em lugar nenhum</li>
+          <li class="nota n1">Os filhos não perguntam</li>
+          <li class="nota n2">Notícia de demolição, quando dá</li>
+        </ul>
+      </div>
+      <div class="mapa-rosto">
+        <svg viewBox="0 0 120 120" role="img" aria-label="Retrato de Neuza">
+    <defs><clipPath id="rc-neuza"><circle cx="60" cy="60" r="57"/></clipPath></defs>
+    <g clip-path="url(#rc-neuza)">
+      <circle cx="60" cy="60" r="57" fill="#DFDCD1"/>
+      <path d="M60 86c-24 0-40 15-42 36h84c-2-21-18-36-42-36z" fill="#14396E"/>
+      <rect x="52" y="70" width="16" height="22" rx="8" fill="#8A5B3C"/>
+      <ellipse cx="60" cy="54" rx="21" ry="24" fill="#A06D48"/>
+      <path d="M38 54c-1-16 9-27 22-27s23 11 22 27c2-7 2-15 0-21-3-10-12-16-22-16s-19 6-22 16c-2 6-2 14 0 21z" fill="#8E8C88"/>
+      <path d="M38 52c4-6 10-9 15-9-6 3-11 8-13 14zM82 52c-4-6-10-9-15-9 6 3 11 8 13 14z" fill="#C9C7C2"/>
+      <path d="M78 34c7 2 11 8 11 15 0 5-2 9-5 12 2-9 0-19-6-27z" fill="#8E8C88"/>
+      <ellipse cx="52" cy="55" rx="2.5" ry="2.8" fill="#241C14"/>
+      <ellipse cx="68" cy="55" rx="2.5" ry="2.8" fill="#241C14"/>
+      <g fill="none" stroke="#1A1D23" stroke-width="1.8">
+        <circle cx="52" cy="55" r="7.5"/>
+        <circle cx="68" cy="55" r="7.5"/>
+        <path d="M59.5 55h1M44.5 54l-4-1M75.5 54l4-1"/>
+      </g>
+      <path d="M45 45c3-2 7-2 9 0M66 45c3-2 7-2 9 0" stroke="#6E6B66" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M60 60v4c0 1-1 2-2 2" stroke="#6E452C" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+      <path d="M54 71c3 2 9 2 12 0" stroke="#6E452C" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M44 63c2 2 4 3 5 3M71 63c-2 2-4 3-5 3" stroke="#8A5B3C" stroke-width="1.3" fill="none" stroke-linecap="round" opacity=".7"/>
+    </g>
+    <circle cx="60" cy="60" r="57" fill="none" stroke="#F4F3EE" stroke-width="2.5"/>
+        </svg>
+      </div>
+
+      <div class="quad q-dir">
+        <p class="quad-rotulo">O que vê?</p>
+        <ul class="notas">
+          <li class="nota n0">Uma cidade que mudou sem registro</li>
+          <li class="nota n1">Nenhuma placa contando nada</li>
+          <li class="nota n2">As fotos ficaram no Nordeste</li>
+        </ul>
+      </div>
+
+      <div class="quad q-base">
+        <p class="quad-rotulo">O que diz e faz?</p>
+        <ul class="notas">
+          <li class="nota n0">Conto como era quando cheguei</li>
+          <li class="nota n1">Uso o celular todo dia</li>
+          <li class="nota n2">Perguntei a alguém e descobri</li>
+          <li class="nota n3">Não mandaria nada, hoje</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="mapa-baixo">
+
+    <div class="caixa dor">
+      <p class="caixa-rotulo">Dores</p>
+      <ul class="notas">
+        <li class="nota n0">Não sei quem vai ver</li>
+        <li class="nota n1">E se usarem de um jeito errado?</li>
+        <li class="nota n2">Não dá pra desfazer</li>
+        <li class="nota n3">Cadastro logo na entrada</li>
+        <li class="nota n0">Cheguei depois — vale menos?</li>
       </ul>
     </div>
-    <div class="celula ">
-      <h5>Ouve</h5>
-      <ul>
-        <li><strong>Em lugar nenhum</strong> — foi a resposta literal sobre onde ouve falar da história da cidade</li>
-        <li>Os filhos, nascidos aqui, que têm outras referências e não perguntam</li>
-        <li>Notícia de demolição ou reforma, quando vira assunto</li>
+
+    <div class="caixa nec">
+      <p class="caixa-rotulo">Necessidades</p>
+      <ul class="notas">
+        <li class="nota n0">Dizer quem vê, antes de eu enviar</li>
+        <li class="nota n1">Poder apagar depois</li>
+        <li class="nota n2">Meu nome, se eu quiser</li>
+        <li class="nota n3">Memória de quem chegou também conta</li>
+        <li class="nota n0">Ver antes de decidir</li>
       </ul>
     </div>
-    <div class="celula ">
-      <h5>Pensa e sente</h5>
-      <ul>
-        <li><em>"A vida tá passando rápido demais"</em> — o prédio antigo mede o tempo dela, não o da cidade</li>
-        <li>Sente que a memória dela "não conta", porque começa tarde demais</li>
-        <li>Desconfia do destino do que se entrega na internet</li>
-        <li>Quer ser creditada: o que é dela precisa continuar sendo dela</li>
-      </ul>
-    </div>
-    <div class="celula ">
-      <h5>Fala e faz</h5>
-      <ul>
-        <li>Conta como era o lugar quando ela chegou — a memória do recém-chegado</li>
-        <li>Usa o celular todo dia, sem dificuldade nenhuma</li>
-        <li>Procurou a história de um lugar e chegou a achar, perguntando a alguém mais velho</li>
-        <li><strong>Não enviaria</strong> uma memória para um aplicativo, hoje</li>
-      </ul>
-    </div>
-    <div class="celula dor">
-      <h5>Dores</h5>
-      <ul>
-        <li>Não sabe <strong>quem veria</strong> o que ela enviasse</li>
-        <li>Não confia que o material seria usado do jeito certo</li>
-        <li>Não pode desfazer: envio sem volta é envio que ela não faz</li>
-        <li>Cadastro na porta é barreira suficiente para não entrar</li>
-        <li>Sente que sua memória vale menos por não ser de nascença</li>
-      </ul>
-    </div>
-    <div class="celula nec">
-      <h5>Necessidades</h5>
-      <ul>
-        <li>Saber, <strong>antes de enviar</strong>, quem vai ver — e a resposta precisa estar na tela do envio</li>
-        <li>Poder apagar depois, dito de forma explícita e não escondido em ajustes</li>
-        <li>Aparecer como autora, por escolha dela</li>
-        <li>Que a memória de quem chegou depois seja tratada como memória legítima</li>
-        <li>Entrar e ver antes de decidir qualquer coisa</li>
-      </ul>
     </div>
   </div>
 

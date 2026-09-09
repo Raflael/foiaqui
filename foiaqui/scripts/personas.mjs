@@ -144,46 +144,7 @@ const personas = [
     ],
     procedencia:
       'Núcleo em <code>R1, R3, R5, R7</code> — as quatro pessoas de 18 a 24 anos que tentaram descobrir a história de um lugar e não acharam. As barreiras vêm também de <code>R2, R4, R6</code>, que responderam sobre consumo sem ter tentado ou tendo achado. Sociodemográfico calculado sobre a moda do grupo: 18–24, superior em curso, 2 a 5 salários, nascida e moradora na mesma cidade (<code>R3, R5</code>).',
-    empatia: {
-      ve: [
-        'Fachadas antigas fechadas, com placa de aluguel',
-        'Placas de rua e monumentos sem nenhuma explicação do que houve ali',
-        'Resultado de Google que fala do imóvel, nunca do lugar',
-        'Conteúdo de história em vídeo curto no feed, sobre outras cidades',
-      ],
-      ouve: [
-        'Professores citando de passagem que "aqui tinha um cinema"',
-        'Jornal e TV local, quando o assunto vira notícia de tombamento',
-        'Quase nada dos mais velhos: não tem com quem puxar esse assunto',
-      ],
-      pensa: [
-        '<em>"O que será que faziam ai dentro?"</em> — a pergunta volta toda vez e nunca é respondida',
-        'Acha bonito antes de achar histórico: entra pela arquitetura',
-        'Sente que a cidade tem camadas que ela não alcança',
-        'Não se sente autorizada a "ser de história" — isso é coisa de quem estudou',
-      ],
-      fala: [
-        'Pesquisa no Google na hora, uma vez, e desiste se não achar',
-        'Fotografa fachada bonita e posta no story',
-        'Reposta o que descobre — é vetor de divulgação, não só leitora',
-        'Diria que mandaria uma foto ou história que já tem',
-      ],
-      dores: [
-        'Procurou e não achou: a informação existe em algum lugar, mas não onde ela procura',
-        'Cadastro antes de ver qualquer coisa — fecha o app',
-        'Cobrança: desiste na hora',
-        'Parede de texto e carregamento lento, em pé na rua com dados limitados',
-        'Chegar ao app e não ter nada perto dela',
-      ],
-      necessidades: [
-        'Resposta imediata, no lugar, sem etapa anterior',
-        'Alguma coisa <strong>no mundo físico</strong> que a convide — placa, cartaz, QR',
-        'História contada em tom de conversa, não de verbete',
-        'Pouco texto por vez, com imagem',
-        'Poder mostrar aos outros o que encontrou',
-      ],
-    },
-  },
+},
 
   {
     id: 'tiago',
@@ -226,46 +187,7 @@ const personas = [
     ],
     procedencia:
       'Núcleo em <code>R9</code>, o caso mais completo da amostra: único que achou o que procurava perguntando a uma pessoa <em>sem usar buscador</em>, único com foto antiga em papel, e o único que trouxe uma memória concreta e localizável nas perguntas abertas — sobre um ponto que já existe no acervo do protótipo. Complementado por <code>R8</code> (também achou perguntando a alguém mais velho; família tem as fotos) e <code>R5</code> (também recorreu a alguém mais velho, e tem fotos em meio digital). A dor "nunca me passou pela cabeça" é o padrão dominante do conjunto: <code>R1, R6, R7, R8, R9</code>.',
-    empatia: {
-      ve: [
-        'O álbum de papel da mãe, que ninguém abre desde a última mudança',
-        'Prédios vazios no centro, e gente dormindo na porta deles',
-        'O parque de hoje sobre o hospital de ontem — os dois ao mesmo tempo',
-        'Redes sociais cheias de conteúdo, nenhum sobre o que ele sabe',
-      ],
-      ouve: [
-        'A família: é a fonte principal, e a que respondeu quando ele perguntou',
-        'O tio que sabe das coisas — o "arquivo" que funcionou de verdade',
-        'Ninguém pedindo o que ele tem: nenhum convite chegou até hoje',
-      ],
-      pensa: [
-        '<em>"Não achei que fosse interessar a alguém"</em> — a frase que trava tudo',
-        'Orgulho discreto de saber o que os outros não sabem do lugar',
-        'Vê a cidade com incômodo social, não com nostalgia',
-        'Não se enxerga como alguém que "publica" — publicar é para quem tem público',
-      ],
-      fala: [
-        'Conta a história do bisavô no sanatório sempre que o parque vem à conversa',
-        'Pergunta aos mais velhos quando fica curioso — e obtém resposta',
-        'Guarda, não digitaliza: as fotos seguem em papel',
-        'Se fosse enviar, preferiria <strong>só mandar a foto, sem escrever nada</strong>',
-      ],
-      dores: [
-        '<strong>Nunca lhe passou pela cabeça</strong> que aquilo pudesse ser publicado — não existe o gesto',
-        'Acha que o que ele tem não interessa a ninguém',
-        'A foto está em papel: digitalizar parece trabalho, e não há scanner em casa',
-        'Escrever um relato é esforço que ele não vai fazer; falar, faz o tempo todo',
-        'Desconfia de plataforma sem gente séria: precisa ver que o lugar é levado a sério',
-      ],
-      necessidades: [
-        'Ser <strong>convidado explicitamente</strong>, no lugar e no momento — o convite é o produto',
-        'Ver que outras pessoas contaram coisas parecidas, para saber que interessa',
-        'Caminho de dois minutos: fotografar a foto de papel e mandar, sem redigir nada',
-        'Prova de seriedade visível: quem mantém, quem revisa, o que acontece depois',
-        'Que a história fique ligada ao ponto, e não a ele estar presente para contá-la',
-      ],
-    },
-  },
+},
 
   {
     id: 'neuza',
@@ -305,46 +227,136 @@ const personas = [
     ],
     procedencia:
       'Composta de <code>R8</code> e <code>R10</code> — as duas únicas pessoas de 50 a 64 anos da amostra. Ambas nasceram em outro estado e moram em São José; ambas responderam <strong>"eu não mandaria"</strong>; ambas marcaram "saber quem vai ver" como condição. De <code>R10</code> vêm as três falas, a ausência total de canal ("em lugar nenhum"), o medo de uso indevido e os pedidos de apagar e de crédito. De <code>R8</code> vêm a origem no Nordeste, as fotos que ficaram com a família e a barreira única de criar conta. Sexo e ocupação seguem <code>R8</code>; a voz segue <code>R10</code>.',
-    empatia: {
-      ve: [
-        'Uma cidade que mudou muito desde que ela chegou, sem registro de como era',
-        'Nada sobre história local: nem placa, nem jornal, nem post',
-        'Fotos da família que ficaram a dois mil quilômetros daqui',
-      ],
-      ouve: [
-        '<strong>Em lugar nenhum</strong> — foi a resposta literal sobre onde ouve falar da história da cidade',
-        'Os filhos, nascidos aqui, que têm outras referências e não perguntam',
-        'Notícia de demolição ou reforma, quando vira assunto',
-      ],
-      pensa: [
-        '<em>"A vida tá passando rápido demais"</em> — o prédio antigo mede o tempo dela, não o da cidade',
-        'Sente que a memória dela "não conta", porque começa tarde demais',
-        'Desconfia do destino do que se entrega na internet',
-        'Quer ser creditada: o que é dela precisa continuar sendo dela',
-      ],
-      fala: [
-        'Conta como era o lugar quando ela chegou — a memória do recém-chegado',
-        'Usa o celular todo dia, sem dificuldade nenhuma',
-        'Procurou a história de um lugar e chegou a achar, perguntando a alguém mais velho',
-        '<strong>Não enviaria</strong> uma memória para um aplicativo, hoje',
-      ],
-      dores: [
-        'Não sabe <strong>quem veria</strong> o que ela enviasse',
-        'Não confia que o material seria usado do jeito certo',
-        'Não pode desfazer: envio sem volta é envio que ela não faz',
-        'Cadastro na porta é barreira suficiente para não entrar',
-        'Sente que sua memória vale menos por não ser de nascença',
-      ],
-      necessidades: [
-        'Saber, <strong>antes de enviar</strong>, quem vai ver — e a resposta precisa estar na tela do envio',
-        'Poder apagar depois, dito de forma explícita e não escondido em ajustes',
-        'Aparecer como autora, por escolha dela',
-        'Que a memória de quem chegou depois seja tratada como memória legítima',
-        'Entrar e ver antes de decidir qualquer coisa',
-      ],
-    },
-  },
+},
 ];
+
+/**
+ * Conteúdo do mapa de empatia em tamanho de bilhete.
+ *
+ * O modelo da disciplina usa post-it: três a oito palavras. As frases longas
+ * que estavam aqui antes eram corretas e ilegíveis no formato — o mapa existe
+ * para ser lido de relance, e o detalhe já mora na minibio e nas falas.
+ */
+const notas = {
+  camila: {
+    pensa: [
+      'O que será que faziam ali?',
+      'Acho bonito antes de achar histórico',
+      'A cidade tem camadas que eu não alcanço',
+      'História é coisa de quem estudou',
+    ],
+    ouve: [
+      'Professor citando de passagem',
+      'Jornal local, quando vira notícia',
+      'Ninguém mais velho por perto pra perguntar',
+    ],
+    ve: [
+      'Fachadas fechadas com placa de aluguel',
+      'Placas de rua sem explicação nenhuma',
+      'Google que só fala do imóvel',
+      'Vídeo de história — de outras cidades',
+    ],
+    fala: [
+      'Pesquisa uma vez e desiste',
+      'Fotografa fachada e posta no story',
+      'Reposta o que descobre',
+      'Mandaria o que já tem no celular',
+    ],
+    dores: [
+      'Procurei e não achei',
+      'Cadastro antes de ver qualquer coisa',
+      'Se for pago, eu fecho',
+      'Muito texto pra ler no sol',
+      'Abrir e não ter nada perto de mim',
+    ],
+    necessidades: [
+      'Resposta ali, na hora',
+      'Uma placa na rua que me convide',
+      'Tom de conversa, não de verbete',
+      'Pouco texto, com imagem',
+      'Poder mostrar aos outros',
+    ],
+  },
+
+  tiago: {
+    pensa: [
+      'Não achei que fosse interessar a alguém',
+      'Orgulho de saber o que os outros não sabem',
+      'Prédio vazio me incomoda',
+      'Publicar é pra quem tem público',
+    ],
+    ouve: [
+      'A família conta quando eu pergunto',
+      'O tio que sabe das coisas',
+      'Ninguém pedindo o que eu tenho',
+    ],
+    ve: [
+      'O álbum da mãe que ninguém abre',
+      'Prédios vazios e gente na porta',
+      'O parque que já foi hospital',
+      'Rede social sem nada do que eu sei',
+    ],
+    fala: [
+      'Conto a história do bisavô sempre',
+      'Pergunto pros mais velhos',
+      'Guardo, não digitalizo',
+      'Mandaria só a foto',
+    ],
+    dores: [
+      'Nunca me passou pela cabeça',
+      'Acho que não interessa a ninguém',
+      'A foto é de papel',
+      'Escrever relato dá trabalho',
+      'Preciso ver gente séria usando',
+    ],
+    necessidades: [
+      'Que alguém me peça',
+      'Ver que outros já contaram',
+      'Dois minutos, sem escrever nada',
+      'Saber quem cuida disso',
+      'Que fique lá sem eu estar junto',
+    ],
+  },
+
+  neuza: {
+    pensa: [
+      'A vida tá passando rápido demais',
+      'Minha memória começa tarde demais',
+      'Onde é que isso vai parar?',
+      'O que é meu tem que continuar meu',
+    ],
+    ouve: [
+      'Em lugar nenhum',
+      'Os filhos não perguntam',
+      'Notícia de demolição, quando dá',
+    ],
+    ve: [
+      'Uma cidade que mudou sem registro',
+      'Nenhuma placa contando nada',
+      'As fotos ficaram no Nordeste',
+    ],
+    fala: [
+      'Conto como era quando cheguei',
+      'Uso o celular todo dia',
+      'Perguntei a alguém e descobri',
+      'Não mandaria nada, hoje',
+    ],
+    dores: [
+      'Não sei quem vai ver',
+      'E se usarem de um jeito errado?',
+      'Não dá pra desfazer',
+      'Cadastro logo na entrada',
+      'Cheguei depois — vale menos?',
+    ],
+    necessidades: [
+      'Dizer quem vê, antes de eu enviar',
+      'Poder apagar depois',
+      'Meu nome, se eu quiser',
+      'Memória de quem chegou também conta',
+      'Ver antes de decidir',
+    ],
+  },
+};
 
 /* ─────────────────────────────  ACHADOS  ───────────────────────────── */
 
@@ -570,21 +582,123 @@ const css = `
   }
   .fonte p { font-size: .85rem; line-height: 1.5; margin: 0; color: var(--ink-dim); max-width: none; }
   .fonte code { font-family: var(--mono); font-size: .8rem; color: var(--accent); }
-  .empatia {
-    display: grid; gap: 1px; background: var(--line);
-    border: 1px solid var(--line); margin: 14px 0 0;
+  /* ── mapa de empatia, no formato do material da disciplina ──────────
+     Quatro quadrantes cortados por um X, rosto no centro, Dores e
+     Necessidades em caixas separadas embaixo. */
+  .mapa-empatia { margin: 16px 0 0; }
+  .mapa {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    grid-template-areas:
+      "topo topo topo"
+      "esq  face dir"
+      "base base base";
+    gap: 10px;
+    align-items: center;
+    padding: 18px;
+    border: 2px solid var(--ink);
+    background: var(--surface);
   }
-  @media (min-width: 640px) { .empatia { grid-template-columns: 1fr 1fr; } }
-  .celula { background: var(--ground); padding: 15px 17px; }
-  .celula h5 {
-    font-family: var(--plate); font-size: 1.05rem; letter-spacing: .05em;
-    text-transform: uppercase; margin: 0 0 8px; color: var(--plaque);
+  .mapa-x {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
   }
-  .celula.dor h5 { color: var(--accent); }
-  .celula.nec h5 { color: var(--ok); }
-  .celula ul { margin: 0; padding-left: 17px; }
-  .celula li { font-size: .9rem; line-height: 1.45; margin-bottom: 5px; }
-  .celula li em { font-family: var(--story); font-style: italic; }
+  .mapa-x line {
+    stroke: var(--line);
+    stroke-width: .35;
+    stroke-dasharray: 2 1.6;
+    vector-effect: non-scaling-stroke;
+  }
+  .quad { position: relative; z-index: 1; min-width: 0; }
+  .q-topo { grid-area: topo; }
+  .q-esq  { grid-area: esq; }
+  .q-dir  { grid-area: dir; }
+  .q-base { grid-area: base; }
+
+  .quad-rotulo {
+    font-family: var(--plate);
+    font-size: 1.05rem;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    text-align: center;
+    color: var(--plaque);
+    margin: 0 0 8px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .quad-rotulo { color: var(--on-plaque-d); }
+  }
+  :root[data-theme="dark"] .quad-rotulo { color: var(--on-plaque-d); }
+
+  .mapa-rosto {
+    grid-area: face;
+    position: relative;
+    z-index: 2;
+    width: 116px;
+    height: 116px;
+    justify-self: center;
+  }
+  .mapa-rosto svg { width: 100%; height: 100%; display: block; }
+
+  .notas {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 7px;
+  }
+  .nota {
+    background: var(--ground);
+    border: 1px solid var(--line);
+    border-bottom: 3px solid var(--plaque-soft);
+    padding: 7px 10px;
+    font-size: .8rem;
+    line-height: 1.3;
+    max-width: 190px;
+    box-shadow: 1px 1px 0 rgba(0, 0, 0, .07);
+  }
+  /* leve desalinho, como bilhete colado à mão — nunca o suficiente para
+     atrapalhar a leitura */
+  .n0 { transform: rotate(-.7deg); }
+  .n1 { transform: rotate(.5deg); }
+  .n2 { transform: rotate(.8deg); }
+  .n3 { transform: rotate(-.4deg); }
+
+  .mapa-baixo { display: grid; gap: 12px; margin-top: 12px; }
+  @media (min-width: 640px) { .mapa-baixo { grid-template-columns: 1fr 1fr; } }
+  .caixa { border: 2px solid var(--ink); background: var(--surface); padding: 14px 16px; }
+  .caixa-rotulo {
+    font-family: var(--plate);
+    font-size: 1.05rem;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    margin: 0 0 10px;
+  }
+  .caixa.dor .caixa-rotulo { color: var(--accent); }
+  .caixa.nec .caixa-rotulo { color: var(--ok); }
+  .caixa.dor .nota { border-bottom-color: var(--accent); }
+  .caixa.nec .nota { border-bottom-color: var(--ok); }
+  .caixa .notas { justify-content: flex-start; }
+
+  /* No celular, quatro triângulos não se leem: o mapa vira coluna, com os
+     mesmos rótulos e a mesma ordem. */
+  @media (max-width: 759px) {
+    .mapa {
+      grid-template-columns: 1fr;
+      grid-template-areas: "face" "topo" "esq" "dir" "base";
+      gap: 18px;
+    }
+    .mapa-x { display: none; }
+    .nota { max-width: none; }
+    .notas { justify-content: flex-start; }
+    .quad-rotulo { text-align: left; }
+  }
+
   .scroll { overflow-x: auto; margin: 18px 0; }
   table { border-collapse: collapse; width: 100%; min-width: 620px; font-size: .88rem; }
   th, td { text-align: left; padding: 9px 11px; border-bottom: 1px solid var(--line); vertical-align: top; }
@@ -662,24 +776,62 @@ const cartao = (p) => `
     </div>
   </div>`;
 
-const celula = (titulo, itens, classe = '') => `
-    <div class="celula ${classe}">
-      <h5>${titulo}</h5>
-      <ul>
-        ${itens.map((i) => `<li>${i}</li>`).join('\n        ')}
+const bilhete = (t, i) =>
+  `<li class="nota n${i % 4}">${t}</li>`;
+
+const quadrante = (classe, rotulo, itens) => `
+      <div class="quad ${classe}">
+        <p class="quad-rotulo">${rotulo}</p>
+        <ul class="notas">
+          ${itens.map(bilhete).join('\n          ')}
+        </ul>
+      </div>`;
+
+const caixaBaixo = (classe, rotulo, itens) => `
+    <div class="caixa ${classe}">
+      <p class="caixa-rotulo">${rotulo}</p>
+      <ul class="notas">
+        ${itens.map(bilhete).join('\n        ')}
       </ul>
     </div>`;
 
-const mapaEmpatia = (p) => `
-  <div class="empatia">${celula('Vê', p.empatia.ve)}${celula('Ouve', p.empatia.ouve)}${celula(
-    'Pensa e sente',
-    p.empatia.pensa,
-  )}${celula('Fala e faz', p.empatia.fala)}${celula('Dores', p.empatia.dores, 'dor')}${celula(
-    'Necessidades',
-    p.empatia.necessidades,
-    'nec',
-  )}
+/**
+ * O mapa no formato do material da disciplina.
+ *
+ * Quatro quadrantes cortados por um X, o rosto no centro, e Dores e
+ * Necessidades em caixas separadas embaixo. Não é decoração: essa é a
+ * disposição que o professor mostrou como referência, e um quadro em formato
+ * diferente do pedido é a primeira coisa que se nota numa correção.
+ *
+ * O X é decorativo e some no celular — quatro triângulos numa tela de 390 px
+ * não se leem. Abaixo de 760 px o mapa vira coluna, mantendo os mesmos
+ * rótulos e a mesma ordem.
+ */
+const mapaEmpatia = (p) => {
+  const n = notas[p.id];
+  return `
+  <div class="mapa-empatia">
+    <div class="mapa">
+      <svg class="mapa-x" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+        <line x1="0" y1="0" x2="100" y2="100"/>
+        <line x1="100" y1="0" x2="0" y2="100"/>
+      </svg>
+${quadrante('q-topo', 'O que pensa e sente?', n.pensa)}
+${quadrante('q-esq', 'O que ouve?', n.ouve)}
+      <div class="mapa-rosto">
+        <svg viewBox="0 0 120 120" role="img" aria-label="Retrato de ${p.nome}">${retratos[p.id]}
+        </svg>
+      </div>
+${quadrante('q-dir', 'O que vê?', n.ve)}
+${quadrante('q-base', 'O que diz e faz?', n.fala)}
+    </div>
+
+    <div class="mapa-baixo">
+${caixaBaixo('dor', 'Dores', n.dores)}
+${caixaBaixo('nec', 'Necessidades', n.necessidades)}
+    </div>
   </div>`;
+};
 
 const rodape = `<p class="foot">FoiAqui · Define 2.1 e 2.2 · n = 10 · coleta de 7 a 9 de setembro de 2026 · amostra por conveniência</p>`;
 

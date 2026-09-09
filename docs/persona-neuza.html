@@ -149,21 +149,123 @@
   }
   .fonte p { font-size: .85rem; line-height: 1.5; margin: 0; color: var(--ink-dim); max-width: none; }
   .fonte code { font-family: var(--mono); font-size: .8rem; color: var(--accent); }
-  .empatia {
-    display: grid; gap: 1px; background: var(--line);
-    border: 1px solid var(--line); margin: 14px 0 0;
+  /* ── mapa de empatia, no formato do material da disciplina ──────────
+     Quatro quadrantes cortados por um X, rosto no centro, Dores e
+     Necessidades em caixas separadas embaixo. */
+  .mapa-empatia { margin: 16px 0 0; }
+  .mapa {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    grid-template-areas:
+      "topo topo topo"
+      "esq  face dir"
+      "base base base";
+    gap: 10px;
+    align-items: center;
+    padding: 18px;
+    border: 2px solid var(--ink);
+    background: var(--surface);
   }
-  @media (min-width: 640px) { .empatia { grid-template-columns: 1fr 1fr; } }
-  .celula { background: var(--ground); padding: 15px 17px; }
-  .celula h5 {
-    font-family: var(--plate); font-size: 1.05rem; letter-spacing: .05em;
-    text-transform: uppercase; margin: 0 0 8px; color: var(--plaque);
+  .mapa-x {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
   }
-  .celula.dor h5 { color: var(--accent); }
-  .celula.nec h5 { color: var(--ok); }
-  .celula ul { margin: 0; padding-left: 17px; }
-  .celula li { font-size: .9rem; line-height: 1.45; margin-bottom: 5px; }
-  .celula li em { font-family: var(--story); font-style: italic; }
+  .mapa-x line {
+    stroke: var(--line);
+    stroke-width: .35;
+    stroke-dasharray: 2 1.6;
+    vector-effect: non-scaling-stroke;
+  }
+  .quad { position: relative; z-index: 1; min-width: 0; }
+  .q-topo { grid-area: topo; }
+  .q-esq  { grid-area: esq; }
+  .q-dir  { grid-area: dir; }
+  .q-base { grid-area: base; }
+
+  .quad-rotulo {
+    font-family: var(--plate);
+    font-size: 1.05rem;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    text-align: center;
+    color: var(--plaque);
+    margin: 0 0 8px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .quad-rotulo { color: var(--on-plaque-d); }
+  }
+  :root[data-theme="dark"] .quad-rotulo { color: var(--on-plaque-d); }
+
+  .mapa-rosto {
+    grid-area: face;
+    position: relative;
+    z-index: 2;
+    width: 116px;
+    height: 116px;
+    justify-self: center;
+  }
+  .mapa-rosto svg { width: 100%; height: 100%; display: block; }
+
+  .notas {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 7px;
+  }
+  .nota {
+    background: var(--ground);
+    border: 1px solid var(--line);
+    border-bottom: 3px solid var(--plaque-soft);
+    padding: 7px 10px;
+    font-size: .8rem;
+    line-height: 1.3;
+    max-width: 190px;
+    box-shadow: 1px 1px 0 rgba(0, 0, 0, .07);
+  }
+  /* leve desalinho, como bilhete colado à mão — nunca o suficiente para
+     atrapalhar a leitura */
+  .n0 { transform: rotate(-.7deg); }
+  .n1 { transform: rotate(.5deg); }
+  .n2 { transform: rotate(.8deg); }
+  .n3 { transform: rotate(-.4deg); }
+
+  .mapa-baixo { display: grid; gap: 12px; margin-top: 12px; }
+  @media (min-width: 640px) { .mapa-baixo { grid-template-columns: 1fr 1fr; } }
+  .caixa { border: 2px solid var(--ink); background: var(--surface); padding: 14px 16px; }
+  .caixa-rotulo {
+    font-family: var(--plate);
+    font-size: 1.05rem;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    margin: 0 0 10px;
+  }
+  .caixa.dor .caixa-rotulo { color: var(--accent); }
+  .caixa.nec .caixa-rotulo { color: var(--ok); }
+  .caixa.dor .nota { border-bottom-color: var(--accent); }
+  .caixa.nec .nota { border-bottom-color: var(--ok); }
+  .caixa .notas { justify-content: flex-start; }
+
+  /* No celular, quatro triângulos não se leem: o mapa vira coluna, com os
+     mesmos rótulos e a mesma ordem. */
+  @media (max-width: 759px) {
+    .mapa {
+      grid-template-columns: 1fr;
+      grid-template-areas: "face" "topo" "esq" "dir" "base";
+      gap: 18px;
+    }
+    .mapa-x { display: none; }
+    .nota { max-width: none; }
+    .notas { justify-content: flex-start; }
+    .quad-rotulo { text-align: left; }
+  }
+
   .scroll { overflow-x: auto; margin: 18px 0; }
   table { border-collapse: collapse; width: 100%; min-width: 620px; font-size: .88rem; }
   th, td { text-align: left; padding: 9px 11px; border-bottom: 1px solid var(--line); vertical-align: top; }
@@ -280,60 +382,101 @@
   <h2>Mapa de empatia</h2>
   <p class="sub">Os seis campos pedidos no material da disciplina</p>
   
-  <div class="empatia">
-    <div class="celula ">
-      <h5>Vê</h5>
-      <ul>
-        <li>Uma cidade que mudou muito desde que ela chegou, sem registro de como era</li>
-        <li>Nada sobre história local: nem placa, nem jornal, nem post</li>
-        <li>Fotos da família que ficaram a dois mil quilômetros daqui</li>
+  <div class="mapa-empatia">
+    <div class="mapa">
+      <svg class="mapa-x" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+        <line x1="0" y1="0" x2="100" y2="100"/>
+        <line x1="100" y1="0" x2="0" y2="100"/>
+      </svg>
+
+      <div class="quad q-topo">
+        <p class="quad-rotulo">O que pensa e sente?</p>
+        <ul class="notas">
+          <li class="nota n0">A vida tá passando rápido demais</li>
+          <li class="nota n1">Minha memória começa tarde demais</li>
+          <li class="nota n2">Onde é que isso vai parar?</li>
+          <li class="nota n3">O que é meu tem que continuar meu</li>
+        </ul>
+      </div>
+
+      <div class="quad q-esq">
+        <p class="quad-rotulo">O que ouve?</p>
+        <ul class="notas">
+          <li class="nota n0">Em lugar nenhum</li>
+          <li class="nota n1">Os filhos não perguntam</li>
+          <li class="nota n2">Notícia de demolição, quando dá</li>
+        </ul>
+      </div>
+      <div class="mapa-rosto">
+        <svg viewBox="0 0 120 120" role="img" aria-label="Retrato de Neuza">
+    <defs><clipPath id="rc-neuza"><circle cx="60" cy="60" r="57"/></clipPath></defs>
+    <g clip-path="url(#rc-neuza)">
+      <circle cx="60" cy="60" r="57" fill="#DFDCD1"/>
+      <path d="M60 86c-24 0-40 15-42 36h84c-2-21-18-36-42-36z" fill="#14396E"/>
+      <rect x="52" y="70" width="16" height="22" rx="8" fill="#8A5B3C"/>
+      <ellipse cx="60" cy="54" rx="21" ry="24" fill="#A06D48"/>
+      <path d="M38 54c-1-16 9-27 22-27s23 11 22 27c2-7 2-15 0-21-3-10-12-16-22-16s-19 6-22 16c-2 6-2 14 0 21z" fill="#8E8C88"/>
+      <path d="M38 52c4-6 10-9 15-9-6 3-11 8-13 14zM82 52c-4-6-10-9-15-9 6 3 11 8 13 14z" fill="#C9C7C2"/>
+      <path d="M78 34c7 2 11 8 11 15 0 5-2 9-5 12 2-9 0-19-6-27z" fill="#8E8C88"/>
+      <ellipse cx="52" cy="55" rx="2.5" ry="2.8" fill="#241C14"/>
+      <ellipse cx="68" cy="55" rx="2.5" ry="2.8" fill="#241C14"/>
+      <g fill="none" stroke="#1A1D23" stroke-width="1.8">
+        <circle cx="52" cy="55" r="7.5"/>
+        <circle cx="68" cy="55" r="7.5"/>
+        <path d="M59.5 55h1M44.5 54l-4-1M75.5 54l4-1"/>
+      </g>
+      <path d="M45 45c3-2 7-2 9 0M66 45c3-2 7-2 9 0" stroke="#6E6B66" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M60 60v4c0 1-1 2-2 2" stroke="#6E452C" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+      <path d="M54 71c3 2 9 2 12 0" stroke="#6E452C" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M44 63c2 2 4 3 5 3M71 63c-2 2-4 3-5 3" stroke="#8A5B3C" stroke-width="1.3" fill="none" stroke-linecap="round" opacity=".7"/>
+    </g>
+    <circle cx="60" cy="60" r="57" fill="none" stroke="#F4F3EE" stroke-width="2.5"/>
+        </svg>
+      </div>
+
+      <div class="quad q-dir">
+        <p class="quad-rotulo">O que vê?</p>
+        <ul class="notas">
+          <li class="nota n0">Uma cidade que mudou sem registro</li>
+          <li class="nota n1">Nenhuma placa contando nada</li>
+          <li class="nota n2">As fotos ficaram no Nordeste</li>
+        </ul>
+      </div>
+
+      <div class="quad q-base">
+        <p class="quad-rotulo">O que diz e faz?</p>
+        <ul class="notas">
+          <li class="nota n0">Conto como era quando cheguei</li>
+          <li class="nota n1">Uso o celular todo dia</li>
+          <li class="nota n2">Perguntei a alguém e descobri</li>
+          <li class="nota n3">Não mandaria nada, hoje</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="mapa-baixo">
+
+    <div class="caixa dor">
+      <p class="caixa-rotulo">Dores</p>
+      <ul class="notas">
+        <li class="nota n0">Não sei quem vai ver</li>
+        <li class="nota n1">E se usarem de um jeito errado?</li>
+        <li class="nota n2">Não dá pra desfazer</li>
+        <li class="nota n3">Cadastro logo na entrada</li>
+        <li class="nota n0">Cheguei depois — vale menos?</li>
       </ul>
     </div>
-    <div class="celula ">
-      <h5>Ouve</h5>
-      <ul>
-        <li><strong>Em lugar nenhum</strong> — foi a resposta literal sobre onde ouve falar da história da cidade</li>
-        <li>Os filhos, nascidos aqui, que têm outras referências e não perguntam</li>
-        <li>Notícia de demolição ou reforma, quando vira assunto</li>
+
+    <div class="caixa nec">
+      <p class="caixa-rotulo">Necessidades</p>
+      <ul class="notas">
+        <li class="nota n0">Dizer quem vê, antes de eu enviar</li>
+        <li class="nota n1">Poder apagar depois</li>
+        <li class="nota n2">Meu nome, se eu quiser</li>
+        <li class="nota n3">Memória de quem chegou também conta</li>
+        <li class="nota n0">Ver antes de decidir</li>
       </ul>
     </div>
-    <div class="celula ">
-      <h5>Pensa e sente</h5>
-      <ul>
-        <li><em>"A vida tá passando rápido demais"</em> — o prédio antigo mede o tempo dela, não o da cidade</li>
-        <li>Sente que a memória dela "não conta", porque começa tarde demais</li>
-        <li>Desconfia do destino do que se entrega na internet</li>
-        <li>Quer ser creditada: o que é dela precisa continuar sendo dela</li>
-      </ul>
-    </div>
-    <div class="celula ">
-      <h5>Fala e faz</h5>
-      <ul>
-        <li>Conta como era o lugar quando ela chegou — a memória do recém-chegado</li>
-        <li>Usa o celular todo dia, sem dificuldade nenhuma</li>
-        <li>Procurou a história de um lugar e chegou a achar, perguntando a alguém mais velho</li>
-        <li><strong>Não enviaria</strong> uma memória para um aplicativo, hoje</li>
-      </ul>
-    </div>
-    <div class="celula dor">
-      <h5>Dores</h5>
-      <ul>
-        <li>Não sabe <strong>quem veria</strong> o que ela enviasse</li>
-        <li>Não confia que o material seria usado do jeito certo</li>
-        <li>Não pode desfazer: envio sem volta é envio que ela não faz</li>
-        <li>Cadastro na porta é barreira suficiente para não entrar</li>
-        <li>Sente que sua memória vale menos por não ser de nascença</li>
-      </ul>
-    </div>
-    <div class="celula nec">
-      <h5>Necessidades</h5>
-      <ul>
-        <li>Saber, <strong>antes de enviar</strong>, quem vai ver — e a resposta precisa estar na tela do envio</li>
-        <li>Poder apagar depois, dito de forma explícita e não escondido em ajustes</li>
-        <li>Aparecer como autora, por escolha dela</li>
-        <li>Que a memória de quem chegou depois seja tratada como memória legítima</li>
-        <li>Entrar e ver antes de decidir qualquer coisa</li>
-      </ul>
     </div>
   </div>
 
