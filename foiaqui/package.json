@@ -75,7 +75,8 @@
     "icone": "node scripts/icone.mjs",
     "dossie": "node scripts/dossie-pdf.mjs",
     "test": "jest",
-    "test:watch": "jest --watchAll"
+    "test:watch": "jest --watchAll",
+    "personas": "node scripts/personas.mjs"
   },
   "private": true,
   "jest": {

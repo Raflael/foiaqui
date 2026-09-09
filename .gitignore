@@ -33,3 +33,10 @@ yarn-error.*
 # scratch
 *.tmp
 .bundle-check/
+
+# respostas de pesquisa com pessoas: têm nome, telefone e e-mail de gente real,
+# e este repositório é público. Só o resultado anonimizado entra (docs/personas*)
+respostas*.csv
+respostas*.xlsx
+respostas*.json
+*-respostas.*

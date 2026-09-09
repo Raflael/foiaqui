@@ -1,0 +1,335 @@
+<title>Tiago, 29</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Archivo+Narrow:wght@600;700&family=DM+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap">
+
+<style>
+  :root {
+    --ground:#F4F3EE; --surface:#EAE8E0; --surface2:#DFDCD1; --line:#CFCABA;
+    --ink:#1A1D23; --ink-dim:#55524B; --plaque:#14396E; --plaque-soft:#3A6098;
+    --on-plaque:#F4F3EE; --on-plaque-d:#A8C2E4; --accent:#B4471F;
+    --on-accent:#F4F3EE; --ok:#2E6E68;
+    --ui:'Archivo',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    --plate:'Archivo Narrow','Arial Narrow',Impact,sans-serif;
+    --story:'Newsreader',Georgia,'Times New Roman',serif;
+    --mono:'DM Mono',ui-monospace,Consolas,monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground:#101C2E; --surface:#16273D; --surface2:#1D3149; --line:#2C4361;
+      --ink:#EDEAE1; --ink-dim:#A6B4C6; --plaque:#23446F; --plaque-soft:#4E7BB5;
+      --on-plaque:#F4F3EE; --on-plaque-d:#A8C2E4; --accent:#E38A5C;
+      --on-accent:#14243A; --ok:#5FAFA6;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground:#101C2E; --surface:#16273D; --surface2:#1D3149; --line:#2C4361;
+    --ink:#EDEAE1; --ink-dim:#A6B4C6; --plaque:#23446F; --plaque-soft:#4E7BB5;
+    --on-plaque:#F4F3EE; --on-plaque-d:#A8C2E4; --accent:#E38A5C;
+    --on-accent:#14243A; --ok:#5FAFA6;
+  }
+  * { box-sizing: border-box; }
+  body {
+    background: var(--ground); color: var(--ink); font-family: var(--ui);
+    font-size: 16px; line-height: 1.6; -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 0 20px 96px; }
+  .plaque-frame {
+    background: var(--plaque); color: var(--on-plaque); padding: 34px 26px 30px;
+    box-shadow: inset 0 0 0 2px var(--plaque), inset 0 0 0 3.5px var(--on-plaque);
+    margin: 28px 0 0;
+  }
+  h1 {
+    font-family: var(--plate); font-weight: 700;
+    font-size: clamp(2rem, 7vw, 3.2rem); line-height: 1;
+    letter-spacing: .04em; text-transform: uppercase; margin: 0;
+    text-wrap: balance;
+  }
+  .eyebrow {
+    font-family: var(--mono); font-size: .7rem; letter-spacing: .16em;
+    text-transform: uppercase; color: var(--on-plaque-d); margin: 0 0 12px;
+  }
+  .lede {
+    font-family: var(--story); font-size: 1.1rem; line-height: 1.55;
+    margin: 18px 0 0; max-width: 58ch;
+  }
+  .lede em { color: var(--on-plaque-d); font-style: italic; }
+  h2 {
+    font-family: var(--plate); font-weight: 700; font-size: 1.45rem;
+    letter-spacing: .035em; text-transform: uppercase; margin: 60px 0 6px;
+    padding-bottom: 8px; border-bottom: 2px solid var(--ink); text-wrap: balance;
+  }
+  h3 { font-size: 1rem; font-weight: 700; margin: 28px 0 8px; }
+  p { margin: 0 0 14px; max-width: 68ch; }
+  .sub {
+    font-family: var(--mono); font-size: .72rem; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--ink-dim); margin: 0 0 20px;
+  }
+  .flag {
+    border-left: 5px solid var(--accent); background: var(--surface);
+    padding: 18px 20px; margin: 24px 0;
+  }
+  .flag p:last-child { margin-bottom: 0; }
+  .flag .tag {
+    font-family: var(--mono); font-size: .68rem; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--accent); display: block; margin-bottom: 8px;
+  }
+  .achados { display: grid; gap: 14px; margin: 22px 0; }
+  @media (min-width: 720px) { .achados { grid-template-columns: 1fr 1fr; } }
+  .achado {
+    border: 1px solid var(--line); background: var(--surface); padding: 16px 18px;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .achado .num {
+    font-family: var(--plate); font-size: 2.1rem; line-height: 1;
+    letter-spacing: .02em; color: var(--accent);
+  }
+  .achado .num small {
+    font-family: var(--mono); font-size: .72rem; letter-spacing: .08em;
+    color: var(--ink-dim); margin-left: 6px;
+  }
+  .achado .diz { font-size: .93rem; line-height: 1.45; margin: 0; }
+  .achado .quer { font-size: .83rem; color: var(--ink-dim); margin: 0; }
+
+  .persona { margin: 40px 0 0; border: 1px solid var(--line); background: var(--surface); }
+
+  /* o rosto no meio, como no modelo da disciplina */
+  .persona-topo {
+    display: flex; flex-direction: column; align-items: center; text-align: center;
+    gap: 14px; padding: 30px 22px 26px; background: var(--plaque); color: var(--on-plaque);
+  }
+  .retrato { width: 148px; height: 148px; flex-shrink: 0; display: block; }
+  .persona-topo .papel {
+    font-family: var(--mono); font-size: .66rem; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--on-plaque-d); margin: 0;
+  }
+  .persona-topo h3 {
+    font-family: var(--plate); font-size: 2.3rem; line-height: 1;
+    letter-spacing: .04em; text-transform: uppercase; margin: 0;
+    color: var(--on-plaque);
+  }
+  .persona-topo .linha {
+    font-family: var(--story); font-size: 1.06rem; line-height: 1.45; margin: 0;
+    color: var(--on-plaque); max-width: 48ch;
+  }
+  .ficha {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+    border-bottom: 1px solid var(--line);
+  }
+  .ficha div {
+    padding: 11px 14px; border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .ficha dt {
+    font-family: var(--mono); font-size: .6rem; letter-spacing: .13em;
+    text-transform: uppercase; color: var(--ink-dim); margin: 0 0 3px;
+  }
+  .ficha dd { margin: 0; font-size: .88rem; font-weight: 600; line-height: 1.35; }
+  .persona-corpo { padding: 22px; }
+  .persona-corpo h4 {
+    font-family: var(--mono); font-size: .68rem; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--ink-dim); margin: 22px 0 8px;
+  }
+  .persona-corpo h4:first-child { margin-top: 0; }
+  .persona-corpo p { font-size: .97rem; }
+  ol.objetivos { margin: 0; padding-left: 20px; }
+  ol.objetivos li { margin-bottom: 6px; font-size: .97rem; max-width: 64ch; }
+  .fala {
+    font-family: var(--story); font-size: 1.08rem; line-height: 1.45;
+    border-left: 3px solid var(--accent); padding: 2px 0 2px 14px;
+    margin: 0 0 12px; max-width: 60ch;
+  }
+  .fala cite {
+    display: block; font-family: var(--mono); font-size: .68rem; font-style: normal;
+    letter-spacing: .08em; color: var(--ink-dim); margin-top: 5px;
+  }
+  .fonte {
+    margin-top: 20px; padding: 12px 14px; background: var(--surface2);
+    border-left: 4px solid var(--plaque-soft);
+  }
+  .fonte p { font-size: .85rem; line-height: 1.5; margin: 0; color: var(--ink-dim); max-width: none; }
+  .fonte code { font-family: var(--mono); font-size: .8rem; color: var(--accent); }
+  .empatia {
+    display: grid; gap: 1px; background: var(--line);
+    border: 1px solid var(--line); margin: 14px 0 0;
+  }
+  @media (min-width: 640px) { .empatia { grid-template-columns: 1fr 1fr; } }
+  .celula { background: var(--ground); padding: 15px 17px; }
+  .celula h5 {
+    font-family: var(--plate); font-size: 1.05rem; letter-spacing: .05em;
+    text-transform: uppercase; margin: 0 0 8px; color: var(--plaque);
+  }
+  .celula.dor h5 { color: var(--accent); }
+  .celula.nec h5 { color: var(--ok); }
+  .celula ul { margin: 0; padding-left: 17px; }
+  .celula li { font-size: .9rem; line-height: 1.45; margin-bottom: 5px; }
+  .celula li em { font-family: var(--story); font-style: italic; }
+  .scroll { overflow-x: auto; margin: 18px 0; }
+  table { border-collapse: collapse; width: 100%; min-width: 620px; font-size: .88rem; }
+  th, td { text-align: left; padding: 9px 11px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  thead th {
+    font-family: var(--mono); font-size: .63rem; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--ink-dim);
+    border-bottom: 2px solid var(--ink); white-space: nowrap;
+  }
+  tbody th {
+    font-family: var(--mono); font-size: .82rem; font-weight: 500;
+    color: var(--accent); white-space: nowrap;
+  }
+  td.pill span {
+    font-family: var(--mono); font-size: .66rem; letter-spacing: .08em;
+    text-transform: uppercase; border: 1px solid currentColor; padding: 2px 6px;
+    white-space: nowrap; display: inline-block; margin: 1px 2px 1px 0;
+  }
+  .camila { color: var(--plaque); }
+  .tiago { color: var(--accent); }
+  .neuza { color: var(--ok); }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .camila { color: var(--on-plaque-d); }
+  }
+  :root[data-theme="dark"] .camila { color: var(--on-plaque-d); }
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  a:focus-visible { outline: 3px solid var(--plaque); outline-offset: 2px; }
+  ul.plain { margin: 0 0 16px; padding-left: 20px; }
+  ul.plain li { margin-bottom: 8px; max-width: 66ch; }
+  .foot {
+    margin-top: 60px; padding-top: 18px; border-top: 2px solid var(--ink);
+    font-family: var(--mono); font-size: .7rem; letter-spacing: .06em;
+    color: var(--ink-dim); text-transform: uppercase;
+  }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+
+<div class="wrap">
+
+  <header class="plaque-frame">
+    <p class="eyebrow">FoiAqui · Define · Quem guarda</p>
+    <h1>Tiago</h1>
+    <p class="lede">Tem a foto na caixa de sapato e conta a história de boca há anos. Nunca lhe ocorreu que aquilo interessasse a alguém.</p>
+  </header>
+
+  <h2>A persona</h2>
+  <p class="sub">Persona primária · contribuição · tradicional (semifictícia)</p>
+  
+  <div class="persona">
+    <div class="persona-topo">
+      <svg class="retrato" viewBox="0 0 120 120" role="img" aria-label="Retrato ilustrado de Tiago">
+    <defs><clipPath id="rc-tiago"><circle cx="60" cy="60" r="57"/></clipPath></defs>
+    <g clip-path="url(#rc-tiago)">
+      <circle cx="60" cy="60" r="57" fill="#DFDCD1"/>
+      <path d="M60 86c-24 0-40 15-42 36h84c-2-21-18-36-42-36z" fill="#2E6E68"/>
+      <rect x="52" y="70" width="16" height="22" rx="8" fill="#9C6844"/>
+      <ellipse cx="60" cy="54" rx="21" ry="24" fill="#B37C55"/>
+      <path d="M39 50c1-13 10-21 21-21s20 8 21 21c1-4 1-9 0-13-2-9-10-15-21-15s-19 6-21 15c-1 4-1 9 0 13z" fill="#241C14"/>
+      <path d="M43 62c0 12 7 20 17 20s17-8 17-20c1 8-1 16-6 21-3 3-7 5-11 5s-8-2-11-5c-5-5-7-13-6-21z" fill="#241C14"/>
+      <ellipse cx="52" cy="53" rx="2.6" ry="3" fill="#241C14"/>
+      <ellipse cx="68" cy="53" rx="2.6" ry="3" fill="#241C14"/>
+      <path d="M46 46c3-2 8-2 10 1M64 47c2-3 7-3 10-1" stroke="#241C14" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+      <path d="M60 57v5c0 1-1 2-2 2" stroke="#7C4F32" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+      <path d="M54 69c3 2 9 2 12 0" stroke="#5E3A24" stroke-width="2" fill="none" stroke-linecap="round"/>
+    </g>
+    <circle cx="60" cy="60" r="57" fill="none" stroke="#F4F3EE" stroke-width="2.5"/>
+      </svg>
+      <p class="papel">Persona primária · contribuição</p>
+      <h3>Tiago, 29</h3>
+      <p class="linha">Tem a foto na caixa de sapato e conta a história de boca há anos. Nunca lhe ocorreu que aquilo interessasse a alguém.</p>
+    </div>
+
+    <div class="ficha">
+      <div><dt>Idade</dt><dd>29 anos</dd></div>
+      <div><dt>Mora em</dt><dd>São José dos Campos</dd></div>
+      <div><dt>Nasceu em</dt><dd>São José dos Campos</dd></div>
+      <div><dt>Ocupação</dt><dd>Formado em biologia, trabalha no comércio</dd></div>
+      <div><dt>Escolaridade</dt><dd>Superior completo</dd></div>
+      <div><dt>Estado civil</dt><dd>Casado</dd></div>
+      <div><dt>Renda familiar</dt><dd>2 a 5 salários mínimos</dd></div>
+      <div><dt>Acervo</dt><dd>Fotos em álbum de papel, da família</dd></div>
+    </div>
+
+    <div class="persona-corpo">
+      <h4>Perfil comportamental</h4>
+      <p>Tiago é a terceira geração da família na cidade. Quando quis saber a história de um lugar, não usou buscador nenhum: perguntou a um tio, e o tio contou. Foi assim que aprendeu que o parque onde ele leva o filho já foi sanatório de tuberculose, e que o bisavô esteve internado ali.</p>
+      <p>Ele conta essa história com frequência — em roda de conversa, quando alguém comenta do parque. É o repertório dele. Tem fotos antigas em álbum de papel, guardadas pela mãe, que nunca foram digitalizadas.</p>
+      <p>Nunca publicou nada disso. Não por dificuldade técnica: ele usa o celular o dia inteiro. Por duas razões que ele mesmo declarou — <strong>nunca lhe passou pela cabeça</strong>, e <strong>não achou que fosse interessar a alguém</strong>. Olha a rua com um olho social: repara nos prédios vazios e nas pessoas sem teto na mesma frase.</p>
+
+      <h4>Objetivos</h4>
+      <ol class="objetivos">
+        <li>Ver a história que ele conta de boca <strong>existir num lugar</strong>, ligada ao ponto onde aconteceu — e não depender de ele estar presente para ser contada.</li>
+        <li>Descobrir que aquilo interessa a outras pessoas, o que é a permissão que hoje falta.</li>
+        <li>Contribuir sem que isso vire projeto: um envio de dois minutos, não uma tarde de digitalização.</li>
+      </ol>
+
+      <h4>Falas reais que sustentam esta persona</h4>
+      <p class="fala">Gosto de contar que o vicentina aranha já foi um hospital de tuberculose e que meu bisavô já ficou internado lá<cite>respondente de 25 a 34 anos, São José dos Campos — sobre a história que costuma contar</cite></p>
+      <p class="fala">Tantos prédios vazios, tantas pessoas sem teto.<cite>o mesmo respondente, sobre o que passa pela cabeça ao ver um prédio antigo</cite></p>
+      <p class="fala">Não achei que fosse interessar a alguém<cite>o mesmo respondente, sobre por que nunca mostrou</cite></p>
+
+      <div class="fonte">
+        <p><strong>Procedência.</strong> Núcleo em <code>R9</code>, o caso mais completo da amostra: único que achou o que procurava perguntando a uma pessoa <em>sem usar buscador</em>, único com foto antiga em papel, e o único que trouxe uma memória concreta e localizável nas perguntas abertas — sobre um ponto que já existe no acervo do protótipo. Complementado por <code>R8</code> (também achou perguntando a alguém mais velho; família tem as fotos) e <code>R5</code> (também recorreu a alguém mais velho, e tem fotos em meio digital). A dor "nunca me passou pela cabeça" é o padrão dominante do conjunto: <code>R1, R6, R7, R8, R9</code>.</p>
+      </div>
+    </div>
+  </div>
+
+  <h2>Mapa de empatia</h2>
+  <p class="sub">Os seis campos pedidos no material da disciplina</p>
+  
+  <div class="empatia">
+    <div class="celula ">
+      <h5>Vê</h5>
+      <ul>
+        <li>O álbum de papel da mãe, que ninguém abre desde a última mudança</li>
+        <li>Prédios vazios no centro, e gente dormindo na porta deles</li>
+        <li>O parque de hoje sobre o hospital de ontem — os dois ao mesmo tempo</li>
+        <li>Redes sociais cheias de conteúdo, nenhum sobre o que ele sabe</li>
+      </ul>
+    </div>
+    <div class="celula ">
+      <h5>Ouve</h5>
+      <ul>
+        <li>A família: é a fonte principal, e a que respondeu quando ele perguntou</li>
+        <li>O tio que sabe das coisas — o "arquivo" que funcionou de verdade</li>
+        <li>Ninguém pedindo o que ele tem: nenhum convite chegou até hoje</li>
+      </ul>
+    </div>
+    <div class="celula ">
+      <h5>Pensa e sente</h5>
+      <ul>
+        <li><em>"Não achei que fosse interessar a alguém"</em> — a frase que trava tudo</li>
+        <li>Orgulho discreto de saber o que os outros não sabem do lugar</li>
+        <li>Vê a cidade com incômodo social, não com nostalgia</li>
+        <li>Não se enxerga como alguém que "publica" — publicar é para quem tem público</li>
+      </ul>
+    </div>
+    <div class="celula ">
+      <h5>Fala e faz</h5>
+      <ul>
+        <li>Conta a história do bisavô no sanatório sempre que o parque vem à conversa</li>
+        <li>Pergunta aos mais velhos quando fica curioso — e obtém resposta</li>
+        <li>Guarda, não digitaliza: as fotos seguem em papel</li>
+        <li>Se fosse enviar, preferiria <strong>só mandar a foto, sem escrever nada</strong></li>
+      </ul>
+    </div>
+    <div class="celula dor">
+      <h5>Dores</h5>
+      <ul>
+        <li><strong>Nunca lhe passou pela cabeça</strong> que aquilo pudesse ser publicado — não existe o gesto</li>
+        <li>Acha que o que ele tem não interessa a ninguém</li>
+        <li>A foto está em papel: digitalizar parece trabalho, e não há scanner em casa</li>
+        <li>Escrever um relato é esforço que ele não vai fazer; falar, faz o tempo todo</li>
+        <li>Desconfia de plataforma sem gente séria: precisa ver que o lugar é levado a sério</li>
+      </ul>
+    </div>
+    <div class="celula nec">
+      <h5>Necessidades</h5>
+      <ul>
+        <li>Ser <strong>convidado explicitamente</strong>, no lugar e no momento — o convite é o produto</li>
+        <li>Ver que outras pessoas contaram coisas parecidas, para saber que interessa</li>
+        <li>Caminho de dois minutos: fotografar a foto de papel e mandar, sem redigir nada</li>
+        <li>Prova de seriedade visível: quem mantém, quem revisa, o que acontece depois</li>
+        <li>Que a história fique ligada ao ponto, e não a ele estar presente para contá-la</li>
+      </ul>
+    </div>
+  </div>
+
+  <p class="foot">FoiAqui · Define 2.1 e 2.2 · n = 10 · coleta de 7 a 9 de setembro de 2026 · amostra por conveniência</p>
+</div>

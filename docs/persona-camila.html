@@ -1,0 +1,336 @@
+<title>Camila, 21</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Archivo+Narrow:wght@600;700&family=DM+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap">
+
+<style>
+  :root {
+    --ground:#F4F3EE; --surface:#EAE8E0; --surface2:#DFDCD1; --line:#CFCABA;
+    --ink:#1A1D23; --ink-dim:#55524B; --plaque:#14396E; --plaque-soft:#3A6098;
+    --on-plaque:#F4F3EE; --on-plaque-d:#A8C2E4; --accent:#B4471F;
+    --on-accent:#F4F3EE; --ok:#2E6E68;
+    --ui:'Archivo',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    --plate:'Archivo Narrow','Arial Narrow',Impact,sans-serif;
+    --story:'Newsreader',Georgia,'Times New Roman',serif;
+    --mono:'DM Mono',ui-monospace,Consolas,monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground:#101C2E; --surface:#16273D; --surface2:#1D3149; --line:#2C4361;
+      --ink:#EDEAE1; --ink-dim:#A6B4C6; --plaque:#23446F; --plaque-soft:#4E7BB5;
+      --on-plaque:#F4F3EE; --on-plaque-d:#A8C2E4; --accent:#E38A5C;
+      --on-accent:#14243A; --ok:#5FAFA6;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground:#101C2E; --surface:#16273D; --surface2:#1D3149; --line:#2C4361;
+    --ink:#EDEAE1; --ink-dim:#A6B4C6; --plaque:#23446F; --plaque-soft:#4E7BB5;
+    --on-plaque:#F4F3EE; --on-plaque-d:#A8C2E4; --accent:#E38A5C;
+    --on-accent:#14243A; --ok:#5FAFA6;
+  }
+  * { box-sizing: border-box; }
+  body {
+    background: var(--ground); color: var(--ink); font-family: var(--ui);
+    font-size: 16px; line-height: 1.6; -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 0 20px 96px; }
+  .plaque-frame {
+    background: var(--plaque); color: var(--on-plaque); padding: 34px 26px 30px;
+    box-shadow: inset 0 0 0 2px var(--plaque), inset 0 0 0 3.5px var(--on-plaque);
+    margin: 28px 0 0;
+  }
+  h1 {
+    font-family: var(--plate); font-weight: 700;
+    font-size: clamp(2rem, 7vw, 3.2rem); line-height: 1;
+    letter-spacing: .04em; text-transform: uppercase; margin: 0;
+    text-wrap: balance;
+  }
+  .eyebrow {
+    font-family: var(--mono); font-size: .7rem; letter-spacing: .16em;
+    text-transform: uppercase; color: var(--on-plaque-d); margin: 0 0 12px;
+  }
+  .lede {
+    font-family: var(--story); font-size: 1.1rem; line-height: 1.55;
+    margin: 18px 0 0; max-width: 58ch;
+  }
+  .lede em { color: var(--on-plaque-d); font-style: italic; }
+  h2 {
+    font-family: var(--plate); font-weight: 700; font-size: 1.45rem;
+    letter-spacing: .035em; text-transform: uppercase; margin: 60px 0 6px;
+    padding-bottom: 8px; border-bottom: 2px solid var(--ink); text-wrap: balance;
+  }
+  h3 { font-size: 1rem; font-weight: 700; margin: 28px 0 8px; }
+  p { margin: 0 0 14px; max-width: 68ch; }
+  .sub {
+    font-family: var(--mono); font-size: .72rem; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--ink-dim); margin: 0 0 20px;
+  }
+  .flag {
+    border-left: 5px solid var(--accent); background: var(--surface);
+    padding: 18px 20px; margin: 24px 0;
+  }
+  .flag p:last-child { margin-bottom: 0; }
+  .flag .tag {
+    font-family: var(--mono); font-size: .68rem; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--accent); display: block; margin-bottom: 8px;
+  }
+  .achados { display: grid; gap: 14px; margin: 22px 0; }
+  @media (min-width: 720px) { .achados { grid-template-columns: 1fr 1fr; } }
+  .achado {
+    border: 1px solid var(--line); background: var(--surface); padding: 16px 18px;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .achado .num {
+    font-family: var(--plate); font-size: 2.1rem; line-height: 1;
+    letter-spacing: .02em; color: var(--accent);
+  }
+  .achado .num small {
+    font-family: var(--mono); font-size: .72rem; letter-spacing: .08em;
+    color: var(--ink-dim); margin-left: 6px;
+  }
+  .achado .diz { font-size: .93rem; line-height: 1.45; margin: 0; }
+  .achado .quer { font-size: .83rem; color: var(--ink-dim); margin: 0; }
+
+  .persona { margin: 40px 0 0; border: 1px solid var(--line); background: var(--surface); }
+
+  /* o rosto no meio, como no modelo da disciplina */
+  .persona-topo {
+    display: flex; flex-direction: column; align-items: center; text-align: center;
+    gap: 14px; padding: 30px 22px 26px; background: var(--plaque); color: var(--on-plaque);
+  }
+  .retrato { width: 148px; height: 148px; flex-shrink: 0; display: block; }
+  .persona-topo .papel {
+    font-family: var(--mono); font-size: .66rem; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--on-plaque-d); margin: 0;
+  }
+  .persona-topo h3 {
+    font-family: var(--plate); font-size: 2.3rem; line-height: 1;
+    letter-spacing: .04em; text-transform: uppercase; margin: 0;
+    color: var(--on-plaque);
+  }
+  .persona-topo .linha {
+    font-family: var(--story); font-size: 1.06rem; line-height: 1.45; margin: 0;
+    color: var(--on-plaque); max-width: 48ch;
+  }
+  .ficha {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+    border-bottom: 1px solid var(--line);
+  }
+  .ficha div {
+    padding: 11px 14px; border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .ficha dt {
+    font-family: var(--mono); font-size: .6rem; letter-spacing: .13em;
+    text-transform: uppercase; color: var(--ink-dim); margin: 0 0 3px;
+  }
+  .ficha dd { margin: 0; font-size: .88rem; font-weight: 600; line-height: 1.35; }
+  .persona-corpo { padding: 22px; }
+  .persona-corpo h4 {
+    font-family: var(--mono); font-size: .68rem; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--ink-dim); margin: 22px 0 8px;
+  }
+  .persona-corpo h4:first-child { margin-top: 0; }
+  .persona-corpo p { font-size: .97rem; }
+  ol.objetivos { margin: 0; padding-left: 20px; }
+  ol.objetivos li { margin-bottom: 6px; font-size: .97rem; max-width: 64ch; }
+  .fala {
+    font-family: var(--story); font-size: 1.08rem; line-height: 1.45;
+    border-left: 3px solid var(--accent); padding: 2px 0 2px 14px;
+    margin: 0 0 12px; max-width: 60ch;
+  }
+  .fala cite {
+    display: block; font-family: var(--mono); font-size: .68rem; font-style: normal;
+    letter-spacing: .08em; color: var(--ink-dim); margin-top: 5px;
+  }
+  .fonte {
+    margin-top: 20px; padding: 12px 14px; background: var(--surface2);
+    border-left: 4px solid var(--plaque-soft);
+  }
+  .fonte p { font-size: .85rem; line-height: 1.5; margin: 0; color: var(--ink-dim); max-width: none; }
+  .fonte code { font-family: var(--mono); font-size: .8rem; color: var(--accent); }
+  .empatia {
+    display: grid; gap: 1px; background: var(--line);
+    border: 1px solid var(--line); margin: 14px 0 0;
+  }
+  @media (min-width: 640px) { .empatia { grid-template-columns: 1fr 1fr; } }
+  .celula { background: var(--ground); padding: 15px 17px; }
+  .celula h5 {
+    font-family: var(--plate); font-size: 1.05rem; letter-spacing: .05em;
+    text-transform: uppercase; margin: 0 0 8px; color: var(--plaque);
+  }
+  .celula.dor h5 { color: var(--accent); }
+  .celula.nec h5 { color: var(--ok); }
+  .celula ul { margin: 0; padding-left: 17px; }
+  .celula li { font-size: .9rem; line-height: 1.45; margin-bottom: 5px; }
+  .celula li em { font-family: var(--story); font-style: italic; }
+  .scroll { overflow-x: auto; margin: 18px 0; }
+  table { border-collapse: collapse; width: 100%; min-width: 620px; font-size: .88rem; }
+  th, td { text-align: left; padding: 9px 11px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  thead th {
+    font-family: var(--mono); font-size: .63rem; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--ink-dim);
+    border-bottom: 2px solid var(--ink); white-space: nowrap;
+  }
+  tbody th {
+    font-family: var(--mono); font-size: .82rem; font-weight: 500;
+    color: var(--accent); white-space: nowrap;
+  }
+  td.pill span {
+    font-family: var(--mono); font-size: .66rem; letter-spacing: .08em;
+    text-transform: uppercase; border: 1px solid currentColor; padding: 2px 6px;
+    white-space: nowrap; display: inline-block; margin: 1px 2px 1px 0;
+  }
+  .camila { color: var(--plaque); }
+  .tiago { color: var(--accent); }
+  .neuza { color: var(--ok); }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .camila { color: var(--on-plaque-d); }
+  }
+  :root[data-theme="dark"] .camila { color: var(--on-plaque-d); }
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  a:focus-visible { outline: 3px solid var(--plaque); outline-offset: 2px; }
+  ul.plain { margin: 0 0 16px; padding-left: 20px; }
+  ul.plain li { margin-bottom: 8px; max-width: 66ch; }
+  .foot {
+    margin-top: 60px; padding-top: 18px; border-top: 2px solid var(--ink);
+    font-family: var(--mono); font-size: .7rem; letter-spacing: .06em;
+    color: var(--ink-dim); text-transform: uppercase;
+  }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+
+<div class="wrap">
+
+  <header class="plaque-frame">
+    <p class="eyebrow">FoiAqui · Define · Quem descobre</p>
+    <h1>Camila</h1>
+    <p class="lede">Repara no prédio antigo todo dia no caminho da faculdade, já tentou descobrir o que era ali, e não achou.</p>
+  </header>
+
+  <h2>A persona</h2>
+  <p class="sub">Persona primária · consumo · tradicional (semifictícia)</p>
+  
+  <div class="persona">
+    <div class="persona-topo">
+      <svg class="retrato" viewBox="0 0 120 120" role="img" aria-label="Retrato ilustrado de Camila">
+    <defs><clipPath id="rc-camila"><circle cx="60" cy="60" r="57"/></clipPath></defs>
+    <g clip-path="url(#rc-camila)">
+      <circle cx="60" cy="60" r="57" fill="#DFDCD1"/>
+      <path d="M60 86c-24 0-40 15-42 36h84c-2-21-18-36-42-36z" fill="#B4471F"/>
+      <rect x="52" y="70" width="16" height="22" rx="8" fill="#B87A55"/>
+      <ellipse cx="60" cy="54" rx="21" ry="24" fill="#CD8E67"/>
+      <path d="M39 52c0-15 9-25 21-25s21 10 21 25c2-6 3-13 1-19-3-11-12-17-22-17s-19 6-22 17c-2 6-1 13 1 19z" fill="#2B2119"/>
+      <path d="M37 46c-3 10-2 22 2 30-6-4-9-14-8-24 1-8 4-14 9-19zM83 46c3 10 2 22-2 30 6-4 9-14 8-24-1-8-4-14-9-19z" fill="#2B2119"/>
+      <ellipse cx="52" cy="54" rx="2.6" ry="3" fill="#2B2119"/>
+      <ellipse cx="68" cy="54" rx="2.6" ry="3" fill="#2B2119"/>
+      <path d="M47 47c3-2 7-2 9 0M64 47c3-2 7-2 9 0" stroke="#2B2119" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M60 58v5c0 1-1 2-2 2" stroke="#8C5B3E" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+      <path d="M54 70c3 3 9 3 12 0" stroke="#8C5B3E" stroke-width="2" fill="none" stroke-linecap="round"/>
+    </g>
+    <circle cx="60" cy="60" r="57" fill="none" stroke="#F4F3EE" stroke-width="2.5"/>
+      </svg>
+      <p class="papel">Persona primária · consumo</p>
+      <h3>Camila, 21</h3>
+      <p class="linha">Repara no prédio antigo todo dia no caminho da faculdade, já tentou descobrir o que era ali, e não achou.</p>
+    </div>
+
+    <div class="ficha">
+      <div><dt>Idade</dt><dd>21 anos</dd></div>
+      <div><dt>Mora em</dt><dd>São José dos Campos</dd></div>
+      <div><dt>Nasceu em</dt><dd>São José dos Campos</dd></div>
+      <div><dt>Ocupação</dt><dd>Estudante e estagiária</dd></div>
+      <div><dt>Escolaridade</dt><dd>Superior em curso</dd></div>
+      <div><dt>Estado civil</dt><dd>Solteira</dd></div>
+      <div><dt>Renda familiar</dt><dd>2 a 5 salários mínimos</dd></div>
+      <div><dt>Celular</dt><dd>Android intermediário, dados limitados</dd></div>
+    </div>
+
+    <div class="persona-corpo">
+      <h4>Perfil comportamental</h4>
+      <p>Camila mora com os pais no bairro onde cresceu e faz o mesmo trajeto a pé até o ponto de ônibus desde a escola. Conhece de vista cada fachada do centro e já reparou que várias estão fechadas há anos. Uma vez procurou no Google o que funcionava num casarão da rua do comércio; achou uma notícia de despejo e nada mais. Não insistiu.</p>
+      <p>Consome história pelas redes sociais e, ocasionalmente, por um vídeo de jornal local que aparece no feed. Nunca entrou num arquivo público e não sabe que existe um na cidade. Não se considera "pessoa de história" — considera-se curiosa.</p>
+      <p>Se um app resolvesse isso, ela usaria de imediato e provavelmente contribuiria com o que tem no celular. Mas abandona na primeira barreira: cadastro, cobrança ou parede de texto fazem ela fechar e não voltar.</p>
+
+      <h4>Objetivos</h4>
+      <ol class="objetivos">
+        <li>Matar a curiosidade <strong>no momento em que ela aparece</strong>, parada na calçada, sem precisar guardar para pesquisar depois — porque depois ela esquece.</li>
+        <li>Entender a cidade onde nasceu com a profundidade que ela sente que falta, sem ter que virar pesquisadora para isso.</li>
+        <li>Ter algo interessante para mostrar aos outros: o que ela descobre, ela reposta.</li>
+      </ol>
+
+      <h4>Falas reais que sustentam esta persona</h4>
+      <p class="fala">O que será que faziam ai dentro?<cite>respondente de 18 a 24 anos, São José dos Campos</cite></p>
+      <p class="fala">Que deve ter uma história e uma importância para se manter até hoje<cite>respondente de 18 a 24 anos, São José dos Campos</cite></p>
+      <p class="fala">A história das pessoas que já passaram ali, esses locais são uma forma de ver a passagem do tempo de forma concreta.<cite>respondente de 25 a 34 anos</cite></p>
+      <p class="fala">Como se fosse uma fofoca, como meu professor de história da arte fazia<cite>respondente de 18 a 24 anos, sobre como gosta que a história seja contada</cite></p>
+
+      <div class="fonte">
+        <p><strong>Procedência.</strong> Núcleo em <code>R1, R3, R5, R7</code> — as quatro pessoas de 18 a 24 anos que tentaram descobrir a história de um lugar e não acharam. As barreiras vêm também de <code>R2, R4, R6</code>, que responderam sobre consumo sem ter tentado ou tendo achado. Sociodemográfico calculado sobre a moda do grupo: 18–24, superior em curso, 2 a 5 salários, nascida e moradora na mesma cidade (<code>R3, R5</code>).</p>
+      </div>
+    </div>
+  </div>
+
+  <h2>Mapa de empatia</h2>
+  <p class="sub">Os seis campos pedidos no material da disciplina</p>
+  
+  <div class="empatia">
+    <div class="celula ">
+      <h5>Vê</h5>
+      <ul>
+        <li>Fachadas antigas fechadas, com placa de aluguel</li>
+        <li>Placas de rua e monumentos sem nenhuma explicação do que houve ali</li>
+        <li>Resultado de Google que fala do imóvel, nunca do lugar</li>
+        <li>Conteúdo de história em vídeo curto no feed, sobre outras cidades</li>
+      </ul>
+    </div>
+    <div class="celula ">
+      <h5>Ouve</h5>
+      <ul>
+        <li>Professores citando de passagem que "aqui tinha um cinema"</li>
+        <li>Jornal e TV local, quando o assunto vira notícia de tombamento</li>
+        <li>Quase nada dos mais velhos: não tem com quem puxar esse assunto</li>
+      </ul>
+    </div>
+    <div class="celula ">
+      <h5>Pensa e sente</h5>
+      <ul>
+        <li><em>"O que será que faziam ai dentro?"</em> — a pergunta volta toda vez e nunca é respondida</li>
+        <li>Acha bonito antes de achar histórico: entra pela arquitetura</li>
+        <li>Sente que a cidade tem camadas que ela não alcança</li>
+        <li>Não se sente autorizada a "ser de história" — isso é coisa de quem estudou</li>
+      </ul>
+    </div>
+    <div class="celula ">
+      <h5>Fala e faz</h5>
+      <ul>
+        <li>Pesquisa no Google na hora, uma vez, e desiste se não achar</li>
+        <li>Fotografa fachada bonita e posta no story</li>
+        <li>Reposta o que descobre — é vetor de divulgação, não só leitora</li>
+        <li>Diria que mandaria uma foto ou história que já tem</li>
+      </ul>
+    </div>
+    <div class="celula dor">
+      <h5>Dores</h5>
+      <ul>
+        <li>Procurou e não achou: a informação existe em algum lugar, mas não onde ela procura</li>
+        <li>Cadastro antes de ver qualquer coisa — fecha o app</li>
+        <li>Cobrança: desiste na hora</li>
+        <li>Parede de texto e carregamento lento, em pé na rua com dados limitados</li>
+        <li>Chegar ao app e não ter nada perto dela</li>
+      </ul>
+    </div>
+    <div class="celula nec">
+      <h5>Necessidades</h5>
+      <ul>
+        <li>Resposta imediata, no lugar, sem etapa anterior</li>
+        <li>Alguma coisa <strong>no mundo físico</strong> que a convide — placa, cartaz, QR</li>
+        <li>História contada em tom de conversa, não de verbete</li>
+        <li>Pouco texto por vez, com imagem</li>
+        <li>Poder mostrar aos outros o que encontrou</li>
+      </ul>
+    </div>
+  </div>
+
+  <p class="foot">FoiAqui · Define 2.1 e 2.2 · n = 10 · coleta de 7 a 9 de setembro de 2026 · amostra por conveniência</p>
+</div>
