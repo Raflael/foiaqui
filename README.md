@@ -577,7 +577,7 @@ foiaqui/
   scripts/contraste.mjs   auditoria WCAG AA (portão: falha o processo)
   scripts/personas.mjs    gera as personas, os mapas de empatia e os SVG do README
   scripts/icone.mjs       gera o ícone do app a partir dos tokens da identidade
-  scripts/dossie-pdf.mjs  imprime docs/dossie.html em PDF com as fontes reais
+  scripts/pdf.mjs         imprime qualquer página de docs/ em PDF, com as fontes embutidas
 ```
 
 <details>

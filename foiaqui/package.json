@@ -73,10 +73,11 @@
     "lint": "expo lint",
     "contraste": "node scripts/contraste.mjs",
     "icone": "node scripts/icone.mjs",
-    "dossie": "node scripts/dossie-pdf.mjs",
+    "dossie": "node scripts/pdf.mjs dossie",
     "test": "jest",
     "test:watch": "jest --watchAll",
-    "personas": "node scripts/personas.mjs"
+    "personas": "node scripts/personas.mjs",
+    "pdf": "node scripts/pdf.mjs personas persona-camila persona-tiago persona-neuza"
   },
   "private": true,
   "jest": {

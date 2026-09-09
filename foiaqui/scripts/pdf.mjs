@@ -1,17 +1,21 @@
 /**
- * Gera o PDF do dossiê a partir de `docs/dossie.html`.
+ * Imprime qualquer página de `docs/` em PDF.
  *
- * Rode com `npm run dossie`. Sai em `docs/FoiAqui-Dossie.pdf`.
+ *   node scripts/pdf.mjs personas persona-camila
+ *   npm run pdf        (todas as do Define)
+ *   npm run dossie     (só o dossiê)
  *
- * Por que existe: o dossiê é publicado como página, e página é o formato certo
- * para ler. Mas trabalho se entrega em PDF, e imprimir pelo navegador dá um
+ * Substitui o antigo `dossie-pdf.mjs`, que fazia isto para um arquivo só. Com
+ * cinco documentos a mesma máquina copiada cinco vezes seria cinco lugares
+ * para o embutimento de fonte sair de sincronia.
+ *
+ * Por que existe, e não "imprima pelo navegador": impressão manual dá um
  * resultado diferente em cada máquina — margem, escala, se os fundos saem ou
  * não. Aqui o comando é sempre o mesmo, então o PDF é sempre o mesmo.
  *
- * `docs/dossie.html` é o MESMO arquivo publicado como artefato: ele não traz
- * <html>/<head> porque o publicador embrulha isso. Este script põe o embrulho
- * de volta num arquivo temporário — assim existe uma fonte só, e o PDF não
- * pode divergir da página.
+ * As páginas de `docs/` não trazem <html>/<head> porque o publicador de
+ * artefatos embrulha isso. Este script põe o embrulho de volta num arquivo
+ * temporário — assim existe uma fonte só, e o PDF não pode divergir da página.
  */
 import { readFileSync, writeFileSync, existsSync, mkdirSync, rmSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -45,7 +49,7 @@ if (!navegador) {
  *  1. Deixar o <link> do Google Fonts e mandar o Chrome esperar. Em headless a
  *     busca não termina dentro do orçamento de tempo virtual → tudo em Arial.
  *  2. Baixar o CSS do Google com User-Agent antigo para receber TTF. Ele
- *     devolve um arquivo por família, mas só o peso 400 — e o documento usa
+ *     devolve um arquivo por família, mas só o peso 400 — e os documentos usam
  *     600 e 700 em quase todo título.
  *
  * Ler de `node_modules/@expo-google-fonts` resolve os dois: são exatamente as
@@ -90,51 +94,95 @@ function cssDasFontes() {
     process.exit(1);
   }
 
-  console.log('  ' + partes.length + ' faces embutidas do disco');
   return partes.join('\n');
 }
 
-const fonte = readFileSync(caminho('../../docs/dossie.html'), 'utf8');
+/**
+ * Regras que só valem no papel.
+ *
+ * A tela rola de lado; a folha não. As tabelas de jornada e de specs têm
+ * largura mínima para caber a leitura no navegador — no A4 essa largura mínima
+ * estoura a página, então some, e a fonte encolhe o suficiente para o quadro
+ * inteiro caber numa folha.
+ *
+ * E `break-inside: avoid` nos blocos que precisam ser lidos juntos: persona
+ * partida ao meio entre duas páginas é o defeito mais comum de PDF gerado de
+ * página web.
+ */
+const CSS_IMPRESSAO = `
+  @page { size: A4; margin: 12mm; }
+  :root { color-scheme: light; }
+  body { margin: 0; }
+  img, svg { max-width: 100%; }
+  .wrap { max-width: none !important; padding: 0 !important; }
+  .scroll { overflow: visible !important; }
+  table { min-width: 0 !important; width: 100% !important; }
+  table.jornada, table.specs { font-size: .58rem; }
+  table.jornada th, table.jornada td, table.specs th, table.specs td { padding: 5px 6px; }
+  .persona, .mapa, .mapa-baixo, .achado, .caixa, .j-painel, .flag, .fonte, table {
+    break-inside: avoid;
+  }
+  h2, h3 { break-after: avoid; }
+  h2 { break-before: auto; }
+  a { color: inherit; text-decoration: none; }
+`;
+
+const nomes = process.argv.slice(2);
+if (!nomes.length) {
+  console.error('Uso: node scripts/pdf.mjs <nome-do-arquivo-em-docs> [outro...]');
+  process.exit(1);
+}
+
 const css = cssDasFontes();
+console.log(FACES.length + ' faces embutidas do disco · ' + navegador.split(/[\\/]/).pop());
 
-// o <link> do Google Fonts sai: as fontes agora vêm embutidas
-const corpo = fonte.replace(/<link rel="stylesheet" href="https:[^>]*fonts\.googleapis[^>]*>/, '');
+const trabalho = join(tmpdir(), 'foiaqui-pdf');
+mkdirSync(trabalho, { recursive: true });
 
-const pagina = `<!doctype html>
+for (const nome of nomes) {
+  const entrada = caminho('../../docs/' + nome + '.html');
+  if (!existsSync(entrada)) {
+    console.error('  não achei docs/' + nome + '.html');
+    process.exitCode = 1;
+    continue;
+  }
+
+  // o <link> do Google Fonts sai: as fontes agora vêm embutidas
+  const corpo = readFileSync(entrada, 'utf8')
+    .replace(/<link rel="preconnect"[^>]*>/g, '')
+    .replace(/<link rel="stylesheet" href="https:[^>]*fonts\.googleapis[^>]*>/, '');
+
+  const pagina = `<!doctype html>
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
 <style>${css}</style>
-<style>
-  :root { color-scheme: light; }
-  body { margin: 0; }
-  img { max-width: 100%; }
-</style>
+<style>${CSS_IMPRESSAO}</style>
 ${corpo}
 </body>
 </html>`;
 
-const trabalho = join(tmpdir(), 'foiaqui-dossie');
-mkdirSync(trabalho, { recursive: true });
-const html = join(trabalho, 'dossie.html');
-writeFileSync(html, pagina, 'utf8');
+  const html = join(trabalho, nome + '.html');
+  writeFileSync(html, pagina, 'utf8');
 
-const saida = caminho('../../docs/FoiAqui-Dossie.pdf');
+  const saida = caminho('../../docs/pdf/' + nome + '.pdf');
+  mkdirSync(caminho('../../docs/pdf/'), { recursive: true });
 
-console.log('  renderizando com ' + navegador.split(/[\\/]/).pop());
-execFileSync(
-  navegador,
-  [
-    '--headless=new',
-    '--disable-gpu',
-    '--no-pdf-header-footer',
-    '--virtual-time-budget=4000',
-    `--user-data-dir=${join(trabalho, 'perfil')}`,
-    `--print-to-pdf=${saida}`,
-    'file:///' + html.split('\\').join('/'),
-  ],
-  { stdio: ['ignore', 'ignore', 'pipe'] },
-);
+  execFileSync(
+    navegador,
+    [
+      '--headless=new',
+      '--disable-gpu',
+      '--no-pdf-header-footer',
+      '--virtual-time-budget=6000',
+      `--user-data-dir=${join(trabalho, 'perfil')}`,
+      `--print-to-pdf=${saida}`,
+      'file:///' + html.split('\\').join('/'),
+    ],
+    { stdio: ['ignore', 'ignore', 'pipe'] },
+  );
+
+  console.log('  docs/pdf/' + nome + '.pdf');
+}
 
 rmSync(trabalho, { recursive: true, force: true });
-console.log('  docs/FoiAqui-Dossie.pdf gerado');
