@@ -17,7 +17,7 @@
  * é público. O que entra é só o resultado anonimizado — falas atribuídas por
  * faixa etária e cidade, e códigos R1…R10 sem chave de identificação.
  */
-import { writeFileSync, mkdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 // fileURLToPath, não URL.pathname: no Windows o caminho do projeto tem espaços,
@@ -25,70 +25,41 @@ import { fileURLToPath } from 'node:url';
 const saida = fileURLToPath(new URL('../../docs/', import.meta.url));
 
 /* ─────────────────────────────  RETRATOS  ─────────────────────────────
- * Desenhados, não fotografados. Foto de banco de imagens seria o rosto de uma
- * pessoa real usada para representar outra, inventada — e as fontes de imagem
- * externas nem carregariam na página publicada. Ilustração plana resolve os
- * dois problemas e ainda fica na linguagem da identidade do app.
+ *
+ * Fotografias, e não as ilustrações que estavam aqui antes: o modelo da
+ * disciplina pede foto, e foto é a convenção da entrega.
+ *
+ * São imagens GERADAS, não de banco de imagens — e a diferença é ética, não
+ * estética. Foto de banco seria o rosto de uma pessoa real usada para
+ * representar uma pessoa inventada, num documento que circula. Imagem gerada
+ * não é ninguém.
+ *
+ * Entram embutidas em base64 porque as páginas publicadas como artefato não
+ * carregam imagem de fora: o caminho relativo funcionaria no disco e quebraria
+ * no ar. Custa cerca de 160 KB somados — e é o que garante que a página, o PDF
+ * e o SVG mostrem exatamente a mesma coisa em qualquer lugar.
+ *
+ * O recorte circular é feito por `clip-path` com forma, não por `<clipPath>`
+ * com id. O mesmo retrato aparece três vezes na mesma página (ficha, mapa de
+ * empatia e jornada), e três elementos com o mesmo id é HTML inválido — a
+ * forma não precisa de id nenhum.
  */
-const retratos = {
-  camila: `
-    <defs><clipPath id="rc-camila"><circle cx="60" cy="60" r="57"/></clipPath></defs>
-    <g clip-path="url(#rc-camila)">
-      <circle cx="60" cy="60" r="57" fill="#DFDCD1"/>
-      <path d="M60 86c-24 0-40 15-42 36h84c-2-21-18-36-42-36z" fill="#B4471F"/>
-      <rect x="52" y="70" width="16" height="22" rx="8" fill="#B87A55"/>
-      <ellipse cx="60" cy="54" rx="21" ry="24" fill="#CD8E67"/>
-      <path d="M39 52c0-15 9-25 21-25s21 10 21 25c2-6 3-13 1-19-3-11-12-17-22-17s-19 6-22 17c-2 6-1 13 1 19z" fill="#2B2119"/>
-      <path d="M37 46c-3 10-2 22 2 30-6-4-9-14-8-24 1-8 4-14 9-19zM83 46c3 10 2 22-2 30 6-4 9-14 8-24-1-8-4-14-9-19z" fill="#2B2119"/>
-      <ellipse cx="52" cy="54" rx="2.6" ry="3" fill="#2B2119"/>
-      <ellipse cx="68" cy="54" rx="2.6" ry="3" fill="#2B2119"/>
-      <path d="M47 47c3-2 7-2 9 0M64 47c3-2 7-2 9 0" stroke="#2B2119" stroke-width="2" fill="none" stroke-linecap="round"/>
-      <path d="M60 58v5c0 1-1 2-2 2" stroke="#8C5B3E" stroke-width="1.6" fill="none" stroke-linecap="round"/>
-      <path d="M54 70c3 3 9 3 12 0" stroke="#8C5B3E" stroke-width="2" fill="none" stroke-linecap="round"/>
-    </g>
-    <circle cx="60" cy="60" r="57" fill="none" stroke="#F4F3EE" stroke-width="2.5"/>`,
+const FOTOS = ['camila', 'tiago', 'neuza'];
 
-  tiago: `
-    <defs><clipPath id="rc-tiago"><circle cx="60" cy="60" r="57"/></clipPath></defs>
-    <g clip-path="url(#rc-tiago)">
-      <circle cx="60" cy="60" r="57" fill="#DFDCD1"/>
-      <path d="M60 86c-24 0-40 15-42 36h84c-2-21-18-36-42-36z" fill="#2E6E68"/>
-      <rect x="52" y="70" width="16" height="22" rx="8" fill="#9C6844"/>
-      <ellipse cx="60" cy="54" rx="21" ry="24" fill="#B37C55"/>
-      <path d="M39 50c1-13 10-21 21-21s20 8 21 21c1-4 1-9 0-13-2-9-10-15-21-15s-19 6-21 15c-1 4-1 9 0 13z" fill="#241C14"/>
-      <path d="M43 62c0 12 7 20 17 20s17-8 17-20c1 8-1 16-6 21-3 3-7 5-11 5s-8-2-11-5c-5-5-7-13-6-21z" fill="#241C14"/>
-      <ellipse cx="52" cy="53" rx="2.6" ry="3" fill="#241C14"/>
-      <ellipse cx="68" cy="53" rx="2.6" ry="3" fill="#241C14"/>
-      <path d="M46 46c3-2 8-2 10 1M64 47c2-3 7-3 10-1" stroke="#241C14" stroke-width="2.2" fill="none" stroke-linecap="round"/>
-      <path d="M60 57v5c0 1-1 2-2 2" stroke="#7C4F32" stroke-width="1.6" fill="none" stroke-linecap="round"/>
-      <path d="M54 69c3 2 9 2 12 0" stroke="#5E3A24" stroke-width="2" fill="none" stroke-linecap="round"/>
-    </g>
+const retratos = Object.fromEntries(
+  FOTOS.map((id) => {
+    const b64 = readFileSync(
+      fileURLToPath(new URL('../../.github/personas/fotos/' + id + '.jpg', import.meta.url)),
+    ).toString('base64');
+    return [
+      id,
+      `
+    <image href="data:image/jpeg;base64,${b64}" x="3" y="3" width="114" height="114"
+      preserveAspectRatio="xMidYMid slice" style="clip-path:circle(47.5% at 50% 50%)"/>
     <circle cx="60" cy="60" r="57" fill="none" stroke="#F4F3EE" stroke-width="2.5"/>`,
-
-  neuza: `
-    <defs><clipPath id="rc-neuza"><circle cx="60" cy="60" r="57"/></clipPath></defs>
-    <g clip-path="url(#rc-neuza)">
-      <circle cx="60" cy="60" r="57" fill="#DFDCD1"/>
-      <path d="M60 86c-24 0-40 15-42 36h84c-2-21-18-36-42-36z" fill="#14396E"/>
-      <rect x="52" y="70" width="16" height="22" rx="8" fill="#8A5B3C"/>
-      <ellipse cx="60" cy="54" rx="21" ry="24" fill="#A06D48"/>
-      <path d="M38 54c-1-16 9-27 22-27s23 11 22 27c2-7 2-15 0-21-3-10-12-16-22-16s-19 6-22 16c-2 6-2 14 0 21z" fill="#8E8C88"/>
-      <path d="M38 52c4-6 10-9 15-9-6 3-11 8-13 14zM82 52c-4-6-10-9-15-9 6 3 11 8 13 14z" fill="#C9C7C2"/>
-      <path d="M78 34c7 2 11 8 11 15 0 5-2 9-5 12 2-9 0-19-6-27z" fill="#8E8C88"/>
-      <ellipse cx="52" cy="55" rx="2.5" ry="2.8" fill="#241C14"/>
-      <ellipse cx="68" cy="55" rx="2.5" ry="2.8" fill="#241C14"/>
-      <g fill="none" stroke="#1A1D23" stroke-width="1.8">
-        <circle cx="52" cy="55" r="7.5"/>
-        <circle cx="68" cy="55" r="7.5"/>
-        <path d="M59.5 55h1M44.5 54l-4-1M75.5 54l4-1"/>
-      </g>
-      <path d="M45 45c3-2 7-2 9 0M66 45c3-2 7-2 9 0" stroke="#6E6B66" stroke-width="2" fill="none" stroke-linecap="round"/>
-      <path d="M60 60v4c0 1-1 2-2 2" stroke="#6E452C" stroke-width="1.6" fill="none" stroke-linecap="round"/>
-      <path d="M54 71c3 2 9 2 12 0" stroke="#6E452C" stroke-width="2" fill="none" stroke-linecap="round"/>
-      <path d="M44 63c2 2 4 3 5 3M71 63c-2 2-4 3-5 3" stroke="#8A5B3C" stroke-width="1.3" fill="none" stroke-linecap="round" opacity=".7"/>
-    </g>
-    <circle cx="60" cy="60" r="57" fill="none" stroke="#F4F3EE" stroke-width="2.5"/>`,
-};
+    ];
+  }),
+);
 
 /* ─────────────────────────────  PERSONAS  ───────────────────────────── */
 

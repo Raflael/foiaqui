@@ -214,7 +214,7 @@ acento âmbar, textura de papel, display em Fraunces. Caiu por duas razões:
 <table>
 <tr>
 <td width="33%" align="center" valign="top">
-<img src=".github/personas/camila.svg" width="118" alt="Retrato ilustrado de Camila"><br>
+<img src=".github/personas/fotos/camila.jpg" width="118" alt="Retrato de Camila"><br>
 <b>CAMILA, 21</b><br>
 <sub>primária · quem descobre</sub><br><br>
 <sub><i>"O que será que faziam ai dentro?"</i></sub><br><br>
@@ -222,7 +222,7 @@ acento âmbar, textura de papel, display em Fraunces. Caiu por duas razões:
 <a href="https://claude.ai/code/artifact/cb6e1480-9463-4881-bf88-720b10ac77cb">ficha completa</a>
 </td>
 <td width="33%" align="center" valign="top">
-<img src=".github/personas/tiago.svg" width="118" alt="Retrato ilustrado de Tiago"><br>
+<img src=".github/personas/fotos/tiago.jpg" width="118" alt="Retrato de Tiago"><br>
 <b>TIAGO, 29</b><br>
 <sub>primária · quem guarda</sub><br><br>
 <sub><i>"Não achei que fosse<br>interessar a alguém"</i></sub><br><br>
@@ -230,7 +230,7 @@ acento âmbar, textura de papel, display em Fraunces. Caiu por duas razões:
 <a href="https://claude.ai/code/artifact/f6ca4feb-a2da-4fdd-8e7a-f97719560bfa">ficha completa</a>
 </td>
 <td width="33%" align="center" valign="top">
-<img src=".github/personas/neuza.svg" width="118" alt="Retrato ilustrado de Neuza"><br>
+<img src=".github/personas/fotos/neuza.jpg" width="118" alt="Retrato de Neuza"><br>
 <b>NEUZA, 58</b><br>
 <sub>secundária · quem diria não</sub><br><br>
 <sub><i>"A vida tá passando<br>rápido demais"</i></sub><br><br>
@@ -341,8 +341,10 @@ em SVG dentro de `.github/personas/`. As quatro páginas compartilham CSS, retra
 e dados: escritas à mão, uma correção do professor viraria quatro edições e três
 chances de esquecer uma.
 
-Os mapas são **SVG montado no script**, não captura de tela — o GitHub não renderiza
-HTML com CSS no README, mas renderiza SVG. Custa uma quebra de linha manual (não há
+Os retratos são **imagens geradas**, não fotos de banco: banco de imagens seria o rosto
+de uma pessoa real representando uma pessoa inventada. Os mapas são **SVG montado no
+script**, não captura de tela — o GitHub não renderiza HTML com CSS no README, mas
+renderiza SVG. Custa uma quebra de linha manual (não há
 fluxo de texto em SVG) e paga com imagem que abre em qualquer lugar: README, slide,
 PDF, impressão.
 

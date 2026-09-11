@@ -1,9 +1,9 @@
 /**
  * Imprime qualquer página de `docs/` em PDF.
  *
- *   node scripts/pdf.mjs personas persona-camila
- *   npm run pdf        (todas as do Define)
- *   npm run dossie     (só o dossiê)
+ *   npm run pdf                            todas as páginas de docs/
+ *   node scripts/pdf.mjs personas rota     só estas
+ *   npm run dossie                         só o dossiê
  *
  * Substitui o antigo `dossie-pdf.mjs`, que fazia isto para um arquivo só. Com
  * cinco documentos a mesma máquina copiada cinco vezes seria cinco lugares
@@ -17,7 +17,7 @@
  * artefatos embrulha isso. Este script põe o embrulho de volta num arquivo
  * temporário — assim existe uma fonte só, e o PDF não pode divergir da página.
  */
-import { readFileSync, writeFileSync, existsSync, mkdirSync, rmSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, rmSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { join } from 'node:path';
 import { execFileSync } from 'node:child_process';
@@ -127,11 +127,20 @@ const CSS_IMPRESSAO = `
   a { color: inherit; text-decoration: none; }
 `;
 
-const nomes = process.argv.slice(2);
-if (!nomes.length) {
-  console.error('Uso: node scripts/pdf.mjs <nome-do-arquivo-em-docs> [outro...]');
-  process.exit(1);
-}
+/**
+ * Sem argumento, imprime TUDO que existe em docs/.
+ *
+ * A lista era cravada no package.json, e por isso a rota ficou sem PDF sem
+ * ninguém notar: documento novo não entrava na lista, e lista que precisa ser
+ * lembrada é lista que sai de sincronia. Ler a pasta é a única versão que não
+ * esquece.
+ */
+const nomes = process.argv.slice(2).length
+  ? process.argv.slice(2)
+  : readdirSync(caminho('../../docs/'))
+      .filter((f) => f.endsWith('.html'))
+      .map((f) => f.replace(/\.html$/, ''))
+      .sort();
 
 const css = cssDasFontes();
 console.log(FACES.length + ' faces embutidas do disco · ' + navegador.split(/[\\/]/).pop());

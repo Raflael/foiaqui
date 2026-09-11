@@ -77,7 +77,7 @@
     "test": "jest",
     "test:watch": "jest --watchAll",
     "personas": "node scripts/personas.mjs",
-    "pdf": "node scripts/pdf.mjs personas persona-camila persona-tiago persona-neuza"
+    "pdf": "node scripts/pdf.mjs"
   },
   "private": true,
   "jest": {
