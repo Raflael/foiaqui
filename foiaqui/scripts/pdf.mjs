@@ -100,14 +100,21 @@ function cssDasFontes() {
 /**
  * Regras que só valem no papel.
  *
- * A tela rola de lado; a folha não. As tabelas de jornada e de specs têm
- * largura mínima para caber a leitura no navegador — no A4 essa largura mínima
- * estoura a página, então some, e a fonte encolhe o suficiente para o quadro
- * inteiro caber numa folha.
+ * **A armadilha do A4.** A folha tem 210 mm; tirando as margens sobram 186 mm,
+ * que o Chrome converte para cerca de 703 px de CSS. Isso é MENOR que o ponto
+ * de virada de 760 px onde o mapa de empatia passa para o empilhamento de
+ * celular — então o PDF saía com a versão de telefone: X escondido, quadrantes
+ * um embaixo do outro. A página parecia certa e o PDF não, sem nada no código
+ * indicando por quê.
  *
- * E `break-inside: avoid` nos blocos que precisam ser lidos juntos: persona
- * partida ao meio entre duas páginas é o defeito mais comum de PDF gerado de
- * página web.
+ * Por isso os blocos que mudam por largura são reafirmados aqui: no papel a
+ * largura é conhecida e fixa, e o layout tem que ser o de tela larga
+ * independentemente do número.
+ *
+ * O resto: a folha não rola de lado, então a largura mínima das tabelas some e
+ * a fonte encolhe o suficiente para o quadro caber. E `break-inside: avoid`
+ * nos blocos que se leem juntos — persona partida ao meio entre duas páginas é
+ * o defeito mais comum de PDF gerado de página web.
  */
 const CSS_IMPRESSAO = `
   @page { size: A4; margin: 12mm; }
@@ -117,13 +124,41 @@ const CSS_IMPRESSAO = `
   .wrap { max-width: none !important; padding: 0 !important; }
   .scroll { overflow: visible !important; }
   table { min-width: 0 !important; width: 100% !important; }
-  table.jornada, table.specs { font-size: .58rem; }
+  table.jornada, table.specs { font-size: .58rem; table-layout: fixed; }
+  /* nowrap é regra de tela: lá a tabela rola de lado e o texto comprido some
+     na rolagem. No papel ele vaza para a coluna vizinha. */
+  table.jornada th, table.jornada td, table.specs th, table.specs td {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  .j-sub { font-size: .55rem; }
+  .j-etapa { font-size: .95rem; }
   table.jornada th, table.jornada td, table.specs th, table.specs td { padding: 5px 6px; }
+
+  /* o mapa de empatia volta a ser os quatro quadrantes com o X, como na tela */
+  .mapa {
+    grid-template-columns: 1fr auto 1fr !important;
+    grid-template-areas:
+      "topo topo topo"
+      "esq  face dir"
+      "base base base" !important;
+    gap: 8px !important;
+  }
+  .mapa-x { display: block !important; }
+  .quad-rotulo { text-align: center !important; }
+  .notas { justify-content: center !important; }
+  .nota { max-width: 168px !important; font-size: .74rem; }
+  .caixa .notas { justify-content: flex-start !important; }
+  .mapa-baixo { grid-template-columns: 1fr 1fr !important; }
+
+  /* e os pares que também dependem de largura */
+  .achados { grid-template-columns: 1fr 1fr !important; }
+  .ficha { grid-template-columns: repeat(4, 1fr) !important; }
+
   .persona, .mapa, .mapa-baixo, .achado, .caixa, .j-painel, .flag, .fonte, table {
     break-inside: avoid;
   }
   h2, h3 { break-after: avoid; }
-  h2 { break-before: auto; }
   a { color: inherit; text-decoration: none; }
 `;
 
@@ -166,8 +201,11 @@ for (const nome of nomes) {
 <head>
 <meta charset="utf-8">
 <style>${css}</style>
-<style>${CSS_IMPRESSAO}</style>
+</head>
 ${corpo}
+
+<!-- por último de propósito: assim vence o CSS da página no desempate -->
+<style>${CSS_IMPRESSAO}</style>
 </body>
 </html>`;
 
