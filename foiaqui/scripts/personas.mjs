@@ -355,6 +355,8 @@ const jornadas = {
         ],
         pensando: ['"Vai pedir cadastro?"', '"Isso aqui carrega no meu 4G?"'],
         dores: ['Cadastro antes de ver qualquer coisa', 'Demorar pra carregar'],
+        emoji: '🤨',
+        nivel: 3,
         sentindo: 'Curiosidade com desconfiança — pronta para fechar ao primeiro obstáculo',
         contatos: ['Placa com QR na rua', 'Story de um conhecido', 'Busca na loja de apps'],
       },
@@ -368,6 +370,8 @@ const jornadas = {
         ],
         pensando: ['"Era isso que tinha aqui!"', '"Isso é verdade mesmo ou alguém inventou?"'],
         dores: ['Não confiar se é verdade', 'Muito texto pra ler no sol'],
+        emoji: '😃',
+        nivel: 5,
         sentindo: 'Surpresa, e o começo de um vínculo com a rua onde ela sempre andou',
         contatos: ['Mapa', 'Ficha da memória', 'Slider', 'Áudio', 'Fonte declarada'],
       },
@@ -382,6 +386,8 @@ const jornadas = {
         ],
         pensando: ['"Aqui não tem nada"', '"Será que o que eu tenho serve?"'],
         dores: ['Abrir e não ter nada perto de mim', 'Nunca me passou pela cabeça contribuir'],
+        emoji: '😊',
+        nivel: 4,
         sentindo: 'Pertencimento, e vontade de mostrar que sabe algo da própria cidade',
         contatos: ['Câmera AR', 'Trilhas', 'Salvos e coleções', 'Compartilhar como imagem'],
       },
@@ -395,6 +401,8 @@ const jornadas = {
         ],
         pensando: ['"Já vi tudo que tinha"', '"Ninguém contou mais nada?"'],
         dores: ['Acervo que não cresce', 'Abrir e não ter nada perto de mim'],
+        emoji: '😐',
+        nivel: 2,
         sentindo: 'Frustração se está igual; curiosidade renovada se cresceu',
         contatos: ['Aviso de proximidade', 'Linha do tempo', 'Feed do ponto'],
       },
@@ -414,6 +422,8 @@ const jornadas = {
         ],
         pensando: ['"Isso é coisa séria ou é mais uma rede social?"'],
         dores: ['Desconfia de plataforma sem gente séria'],
+        emoji: '🤨',
+        nivel: 2,
         sentindo: 'Reserva — já viu muito app de memória virar bagunça',
         contatos: ['Link no WhatsApp da família', 'Placa com QR no parque'],
       },
@@ -430,6 +440,8 @@ const jornadas = {
           'Acha que o que ele tem não interessa a ninguém',
           'Nunca lhe passou pela cabeça que pudesse publicar',
         ],
+        emoji: '🙂',
+        nivel: 3,
         sentindo: 'Reconhecimento, e uma coceira de corrigir o que está incompleto',
         contatos: ['Feed do ponto', 'Fonte declarada', 'Contagem de memórias do lugar'],
       },
@@ -444,6 +456,8 @@ const jornadas = {
         ],
         pensando: ['"Vou ter que escrever um texto?"', '"A foto tá no álbum, não no celular"'],
         dores: ['Escrever relato dá trabalho', 'A foto é de papel'],
+        emoji: '😌',
+        nivel: 4,
         sentindo: 'Alívio: era mais fácil do que ele imaginava',
         contatos: [
           'Botão "tenho uma foto de como era aqui"',
@@ -462,6 +476,8 @@ const jornadas = {
         ],
         pensando: ['"Alguém viu isso?"', '"Valeu a pena?"'],
         dores: ['Não saber se interessou a alguém'],
+        emoji: '😄',
+        nivel: 5,
         sentindo: 'Orgulho discreto — e disposição para a segunda contribuição',
         contatos: ['Aviso de aprovação', 'Perfil com contribuições', 'A memória publicada'],
       },
@@ -481,6 +497,8 @@ const jornadas = {
         ],
         pensando: ['"Vai pedir meus dados logo de cara?"'],
         dores: ['Cadastro logo na entrada'],
+        emoji: '🙂',
+        nivel: 4,
         sentindo: 'Interesse — é a cidade dela há trinta e um anos',
         contatos: ['O filho', 'Loja de aplicativos'],
       },
@@ -494,6 +512,8 @@ const jornadas = {
         ],
         pensando: ['"Tudo isso é de quem nasceu na cidade"', '"A minha começa tarde demais"'],
         dores: ['Sente que sua memória vale menos por não ser de nascença'],
+        emoji: '😕',
+        nivel: 3,
         sentindo: 'Reconhecimento parcial, com um incômodo que ela não nomeia',
         contatos: ['Mapa', 'Busca', 'Linha do tempo'],
       },
@@ -511,6 +531,8 @@ const jornadas = {
           '"Depois eu consigo apagar?"',
         ],
         dores: ['Não sabe quem vai ver', 'Não confia no uso', 'Não dá pra desfazer'],
+        emoji: '😟',
+        nivel: 1,
         sentindo: 'Recuo. Não é dificuldade: é falta de garantia',
         contatos: ['Formulário de envio', 'Critérios de moderação', 'Perfil'],
       },
@@ -523,6 +545,8 @@ const jornadas = {
         ],
         pensando: ['"Continua sem nada de quando eu cheguei"'],
         dores: ['Memória de quem chegou depois não tem lugar no acervo'],
+        emoji: '😞',
+        nivel: 2,
         sentindo: 'Resignação — o app é dos outros',
         contatos: ['Mapa', 'Compartilhar como imagem'],
       },
@@ -933,8 +957,33 @@ const css = `
   tr.j-dores td { background: var(--surface); }
   tr.j-dores li { color: var(--accent); font-weight: 600; }
   tr.j-dores th.j-linha { color: var(--accent); }
-  td.j-sente { font-family: var(--story); font-size: .95rem; line-height: 1.4; }
   ul.j-contato li { font-family: var(--mono); font-size: .74rem; color: var(--ink-dim); }
+
+  /* a curva emocional: carinha na altura do nível, traço ligando os estágios */
+  tr.j-humor td { padding: 0 0 10px; vertical-align: top; }
+  .curva { position: relative; height: 66px; width: 100%; }
+  .curva svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .curva svg line { stroke: var(--accent); stroke-width: 2; stroke-linecap: round; }
+  .carinha {
+    position: absolute;
+    left: 50%;
+    top: var(--y);
+    transform: translate(-50%, -50%);
+    font-size: 1.75rem;
+    line-height: 1;
+    /* o disco atrás impede que o traço corte a carinha ao meio */
+    background: var(--surface);
+    border-radius: 50%;
+    padding: 2px;
+  }
+  .j-frase {
+    font-family: var(--story);
+    font-size: .92rem;
+    line-height: 1.4;
+    margin: 0;
+    padding: 0 12px;
+    max-width: none;
+  }
 
   .j-painel {
     display: flex;
@@ -1253,6 +1302,45 @@ ${caixaBaixo('nec', 'Necessidades', n.necessidades)}
 
 const lista = (itens) => itens.map((i) => `<li>${i}</li>`).join('');
 
+/** Altura do ponto na curva: nível 5 no alto, nível 1 embaixo. */
+const alturaDo = (nivel) => 100 - nivel * 16;
+
+/**
+ * A célula do "sentindo": carinha, curva e frase.
+ *
+ * A curva é desenhada em pedaços, um por célula, e cada pedaço vai da borda
+ * esquerda até o centro e do centro até a borda direita — passando pela média
+ * entre este estágio e o vizinho. Os pedaços se encontram exatamente na linha
+ * que separa as colunas, então o olho lê uma curva contínua atravessando a
+ * tabela, que é o que o modelo da disciplina mostra.
+ *
+ * Desenhar uma curva única por cima da tabela seria mais simples e mais
+ * frágil: bastaria a largura de uma coluna mudar — e muda, porque o conteúdo
+ * é que dita — para a curva descolar dos estágios.
+ *
+ * Vale olhar a da Neuza: ela é a única que despenca, e despenca exatamente na
+ * escalada, que é onde ela fecha o app. A curva conta isso sem uma palavra.
+ */
+function celulaHumor(e, i, todos) {
+  const y = alturaDo(e.nivel);
+  const antes = i > 0 ? (alturaDo(todos[i - 1].nivel) + y) / 2 : null;
+  const depois = i < todos.length - 1 ? (y + alturaDo(todos[i + 1].nivel)) / 2 : null;
+
+  const traco = (x1, y1, x2, y2) =>
+    `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" vector-effect="non-scaling-stroke"/>`;
+
+  return `<td class="j-sente">
+            <div class="curva" style="--y:${y}%">
+              <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+                ${antes !== null ? traco(0, antes, 50, y) : ''}
+                ${depois !== null ? traco(50, y, 100, depois) : ''}
+              </svg>
+              <span class="carinha" role="img" aria-label="${e.sentindo}">${e.emoji}</span>
+            </div>
+            <p class="j-frase">${e.sentindo}</p>
+          </td>`;
+}
+
 /**
  * A jornada no formato do material: painel da persona à esquerda, os quatro
  * estágios em colunas, e as linhas fazendo / pensando (dores) / sentindo /
@@ -1286,11 +1374,10 @@ function jornadaHTML(p) {
           <th class="j-linha">Dores</th>
           ${j.estagios.map((e) => `<td><ul>${lista(e.dores)}</ul></td>`).join('\n          ')}
         </tr>
-        <tr>
+        <tr class="j-humor">
           <th class="j-linha">Sentindo</th>
-          ${j.estagios.map((e) => `<td class="j-sente">${e.sentindo}</td>`).join('\n          ')}
-        </tr>
-        <tr>
+          ${j.estagios.map((e, i, todos) => celulaHumor(e, i, todos)).join('\n          ')}
+        </tr>        <tr>
           <th class="j-linha">Pontos de contato</th>
           ${j.estagios
             .map((e) => `<td><ul class="j-contato">${lista(e.contatos)}</ul></td>`)

@@ -200,8 +200,33 @@
   tr.j-dores td { background: var(--surface); }
   tr.j-dores li { color: var(--accent); font-weight: 600; }
   tr.j-dores th.j-linha { color: var(--accent); }
-  td.j-sente { font-family: var(--story); font-size: .95rem; line-height: 1.4; }
   ul.j-contato li { font-family: var(--mono); font-size: .74rem; color: var(--ink-dim); }
+
+  /* a curva emocional: carinha na altura do nível, traço ligando os estágios */
+  tr.j-humor td { padding: 0 0 10px; vertical-align: top; }
+  .curva { position: relative; height: 66px; width: 100%; }
+  .curva svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .curva svg line { stroke: var(--accent); stroke-width: 2; stroke-linecap: round; }
+  .carinha {
+    position: absolute;
+    left: 50%;
+    top: var(--y);
+    transform: translate(-50%, -50%);
+    font-size: 1.75rem;
+    line-height: 1;
+    /* o disco atrás impede que o traço corte a carinha ao meio */
+    background: var(--surface);
+    border-radius: 50%;
+    padding: 2px;
+  }
+  .j-frase {
+    font-family: var(--story);
+    font-size: .92rem;
+    line-height: 1.4;
+    margin: 0;
+    padding: 0 12px;
+    max-width: none;
+  }
 
   .j-painel {
     display: flex;
@@ -596,14 +621,49 @@
           <td><ul><li>Não sabe quem vai ver</li><li>Não confia no uso</li><li>Não dá pra desfazer</li></ul></td>
           <td><ul><li>Memória de quem chegou depois não tem lugar no acervo</li></ul></td>
         </tr>
-        <tr>
+        <tr class="j-humor">
           <th class="j-linha">Sentindo</th>
-          <td class="j-sente">Interesse — é a cidade dela há trinta e um anos</td>
-          <td class="j-sente">Reconhecimento parcial, com um incômodo que ela não nomeia</td>
-          <td class="j-sente">Recuo. Não é dificuldade: é falta de garantia</td>
-          <td class="j-sente">Resignação — o app é dos outros</td>
-        </tr>
-        <tr>
+          <td class="j-sente">
+            <div class="curva" style="--y:36%">
+              <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+                
+                <line x1="50" y1="36" x2="100" y2="44" vector-effect="non-scaling-stroke"/>
+              </svg>
+              <span class="carinha" role="img" aria-label="Interesse — é a cidade dela há trinta e um anos">🙂</span>
+            </div>
+            <p class="j-frase">Interesse — é a cidade dela há trinta e um anos</p>
+          </td>
+          <td class="j-sente">
+            <div class="curva" style="--y:52%">
+              <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+                <line x1="0" y1="44" x2="50" y2="52" vector-effect="non-scaling-stroke"/>
+                <line x1="50" y1="52" x2="100" y2="68" vector-effect="non-scaling-stroke"/>
+              </svg>
+              <span class="carinha" role="img" aria-label="Reconhecimento parcial, com um incômodo que ela não nomeia">😕</span>
+            </div>
+            <p class="j-frase">Reconhecimento parcial, com um incômodo que ela não nomeia</p>
+          </td>
+          <td class="j-sente">
+            <div class="curva" style="--y:84%">
+              <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+                <line x1="0" y1="68" x2="50" y2="84" vector-effect="non-scaling-stroke"/>
+                <line x1="50" y1="84" x2="100" y2="76" vector-effect="non-scaling-stroke"/>
+              </svg>
+              <span class="carinha" role="img" aria-label="Recuo. Não é dificuldade: é falta de garantia">😟</span>
+            </div>
+            <p class="j-frase">Recuo. Não é dificuldade: é falta de garantia</p>
+          </td>
+          <td class="j-sente">
+            <div class="curva" style="--y:68%">
+              <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+                <line x1="0" y1="76" x2="50" y2="68" vector-effect="non-scaling-stroke"/>
+                
+              </svg>
+              <span class="carinha" role="img" aria-label="Resignação — o app é dos outros">😞</span>
+            </div>
+            <p class="j-frase">Resignação — o app é dos outros</p>
+          </td>
+        </tr>        <tr>
           <th class="j-linha">Pontos de contato</th>
           <td><ul class="j-contato"><li>O filho</li><li>Loja de aplicativos</li></ul></td>
           <td><ul class="j-contato"><li>Mapa</li><li>Busca</li><li>Linha do tempo</li></ul></td>
